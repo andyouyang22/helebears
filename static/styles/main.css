@@ -1,0 +1,12 @@
+header{
+	overflow:auto;
+	width: 100%;
+	position:relative;
+	padding: 5px 0px 10px 0px;
+}
+div.sign_up{
+	float:left;
+}
+div.log_in{
+	float:right
+}
