@@ -24,7 +24,10 @@ div.log_in{
 	margin: 0px 10px 0px 0px;
 	float:right;
 }
-
+.title{
+	clear:both;
+	text-align: center;
+}
 .main-entry{
 	display : block;
 	width:50%;
