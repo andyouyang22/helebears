@@ -27,11 +27,11 @@
 		<header>
 			<a href="#" class="pure-menu-heading pure-menu-link">HeleBears</a>
 			<ul class="pure-menu-list">
-				<li class="pure-menu-item button log_in">
-					<a href="log_in.html" class="pure-menu-link">Log In</a>
+				<li class="pure-menu-item button">
+					<a class="pure-menu-link log-in">Log In</a>
 				</li>
-				<li class="pure-menu-item button sign_up">
-					<a href="sign_up.html" class="pure-menu-link">Sign Up</a>
+				<li class="pure-menu-item button">
+					<a class="pure-menu-link sign-up">Sign Up</a>
 				</li>
 			</ul>
 
@@ -40,6 +40,45 @@
 			<!-- use the div class sign_up to search for this input, then prevent default execution -->
 		</header>
 	</div>
+
+	<form class="pure-form pure-form-aligned log-in-form drop-down-form">
+		<fieldset>
+			<div class="pure-control-group">
+				<label for="username">Username</label>
+				<input type="text" name="username" placeholder="Username">
+			</div>
+			<div class="pure-control-group">
+				<label for="password">Password</label>
+				<input type="password" name="password" placeholder="Password">
+			</div>
+		</fieldset>
+		<div class="pure-controls">
+			<label class="pure-checkbox" for="remember-me">
+				<input name="remember-me" type="checkbox"> Remember me
+			</label>
+			<button class="pure-button submit-log-in" type="submit">Log In</button>
+		</div>
+	</form>
+
+	<form class="pure-form pure-form-aligned sign-up-form drop-down-form">
+		<fieldset>
+			<div class="pure-control-group">
+				<label for="username">Username</label>
+				<input type="text" name="username" placeholder="Username">
+			</div>
+			<div class="pure-control-group">
+				<label for="password">Enter password</label>
+				<input type="password" name="password" placeholder="Password">
+			</div>
+			<div class="pure-control-group">
+				<label for="password">Confirm password</label>
+				<input type="password" name="password" placeholder="Password">
+			</div>
+		</fieldset>
+		<div class="pure-controls">
+			<button class="pure-button submit-sign-up" type="submit">Sign Up</button>
+		</div>
+	</form>
 
 	<div class="pure-g space"></div>
 
@@ -71,7 +110,9 @@
 					</select>
 				</fieldset>
 				<!-- Advanced Search form; initially hidden -->
-				<fieldset class="advanced-search pure-group"></fieldset>
+				<fieldset class="advanced-search pure-group">
+
+				</fieldset>
 				<!-- Submit button -->
 				<fieldset class="pure-group">
 					<button class="pure-button show-advanced-search">Advanced Search</button>

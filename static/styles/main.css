@@ -17,12 +17,12 @@ body {
 	height: 6em;
 }
 
-
 /* Horizontal menu header */
 
 .pure-menu-horizontal {
 	font-family: 'Roboto Slab', serif;
 	background-color: #00b85c;
+	padding-bottom: 4px;
 }
 
 .pure-menu-link {
@@ -34,7 +34,9 @@ body {
 	padding-bottom: 10px;
 }
 
+/* There's a little bit of an issue with the hover after one of the options has been selected */
 .pure-menu-link:hover {
+	cursor: pointer;
 	background-color: #00a653;
 }
 
@@ -57,6 +59,49 @@ body {
 	float: right;
 	margin-right: 1em;
 	margin-top: 5px;
+}
+
+/* Dropdown log-in and sign-up menus */
+
+.drop-down-form {
+	position: fixed;
+	top: 5em;
+	right: 1.2em;
+	padding: 30px;
+	border-radius: 5px;
+	font-size: 80%;
+	background-color: #eeeeee;
+	display: none;
+}
+
+.log-in-form .pure-control-group label {
+	width: 58px;
+}
+
+.sign-up-form .pure-control-group label {
+	width: 106px;
+}
+
+.log-in-form .pure-controls {
+	margin-left: 75px;
+	margin-top: 0px;
+}
+
+.submit-log-in {
+	margin-top: 5px;
+	font-family: 'Roboto Slab' serif;
+	color: #eeeeee;
+	background-color: #00b85c;
+}
+
+.sign-up-form .pure-controls {
+	margin-left: 125px;
+}
+
+.submit-sign-up {
+	font-family: 'Roboto Slab' serif;
+	color: #eeeeee;
+	background-color: #00b85c;
 }
 
 /* Course search form */
@@ -114,10 +159,4 @@ legend.search-form-title {
 
 .review-values tr > :first-child {
 	text-align: right;
-}
-
-.overall-rating {
-	padding-top: 10px;
-	padding-bottom: 10px;
-	font-size: 120%;
 }
