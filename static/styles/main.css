@@ -1,5 +1,6 @@
 header{
 	overflow:auto;
+	#display:block;
 	width: 100%;
 	position:relative;
 	padding: 5px 0px 10px 0px;
