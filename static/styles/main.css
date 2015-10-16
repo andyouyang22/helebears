@@ -11,6 +11,13 @@ body {
 	display: none;
 }
 
+/* Horizontal rule */
+
+.space {
+	height: 6em;
+}
+
+
 /* Horizontal menu header */
 
 .pure-menu-horizontal {
@@ -87,8 +94,30 @@ legend.search-form-title {
 	background-color: #00a653;
 }
 
-/* Horizontal rule */
+/* Professor review table */
 
-.space {
-	height: 6em;
+.professor-name {
+	font-size: 130%;
+	font-weight: bold;
+	text-align: center;
+}
+
+.review-values {
+	margin-top: 20px;
+	width: 100%;
+}
+
+.review-values tr td {
+	padding-top: 10px;
+	padding-bottom: 10px;
+}
+
+.review-values tr > :first-child {
+	text-align: right;
+}
+
+.overall-rating {
+	padding-top: 10px;
+	padding-bottom: 10px;
+	font-size: 120%;
 }
