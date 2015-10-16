@@ -28,7 +28,7 @@ div.log_in{
 	clear:both;
 	text-align: center;
 }
-.main-entry{
+.entry{
 	display : block;
 	width:50%;
 	margin:auto;
@@ -57,3 +57,18 @@ a.search{
 	display:button;
 	float:right;
 }
+
+.overall-ratings-table{
+	width: 100%;
+	border: 1px solid black;
+}
+
+tr, td {
+	text-align: center;
+}
+tr{
+	margin: 100px 0px 0px 0px;	
+}
+
+
+
