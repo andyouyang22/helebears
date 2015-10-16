@@ -34,24 +34,23 @@ div.log_in{
 	overflow: auto;
 }
 .value-input{
-	margin: 15px 15px 15px 0px;	
+	margin: 0px 15px 15px 0px;
+	//might be cleaner to move this inside of the other class?
 }
-.department-label{
-	display:block;
-	text-align: left;
-	left: 100px;
-	font-size: 100%;
-}
-.department-input{
+.input-holder-left{
 	float:left;
-	width: 35%;
 }
-.class-input{
-	float:left;	
+.input-holder-right{
+	float:right;	
 }
+.label{
+	display:block;
+}
+
 button.advanced-search{
 	float:left;
 }
 a.search{
+	display:button;
 	float:right;
 }
