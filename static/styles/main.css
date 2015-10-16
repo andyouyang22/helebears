@@ -106,6 +106,10 @@ body {
 
 /* Course search form */
 
+.pure-form legend {
+	border-bottom: 1px solid #00a653;
+}
+
 legend.search-form-title {
 	font-weight: bold;
 	font-size: 120%;
