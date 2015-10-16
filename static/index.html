@@ -21,24 +21,26 @@
 		</div>
 	</header>
 	
+	<div class='main-entry'>
 	<form class=query>
-		<div class='basic-search'>
-			<select class='department-input' name='department'>
+		<div class='basic-search-parameters float-container'>
+			<label class='label department-label' for='department-input'>Department</label>
+			<select class='value-input department-input left' name='department'>
 				<option value='dept-1'>dept-1</option>
 				<option value='dept-2'>dept-2</option>
 				<!-- in javacript, when the document is ready, we call a GET request to server to return the department list -->
 				<!-- upon receiving this list, the values are updated. We only need one option to begin with to act as a template -->
 				<!-- for when we use javascript and jquery to input the new options. This is how smiles were populated in the warmup -->
 			</select>
-			<select class='class-input' name='class'>
+			<select class='value-input class-input right' name='class'>
 				<option value='169'>169</option>
 				<!-- when a department is selected, send a GET request to server to return the list of classes for that dept. -->
 				<!-- another template is here as well. -->
 			</select>
 		</div>
-		<div class='advanced-search-paramaters'>
+		<div class='advanced-search-paramaters float-container'>
 			<!-- When the javascript loads, hide this element. This hides all of the advanced search paramaters -->
-			<select class='units-input' name='units'>
+			<select class='value-input units-input' name='units'>
 				<option value='1'>1</option>
 				<option value='2'>2</option>
 				<option value='3'>3</option>
@@ -46,19 +48,19 @@
 				<option value='5'>5</option>
 				<option value='6'>6</option>
 			</select>
+			<!-- Add more advanced search options here. Must correlate to the data we have in the database -->
 			
 		</div>
-		<button class='advanced-search'>Advanced Search</button>
+		<button class='advanced-search left'>Advanced Search</button>
 			<!-- When the button is pressed, show the div.advanced-search-paramaters, and change name to 'Return' -->
 			<!-- When it is pressed again, clear the values in div.advanced-search-paramaters, and chane name to -->
 			<!-- Advanced Search. This is done with javascript on.click. -->
 		
-		<a class='search' href='results.html'>Search</a>
+		<a class='search' href='results.html right'>Search</a>
 			<!-- On click, send a GET request to specified URL with query results from inside of the select and text boxes -->
-			<!-- Get request should go to url such as /api/smiles?dept=Computer%20Science&units=&time=MW%2012-2P&class=169 -->
-			
+			<!-- Get request should go to url such as /api/smiles?dept=Computer%20Science&units=&time=MW%2012-2P&class=169 -->	
 	</form>
-	
+	</div>
 	
 	
 
