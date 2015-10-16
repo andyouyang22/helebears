@@ -3,77 +3,28 @@ body {
 	width: 100%;
 	height: 100%;
 	position: relative;
-	font-family: "Comic Sans MS";
-	/*background-color: #833019;*/
-}
-.float-container{
-	overflow: auto;
-}
-header{
-	font-family: 'Roboto Slab', serif;
-	margin: auto;
-	overflow:auto;
-	#display:block;
-	width: 100%;
-	padding: 15px 0px 10px 0px;
+	font-family: 'Roboto' sans-serif;
 }
 
-.title{
-	clear:both;
-	text-align: center;
-}
-.entry{
-	display : block;
-	width:50%;
-	margin:auto;
-	background-color:#cccccc;
-	padding: 15px;
-	overflow: auto;
-	border-radius: 10px;
-}
-.value-input{
-	margin: 0px 15px 15px 0px;
-	//might be cleaner to move this inside of the other class?
-}
-.input-holder-left{
-	float:left;
-}
-.input-holder-right{
-	float:right;
-}
-.label{
-	display:block;
+.advanced-search {
+	/* Hide initially; display when 'Advanced Search' is clicked */
+	display: none;
 }
 
-button.advanced-search{
-	float:left;
-}
-a.search{
-	display:button;
-	float:right;
-}
-
-.overall-ratings-table{
-	width: 100%;
-	border: 1px solid black;
-}
-
-tr, td {
-	text-align: center;
-}
-tr{
-	margin: 100px 0px 0px 0px;
-}
-
-/* Pure.css Classes */
+/* Horizontal menu header */
 
 .pure-menu-horizontal {
+	font-family: 'Roboto Slab', serif;
 	background-color: #00b85c;
 }
 
 .pure-menu-link {
-	color: #dddddd;
+	color: #eeeeee;
 	border-radius: 5px;
+	padding-left: 20px;
+	padding-right: 20px;
+	padding-top: 10px;
+	padding-bottom: 10px;
 }
 
 .pure-menu-link:hover {
@@ -88,7 +39,7 @@ tr{
 }
 
 .pure-menu-heading:hover {
-	color: #cccccc;
+	color: #dddddd;
 }
 
 .pure-menu-heading:hover {
@@ -99,4 +50,45 @@ tr{
 	float: right;
 	margin-right: 1em;
 	margin-top: 5px;
+}
+
+/* Course search form */
+
+legend.search-form-title {
+	font-weight: bold;
+	font-size: 120%;
+}
+
+.units-input {
+	float: right;
+}
+
+/* Submit form */
+
+.show-advanced-search {
+	float: left;
+	border: 1px solid #00b85c;
+	background-color: white;
+}
+
+.show-advanced-search:hover {
+	color: #00b85c;
+	background-color: white;
+}
+
+.submit-search {
+	float: right;
+	font-family: 'Roboto Slab' serif;
+	color: #eeeeee;
+	background-color: #00b85c;
+}
+
+.submit-search:hover {
+	background-color: #00a653;
+}
+
+/* Horizontal rule */
+
+.space {
+	height: 6em;
 }

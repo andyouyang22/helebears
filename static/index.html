@@ -8,6 +8,7 @@
 	<link rel="stylesheet" href="http://yui.yahooapis.com/pure/0.6.0/pure-min.css">
 	<!-- Import 'Roboto Slab' font from Google Fonts -->
 	<link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Roboto+Slab:400,700">
+	<link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Roboto:400,700">
 	<!-- Load main CSS file last to override Pure classes -->
 	<link rel="stylesheet" type="text/css" href="styles/main.css">
 </head>
@@ -16,11 +17,11 @@
 		<header>
 			<a href="#" class="pure-menu-heading pure-menu-link">HeleBears</a>
 			<ul class="pure-menu-list">
-				<li class="pure-menu-item button sign_up">
-					<a href="sign_up.html" class="pure-menu-link">Sign Up</a>
-				</li>
 				<li class="pure-menu-item button log_in">
 					<a href="log_in.html" class="pure-menu-link">Log In</a>
+				</li>
+				<li class="pure-menu-item button sign_up">
+					<a href="sign_up.html" class="pure-menu-link">Sign Up</a>
 				</li>
 			</ul>
 
@@ -30,65 +31,51 @@
 		</header>
 	</div>
 
-	<div class='title'>Helebears Search</div>
+	<div class="pure-g space"></div>
 
-	<div class='main-entry'>
-	<div class='entry'>
-	<form class='query'>
-		<div class='basic-search-parameters float-container'>
-			<div class='input-holder-left'>
-				<label class='label department-label' for='department-input'>Department</label>
-				<select class='value-input department-input left' id='department-input' name='department'>
-					<option value='dept-1'>dept-1</option>
-					<option value='dept-2'>dept-2</option>
-					<!-- in javacript, when the document is ready, we call a GET request to server to return the department list -->
-					<!-- upon receiving this list, the values are updated. We only need one option to begin with to act as a template -->
-					<!-- for when we use javascript and jquery to input the new options. This is how smiles were populated in the warmup -->
-				</select>
-			</div>
-			<div class='input-holder-right'>
-				<label class='label class-label' for='class-input'>Class</label>
-				<select class='value-input class-input right' name='class'>
-					<option value='169'>169</option>
-					<!-- when a department is selected, send a GET request to server to return the list of classes for that dept. -->
-					<!-- another template is here as well. -->
-				</select>
-			</div>
+	<div class="pure-g ">
+		<div class="pure-u-1-3"></div>
+		<div class="pure-u-1-3">
+			<form class="pure-form">
+				<!-- Basic Search form; initially displayed -->
+				<fieldset class="basic-search pure-group">
+					<legend class="search-form-title">Search Courses</legend>
+					<select class="department-input" name="department">
+						<option class="default-option" selected disabled>Department</option>
+						<option value="computer-science">Computer Science</option>
+						<option value="mathematics">Mathematics</option>
+						<option value="astronomy">Astronomy</option>
+					</select>
+					<select class="course-number-input" name="course-number">
+						<option class="default-option" selected disabled>Course</option>
+						<option value="cs169">169</option>
+						<option value="cs170">170</option>
+						<option value="cs186">186</option>
+					</select>
+					<select class="units-input" name="units">
+						<option class="default-option" selected disabled>Units</option>
+						<option value="1">1</option>
+						<option value="2">2</option>
+						<option value="3">3</option>
+						<option value="4">4</option>
+					</select>
+				</fieldset>
+				<!-- Advanced Search form; initially hidden -->
+				<fieldset class="advanced-search pure-group"></fieldset>
+				<!-- Submit button -->
+				<fieldset class="pure-group">
+					<button class="pure-button show-advanced-search">Advanced Search</button>
+					<!-- When the button is pressed, show the div.advanced-search-paramaters, and change name to 'Return' -->
+					<!-- When it is pressed again, clear the values in div.advanced-search-paramaters, and change name to -->
+					<!-- Advanced Search. This is done with javascript on.click. -->
+					<button class="pure-button submit-search" type="submit">Search</button>
+					<!-- On click, send a GET request to specified URL with query results from inside of the select and text boxes -->
+					<!-- Get request should go to url such as /api/smiles?dept=Computer%20Science&units=&time=MW%2012-2P&class=169 -->
+				</fieldset>
+			</form>
 		</div>
-
-		<div class='advanced-search-paramaters float-container'>
-			<!-- When the javascript loads, hide this element. This hides all of the advanced search paramaters -->
-			<div class='input-holder-left'>
-				<label class='label units-label' for='units-input'>Units</label>
-				<select class='value-input units-input' name='units'>
-					<option value='1'>1</option>
-					<option value='2'>2</option>
-					<option value='3'>3</option>
-					<option value='4'>4</option>
-					<option value='5'>5</option>
-					<option value='6'>6</option>
-				</select>
-			</div>
-			<!-- Add more advanced search options here. Must correlate to the data we have in the database -->
-			<!-- TO MAINTAIN THE GOOD LOOKS OF THE BOXES, Put each select or  text-box class inside of a div -->
-			<!-- with class='input-holder-left' or 'input-holder-right', along with the label -->
-			<!-- When in doubt, just follow the pattern seen above -->
-
-		</div>
-		<button class='advanced-search left'>Advanced Search</button>
-			<!-- When the button is pressed, show the div.advanced-search-paramaters, and change name to 'Return' -->
-			<!-- When it is pressed again, clear the values in div.advanced-search-paramaters, and chane name to -->
-			<!-- Advanced Search. This is done with javascript on.click. -->
-
-		<a class='search' href='results.html right'><button type='button'>Search</button></a>
-			<!-- On click, send a GET request to specified URL with query results from inside of the select and text boxes -->
-			<!-- Get request should go to url such as /api/smiles?dept=Computer%20Science&units=&time=MW%2012-2P&class=169 -->
-	</form>
+		<div class="pure-u-1-3"></div>
 	</div>
-	</div>
-
-
-
 
 </body>
 </html>
