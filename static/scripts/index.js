@@ -28,8 +28,24 @@ var Home = function() {
 	};
 
 	var attachAdvancedSearchHandler = function() {
-		$('.show-advanced-search').on('click', function() {
-			$('.advanced-search').slideToggle();
+		var show = $('.show-advanced-search');
+		var hide = $('.hide-advanced-search');
+		var form = $('.advanced-search');
+
+		show.mouseover(function(e) {
+			$(this).css('background-image', 'none');
+		});
+
+		show.on('click', function(e) {
+			e.preventDefault();
+			form.slideDown();
+			show.slideUp();
+		});
+
+		hide.on('click', function(e) {
+			e.preventDefault();
+			form.slideUp();
+			show.slideDown();
 		});
 	};
 
