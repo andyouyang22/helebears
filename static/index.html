@@ -4,24 +4,34 @@
 <head>
 	<title>HeleBears</title>
 	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<!-- Import Pure.css -->
+	<link rel="stylesheet" href="http://yui.yahooapis.com/pure/0.6.0/pure-min.css">
+	<!-- Import 'Roboto Slab' font from Google Fonts -->
+	<link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Roboto+Slab:400,700">
+	<!-- Load main CSS file last to override Pure classes -->
 	<link rel="stylesheet" type="text/css" href="styles/main.css">
 </head>
 <body>
-	<header>
-		<div class='sign_up'>
-			<a class='button' id='sign_up' href='sign_up.html'>Sign Up</a>
+	<div class="pure-menu pure-menu-horizontal">
+		<header>
+			<a href="#" class="pure-menu-heading pure-menu-link">HeleBears</a>
+			<ul class="pure-menu-list">
+				<li class="pure-menu-item button sign_up">
+					<a href="sign_up.html" class="pure-menu-link">Sign Up</a>
+				</li>
+				<li class="pure-menu-item button log_in">
+					<a href="log_in.html" class="pure-menu-link">Log In</a>
+				</li>
+			</ul>
+
 			<!-- Right now can design the form element on different html page called sign_up.html -->
 			<!-- Once that is complete, can transfer the code into here, and then in javascript, -->
 			<!-- use the div class sign_up to search for this input, then prevent default execution -->
-			<!-- Same as smile part 2 task 4 -->
-		</div>
-		<div class='log_in'>
-			<a class='button' id='log_in' href='log_in.html'>Log In</a>
-			<!-- same comments as above -->
-		</div>
-		<div class='title'>Helebears Search</div>
-	</header>
-	
+		</header>
+	</div>
+
+	<div class='title'>Helebears Search</div>
+
 	<div class='main-entry'>
 	<div class='entry'>
 	<form class='query'>
@@ -36,7 +46,7 @@
 					<!-- for when we use javascript and jquery to input the new options. This is how smiles were populated in the warmup -->
 				</select>
 			</div>
-			<div class='input-holder-right'>	
+			<div class='input-holder-right'>
 				<label class='label class-label' for='class-input'>Class</label>
 				<select class='value-input class-input right' name='class'>
 					<option value='169'>169</option>
@@ -45,7 +55,7 @@
 				</select>
 			</div>
 		</div>
-		
+
 		<div class='advanced-search-paramaters float-container'>
 			<!-- When the javascript loads, hide this element. This hides all of the advanced search paramaters -->
 			<div class='input-holder-left'>
@@ -63,22 +73,22 @@
 			<!-- TO MAINTAIN THE GOOD LOOKS OF THE BOXES, Put each select or  text-box class inside of a div -->
 			<!-- with class='input-holder-left' or 'input-holder-right', along with the label -->
 			<!-- When in doubt, just follow the pattern seen above -->
-			
+
 		</div>
 		<button class='advanced-search left'>Advanced Search</button>
 			<!-- When the button is pressed, show the div.advanced-search-paramaters, and change name to 'Return' -->
 			<!-- When it is pressed again, clear the values in div.advanced-search-paramaters, and chane name to -->
 			<!-- Advanced Search. This is done with javascript on.click. -->
-		
+
 		<a class='search' href='results.html right'><button type='button'>Search</button></a>
 			<!-- On click, send a GET request to specified URL with query results from inside of the select and text boxes -->
-			<!-- Get request should go to url such as /api/smiles?dept=Computer%20Science&units=&time=MW%2012-2P&class=169 -->	
+			<!-- Get request should go to url such as /api/smiles?dept=Computer%20Science&units=&time=MW%2012-2P&class=169 -->
 	</form>
 	</div>
 	</div>
-	
-	
 
-	
+
+
+
 </body>
 </html>

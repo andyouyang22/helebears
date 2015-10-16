@@ -1,29 +1,23 @@
 body {
 	margin: 0;
-        width: 100%;
-        height: 100%;
-        position: relative;
+	width: 100%;
+	height: 100%;
+	position: relative;
 	font-family: "Comic Sans MS";
-	background-color: #833019;
+	/*background-color: #833019;*/
 }
 .float-container{
-	overflow: auto;	
+	overflow: auto;
 }
 header{
+	font-family: 'Roboto Slab', serif;
 	margin: auto;
 	overflow:auto;
 	#display:block;
 	width: 100%;
 	padding: 15px 0px 10px 0px;
 }
-div.sign_up{
-	margin: 0px 0px 0px 10px;
-	float:left;
-}
-div.log_in{
-	margin: 0px 10px 0px 0px;
-	float:right;
-}
+
 .title{
 	clear:both;
 	text-align: center;
@@ -32,9 +26,10 @@ div.log_in{
 	display : block;
 	width:50%;
 	margin:auto;
-	background-color:#8D441B;
+	background-color:#cccccc;
 	padding: 15px;
 	overflow: auto;
+	border-radius: 10px;
 }
 .value-input{
 	margin: 0px 15px 15px 0px;
@@ -44,7 +39,7 @@ div.log_in{
 	float:left;
 }
 .input-holder-right{
-	float:right;	
+	float:right;
 }
 .label{
 	display:block;
@@ -67,8 +62,41 @@ tr, td {
 	text-align: center;
 }
 tr{
-	margin: 100px 0px 0px 0px;	
+	margin: 100px 0px 0px 0px;
 }
 
+/* Pure.css Classes */
 
+.pure-menu-horizontal {
+	background-color: #00b85c;
+}
 
+.pure-menu-link {
+	color: #dddddd;
+	border-radius: 5px;
+}
+
+.pure-menu-link:hover {
+	background-color: #00a653;
+}
+
+.pure-menu-heading {
+	text-transform: none;
+	font-weight: bold;
+	font-size: 130%;
+	margin-left: 1em;
+}
+
+.pure-menu-heading:hover {
+	color: #cccccc;
+}
+
+.pure-menu-heading:hover {
+	background-color: inherit;
+}
+
+.pure-menu-list {
+	float: right;
+	margin-right: 1em;
+	margin-top: 5px;
+}
