@@ -11,6 +11,16 @@
 	<link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Roboto:400,700">
 	<!-- Load main CSS file last to override Pure classes -->
 	<link rel="stylesheet" type="text/css" href="styles/main.css">
+	<!-- Load jQuery -->
+	<script src="scripts/jquery.min.js"></script>
+	<!-- Load home page Javscript functionality -->
+	<script src="scripts/index.js"></script>
+	<!-- Run start-up functions after page has loaded -->
+	<script type="text/javascript">
+		$(function() {
+			Home.start();
+		});
+	</script>
 </head>
 <body>
 	<div class="pure-menu pure-menu-horizontal">
