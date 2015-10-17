@@ -175,8 +175,10 @@ legend.advanced-form-title {
 	text-align: center;
 }
 
+.review{
+	margin-top: 20px;	
+}
 .review-values {
-	margin-top: 20px;
 	width: 100%;
 }
 
@@ -187,4 +189,11 @@ legend.advanced-form-title {
 
 .review-values tr > :first-child {
 	text-align: right;
+}
+
+.review-box{
+	border: 20px;	
+}
+.review-user-text{
+	margin-left: 20px;
 }
