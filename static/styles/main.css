@@ -192,8 +192,9 @@ legend.advanced-form-title {
 }
 
 .review-box{
-	border: 20px;	
+	border: 1px solid #eeeeee;	
 }
 .review-user-text{
 	margin-left: 20px;
+	margin-top: 6px;
 }
