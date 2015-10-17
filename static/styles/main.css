@@ -180,7 +180,11 @@ legend.advanced-form-title {
 	text-align: center;
 	padding: 3px 0px 0px 0px;
 }
-
+.time {
+	font-size: 100%;
+	text-align: center;
+	padding: 2px 0px 2px 0px;
+}
 .review{
 	margin-top: 20px;	
 }
