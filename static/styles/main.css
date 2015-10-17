@@ -208,3 +208,14 @@ legend.advanced-form-title {
 	margin-left: 20px;
 	margin-top: 30px;
 }
+.testtest{
+	height: 100%;	
+}
+.rating-input-text{
+	width: calc(100% - 5px);	
+	min-height: 122px;
+}
+.footer{
+	display:inline;
+}
+
