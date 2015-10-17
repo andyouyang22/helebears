@@ -71,10 +71,12 @@ var Home = function() {
 		newElem.removeAttr('selected');
 		newElem.removeAttr('disabled');
 		newElem.removeClass('default-option');
+		newElem.addClass('course-added');
 		courseList.append(newElem);
 	};
 	
 	var insertCourseList = function(department){
+		courseList.find('option').remove('.course-added')
 		var onSuccess = function(data){
 			//Take the returned list of classes and insert each one.
 			/* var len data.classes.length()
@@ -109,6 +111,8 @@ var Home = function() {
 		newElem.removeAttr('selected');
 		newElem.removeAttr('disabled');
 		newElem.removeClass('default-option');
+		newElem.addClass('department-added'); //This value is not actually used, however course-added is.
+		//This might provide to be a useful handle later on, however.
 		departmentList.append(newElem);
 		
 	};
