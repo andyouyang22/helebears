@@ -6,6 +6,9 @@ var Home = function() {
 	var departmentList;
 	var templateDepartment;
 	
+	var courseList;
+	var templateCourse;
+	
 	var defaultColor = "#00b85c";
 	var selectedColor = "#00a653"
 
@@ -60,6 +63,45 @@ var Home = function() {
 			show.slideDown();
 		});
 	};
+	
+	var insertCourse = function(course){
+		var newElem = $(templateCourse);
+		newElem.attr('value',course);
+		newElem.html(course);
+		newElem.removeAttr('selected');
+		newElem.removeAttr('disabled');
+		newElem.removeClass('default-option');
+		courseList.append(newElem);
+	};
+	
+	var insertCourseList = function(department){
+		var onSuccess = function(data){
+			//Take the returned list of classes and insert each one.
+			/* var len data.classes.length()
+			for(i=0; i < len; i++){
+				insertClass(data.classes[i]);
+			}
+			*/
+		};	
+		var onFailure = function(){
+			/*print error message
+			console.error('could not get department list');
+			*/
+		};
+		//makeGetRequest(url_to_get_classes, onSuccess, onFailure);
+		//the bottom ones go away once we have ajax calls
+		insertCourse('169');
+		insertCourse('249A');
+	};
+	
+	var attachCourseListHandler = function(){
+		$(departmentList).on('change',function(){
+			var department = $(this).val();
+			alert('Send request to server for class list here');
+			insertCourseList(department);
+		});
+	};
+	
 	var insertDepartment = function(dept){
 		var newElem = $(templateDepartment);
 		newElem.attr('value',dept);
@@ -78,28 +120,35 @@ var Home = function() {
 				insertDepartment(data.departments[i]);
 			}
 			*/
-		};
+		};	
 		var onFailure = function(){
 			/*print error message
 			console.error('could not get department list');
 			*/
 		};
-		//makeGetRequest(url_to_get_departments (main page), onSuccess, onFailure);
+		//makeGetRequest(url_to_get_departments, onSuccess, onFailure);
+		//The bottom ones go away once we have ajax calls
 		insertDepartment('Computer Science');
 		insertDepartment('Astronomy');
 		insertDepartment('History');
 	};
+	
 	
 	var start = function() {
 		logIn = $('.log-in');
 		signUp = $('.sign-up');
 		departmentList = $('.department-input');
 		templateDepartment = $('.department-input .department-option')[0].outerHTML;
-		//departmentList.remove(templateDepartment);
-		//departmentList.html('');
+		
+		courseList = $('.course-input');
+		templateCourse = $('.course-input .course-option')[0].outerHTML;
+		//convert to outerHTML, then use $(templateDepartment) to essentially create a new
+		//object to later attach. If you do not do outerHTML, it will not point your new var to
+		//a new object, and when you try to add it into the html, it does not add properly.
 		attachLogInHandler();
 		attachSignUpHandler();
 		attachAdvancedSearchHandler();
+		attachCourseListHandler();
 		insertDepartmentList();
 	};
 
