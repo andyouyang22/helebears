@@ -156,6 +156,9 @@ legend.advanced-form-title {
 	background-image: none;
 }
 
+#cancel-review{
+	float:left;	
+}
 .submit-search {
 	float: right;
 	font-family: 'Roboto Slab' serif;
@@ -188,6 +191,9 @@ legend.advanced-form-title {
 .review{
 	margin-top: 20px;	
 }
+.review-input{
+	margin-bottom: 100px	
+}
 .review-values {
 	width: 100%;
 }
@@ -216,4 +222,6 @@ legend.advanced-form-title {
 .footer{
 	display:inline;
 }
-
+.review-button{
+	margin: 5px 10px 5px 10px;	
+}
