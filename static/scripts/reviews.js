@@ -4,6 +4,7 @@ var Reviews = function() {
 	var signUp;
 	var departmentList;
 	var templateDepartment;
+	var overallReview;
 	
 	var courseList;
 	var templateCourse;
@@ -105,23 +106,48 @@ var Reviews = function() {
 		insertDepartment('History');
 	};
 	
+	var insertRatingsOverall = function(ratings_dict){
+		overallReview.find('.professor-name').html(ratings_dict.professor);
+		var ratings_table = overallReview.find('.review-values')[0];
+		ratings_table.rows[0].cells[1].innerHTML = ratings_dict.value_1;
+		ratings_table.rows[1].cells[1].innerHTML = ratings_dict.value_2;
+		ratings_table.rows[2].cells[1].innerHTML = ratings_dict.value_3;
+		
+	};
+	
+	var insertProfessorOverallRatings = function(){
+		var onSuccess = function(data){
+			//Return dictionary of {rating_1: value, rating_2: value, etc}
+			insertRatingsOverall(data);
+		}
+		var onFailure = function(){
+		//console.error('could not retreive overall ratings');	
+		};
+		var ratings_dict = {};
+		ratings_dict.professor = 'Javascript Insert Prof';
+		ratings_dict.value_1 = 8;
+		ratings_dict.value_2 = 9;
+		ratings_dict.value_3 = 10;
+		insertRatingsOverall(ratings_dict);
+	};
 	
 	var start = function() {
 		logIn = $('.log-in');
 		signUp = $('.sign-up');
 		departmentList = $('.department-input');
-		templateDepartment = $('.department-input .department-option')[0].outerHTML;
+	//	templateDepartment = $('.department-input .department-option')[0].outerHTML;
+		
+		overallReview = $('.review-overall');
+		
 		
 		courseList = $('.course-input');
-		templateCourse = $('.course-input .course-option')[0].outerHTML;
+		//templateCourse = $('.course-input .course-option')[0].outerHTML;
 		//convert to outerHTML, then use $(templateDepartment) to essentially create a new
 		//object to later attach. If you do not do outerHTML, it will not point your new var to
 		//a new object, and when you try to add it into the html, it does not add properly.
-		attachLogInHandler();
-		attachSignUpHandler();
-		attachAdvancedSearchHandler();
 		attachCourseListHandler();
 		insertDepartmentList();
+		insertProfessorOverallRatings();
 	};
 
 	return {
