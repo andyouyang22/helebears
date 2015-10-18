@@ -226,8 +226,6 @@ var Reviews = function() {
 			var onSuccess = function(data) {
 				//check for errors
 				//insertUserRating(data.review);
-				//console.log('success!');
-                // FINISH ME (Task 4): insert smile at the beginning of the smiles container
             };
 			var onFailure = function() { 
                // console.error('unable to submit post'); 
@@ -241,6 +239,9 @@ var Reviews = function() {
 			}else{
 				//makePostRequest(url_of_post_request,review,onSuccess,onFailure);
 				insertUserRating(review);
+				//note: The above line is removed when actually posting a review.
+				//This is also why it does not have an id - becasue it is generated from the server.
+				user_input.find('.review-box').trigger('reset');
 			}
 			
 		});
