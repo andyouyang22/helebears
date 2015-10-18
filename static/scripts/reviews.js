@@ -134,17 +134,12 @@ var Reviews = function() {
 	var start = function() {
 		logIn = $('.log-in');
 		signUp = $('.sign-up');
-		departmentList = $('.department-input');
+	//	departmentList = $('.department-input');
 	//	templateDepartment = $('.department-input .department-option')[0].outerHTML;
 		
 		overallReview = $('.review-overall');
 		
 		
-		courseList = $('.course-input');
-		//templateCourse = $('.course-input .course-option')[0].outerHTML;
-		//convert to outerHTML, then use $(templateDepartment) to essentially create a new
-		//object to later attach. If you do not do outerHTML, it will not point your new var to
-		//a new object, and when you try to add it into the html, it does not add properly.
 		attachCourseListHandler();
 		insertDepartmentList();
 		insertProfessorOverallRatings();
