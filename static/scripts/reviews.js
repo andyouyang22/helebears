@@ -2,7 +2,6 @@ var Reviews = function() {
 
 	var logIn;
 	var signUp;
-	var departmentList;
 	var templateDepartment;
 	var overallReview;
 	var user_reviews;
@@ -57,8 +56,6 @@ var Reviews = function() {
 		return error_list;
 		
 	}
-	
-/*	
 	var attachLogInHandler = function() {
 		logIn.on('click', function() {
 			signUp.css('background-color', defaultColor);
@@ -68,80 +65,18 @@ var Reviews = function() {
 			});
 		});
 	};
-*/
-	
-	var insertCourse = function(course){
-		var newElem = $(templateCourse);
-		newElem.attr('value',course);
-		newElem.html(course);
-		newElem.removeAttr('selected');
-		newElem.removeAttr('disabled');
-		newElem.removeClass('default-option');
-		newElem.addClass('course-added');
-		courseList.append(newElem);
-	};
-	
-	var insertCourseList = function(department){
-		courseList.find('option').remove('.course-added')
-		var onSuccess = function(data){
-			//Take the returned list of classes and insert each one.
-			/* var len data.classes.length()
-			for(i=0; i < len; i++){
-				insertClass(data.classes[i]);
-			}
-			*/
-		};	
-		var onFailure = function(){
-			/*print error message
-			console.error('could not get department list');
-			*/
-		};
-		//makeGetRequest(url_to_get_classes, onSuccess, onFailure);
-		//the bottom ones go away once we have ajax calls
-		insertCourse('169');
-		insertCourse('249A');
-	};
-	
-	var attachCourseListHandler = function(){
-		$(departmentList).on('change',function(){
-			var department = $(this).val();
-			alert('Send request to server for class list here');
-			insertCourseList(department);
+
+	var attachSignUpHandler = function() {
+		signUp.on('click', function() {
+			logIn.css('background-color', defaultColor);
+			signUp.css('background-color', selectedColor);
+			$('.log-in-form').slideUp(function() {
+				$('.sign-up-form').slideToggle();
+			});
 		});
 	};
+
 	
-	var insertDepartment = function(dept){
-		var newElem = $(templateDepartment);
-		newElem.attr('value',dept);
-		newElem.html(dept);
-		newElem.removeAttr('selected');
-		newElem.removeAttr('disabled');
-		newElem.removeClass('default-option');
-		newElem.addClass('department-added'); //This value is not actually used, however course-added is.
-		//This might provide to be a useful handle later on, however.
-		departmentList.append(newElem);
-		
-	};
-	var insertDepartmentList = function() {
-		var onSuccess = function(data){
-			//Take the returned list of departments and insert each one.
-			/* var len data.departments.length()
-			for(i=0; i < len; i++){
-				insertDepartment(data.departments[i]);
-			}
-			*/
-		};	
-		var onFailure = function(){
-			/*print error message
-			console.error('could not get department list');
-			*/
-		};
-		//makeGetRequest(url_to_get_departments, onSuccess, onFailure);
-		//The bottom ones go away once we have ajax calls
-		insertDepartment('Computer Science');
-		insertDepartment('Astronomy');
-		insertDepartment('History');
-	};
 	
 	var insertRatingsOverall = function(ratings_dict){
 		name_of_professor = ratings_dict.professor; //Store the name of the professor locally.
@@ -178,7 +113,7 @@ var Reviews = function() {
 		};
 		//makeGetRequest(url_to_get_professor's ratings, onSuccess, onFailure);
 		var ratings_dict = {};
-		ratings_dict.professor = 'Javascript Insert Prof';
+		ratings_dict.professor = professor_name;
 		ratings_dict.overall_rating_1 = 8;
 		ratings_dict.overall_rating_2 = 9;
 		ratings_dict.overall_rating_3 = 10;
@@ -256,19 +191,17 @@ var Reviews = function() {
 		//the vars will be moved inside of the other start function as well.
 		logIn = $('.log-in');
 		signUp = $('.sign-up');
-		departmentList = $('.department-input');
 		user_input = $('.review-input');
-		
-	//	templateDepartment = $('.department-input .department-option')[0].outerHTML;
-		
+			
 		overallReview = $('.review-overall');
 		user_reviews = $('.all-user-reviews');
 		userReviewTemplateHtml = $(".all-user-reviews .single-review")[0].outerHTML;
 		user_reviews.html('');
 		
-		attachCourseListHandler();
 		attachUserInputHandler();
-		insertDepartmentList();
+		attachLogInHandler();
+		attachSignUpHandler();
+		
 		insertProfessorOverallRatings('prof_name');
 		insertProfessorUserRatings('prof_name');
 		
