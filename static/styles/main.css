@@ -74,8 +74,16 @@ body {
 	display: none;
 }
 
+.log-in-form {
+	font-family: 'Roboto' sans-serif;
+}
+
 .log-in-form .pure-control-group label {
 	width: 58px;
+}
+
+.sign-up-form {
+	font-family: 'Roboto' sans-serif;
 }
 
 .sign-up-form .pure-control-group label {
@@ -157,7 +165,7 @@ legend.advanced-form-title {
 }
 
 #cancel-review{
-	float:left;	
+	float:left;
 }
 .submit-search {
 	float: right;
@@ -189,10 +197,10 @@ legend.advanced-form-title {
 	padding: 2px 0px 2px 0px;
 }
 .review{
-	margin-top: 20px;	
+	margin-top: 20px;
 }
 .review-input{
-	margin-bottom: 100px	
+	margin-bottom: 100px
 }
 .review-values {
 	width: 100%;
@@ -208,7 +216,7 @@ legend.advanced-form-title {
 }
 
 .review-box{
-	border: 1px solid #dddddd;	
+	border: 1px solid #dddddd;
 }
 .review-user-text{
 	margin-left: 20px;
@@ -216,12 +224,12 @@ legend.advanced-form-title {
 }
 
 .rating-input-text{
-	width: calc(100% - 5px);	
+	width: calc(100% - 5px);
 	min-height: 122px;
 }
 .footer{
 	display:inline;
 }
 .review-button{
-	margin: 5px 10px 5px 10px;	
+	margin: 5px 10px 5px 10px;
 }
