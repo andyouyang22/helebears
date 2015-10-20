@@ -61,6 +61,7 @@ var Home = function() {
 			e.preventDefault();
 			form.slideUp();
 			show.slideDown();
+			$(".advanced-search-form").trigger('reset');
 		});
 	};
 	
