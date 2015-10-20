@@ -9,8 +9,11 @@ var Home = function() {
 	var courseList;
 	var templateCourse;
 	
+	var basicSearchHolder;
+	var advSearchHolder;
+	
 	var defaultColor = "#00b85c";
-	var selectedColor = "#00a653"
+	var selectedColor = "#00a653";
 
 	var makeGetRequest = function(url, onSuccess, onFailure) {
        $.ajax({
@@ -63,6 +66,20 @@ var Home = function() {
 			show.slideDown();
 			$(".advanced-search-form").trigger('reset');
 		});
+	};
+	
+	var attachSubmitSearchHandler = function(){
+		advSearchHolder.on('click', '.submit-input', function (e){
+			var request = {};
+			request.department = basicSearchHolder.find('department-input').val();
+			request.courseID = basicSearchHolder.find('course-input').val();
+			request.classTime = 
+			request.classDays = 
+			advSearchHolder
+			
+			
+		});
+		
 	};
 	
 	var insertCourse = function(course){
@@ -147,6 +164,9 @@ var Home = function() {
 		
 		courseList = $('.course-input');
 		templateCourse = $('.course-input .course-option')[0].outerHTML;
+		basicSearchHolder = $('.basic-search-form');
+		advSearchHolder = $('.advanced-search-form');
+		
 		//convert to outerHTML, then use $(templateDepartment) to essentially create a new
 		//object to later attach. If you do not do outerHTML, it will not point your new var to
 		//a new object, and when you try to add it into the html, it does not add properly.
@@ -154,6 +174,7 @@ var Home = function() {
 		attachSignUpHandler();
 		attachAdvancedSearchHandler();
 		attachCourseListHandler();
+		attachSubmitSearchHandler();
 		insertDepartmentList();
 	};
 

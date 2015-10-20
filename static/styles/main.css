@@ -95,6 +95,7 @@ body {
 	margin-top: 0px;
 }
 
+
 .submit-log-in {
 	margin-top: 5px;
 	font-family: 'Roboto Slab' serif;
@@ -145,6 +146,11 @@ legend.advanced-form-title {
 	font-weight: bold;
 	font-size: 105%;
 }
+
+.days{
+	float:left;
+};
+
 
 .hot-input {
 	float: right;
