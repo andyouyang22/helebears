@@ -68,15 +68,44 @@ var Home = function() {
 		});
 	};
 	
+	
+	var clear_dict_key = function(del_value,request){
+		for(var key in request) {
+    		if(request[key] == del_value) {
+        	delete request[key];
+			};
+		};
+	};
+	
 	var attachSubmitSearchHandler = function(){
-		advSearchHolder.on('click', '.submit-input', function (e){
+		advSearchHolder.on('click', '.submit-search', function (e){
+			e.preventDefault();
 			var request = {};
-			request.department = basicSearchHolder.find('department-input').val();
-			request.courseID = basicSearchHolder.find('course-input').val();
-			request.classTime = 
-			request.classDays = 
-			advSearchHolder
+			var classDays = ['M','T','W','R','F','S'];
+			var dayList = advSearchHolder.find('.days');
+			var classDaysChecked = '';
+			request.department = basicSearchHolder.find('.department-input').val();
+			request.courseID = basicSearchHolder.find('.course-input').val();
+			request.classStartTime = advSearchHolder.find('.start-time').val();
+			request.classEndTime = advSearchHolder.find('.end-time').val();
+			for(i = 0; i < classDays.length; i++){
+				if(dayList[i].checked)
+					classDaysChecked = classDaysChecked + classDays[i];
+			};
+			request.classDays = classDaysChecked;
+			clear_dict_key(null,request);
+			clear_dict_key('',request);
+			request = JSON.stringify(request);
+			request = request.replace(/"/g,"");
+			request = request.replace(/{/g,'');
+			request = request.replace(/}/g,'');
+			request = request.replace(/:/g,'=');
+			request = request.replace(/,/g,'&');
+			request = request.replace(/ /g,'%20');
+			alert(JSON.stringify(request) + ' Send get request here');
+			request = '?' + request;
 			
+			//makeGetRequest = function(url + request, onSuccess, onFailure)
 			
 		});
 		
