@@ -36,7 +36,7 @@ var Users = sequelize.define("Users", {
   password: Sequelize.STRING
 
 })
-var Reviews = sequelize.define("Users", {
+var Reviews = sequelize.define("Reviews", {
   rating_1: Sequelize.INTEGER,
   rating_2: Sequelize.INTEGER,
   rating_3: Sequelize.INTEGER,
