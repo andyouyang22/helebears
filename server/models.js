@@ -31,6 +31,39 @@ var Courses = sequelize.define('Courses', {
 
 })
 
+var Users = sequelize.define("Users", {
+  name: { type: Sequelize.STRING, primaryKey: true},
+  password: Sequelize.STRING
+
+})
+var Reviews = sequelize.define("Users", {
+  rating_1: Sequelize.INTEGER,
+  rating_2: Sequelize.INTEGER,
+  rating_3: Sequelize.INTEGER,
+  review: Sequelize.STRING
+
+})
+var Schedules = sequelize.define("Schedules", {
+  unique_id: Sequelize.STRING
+
+})
+var Sections = sequelize.define("Sections", {
+  discussion: {type: Sequelize.STRING, primaryKey: true},
+  type: {type: Sequelize.STRING, primaryKey: true},
+  instructor: Sequelize.STRING,
+  ccn: Sequelize.INTEGER,
+  time: Sequelize.STRING,
+  location: Sequelize.STRING,
+  limit: Sequelize.INTEGER,
+  enrolled: Sequelize.INTEGER,
+  waitlist: Sequelize.INTEGER
+
+})
+
 Courses.sync()
 Departments.sync()
 Professors.sync()
+Reviews.sync()
+Users.sync()
+Schedules.sync()
+Sections.sync()
