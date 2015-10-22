@@ -13,7 +13,7 @@ function scheduleModel() {
 scheduleModel.prototype = new classModel();
 
 //Override the parent method dataValidator
-scheduleModel.prototype.dataValidator = function() {
+scheduleModel.prototype.dataValidator = function(queryJSON) {
 
 };
 
