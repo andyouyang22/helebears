@@ -3,7 +3,29 @@
  */
 
 
-var classModel = require("./models/class_models");
+var classModel = require("./class_models");
+
+var sequelize_modules = require("./init")
+var sequelize = sequelize_modules.sequelize;
+var Sequelize = sequelize_modules.Sequelize;
+
+var Professors = sequelize.define('Professors', {
+  professor_name: { type: Sequelize.STRING, primaryKey: true}
+})
+
+var Reviews = sequelize.define("Reviews", {
+  rating_1: Sequelize.INTEGER,
+  rating_2: Sequelize.INTEGER,
+  rating_3: Sequelize.INTEGER,
+  review: Sequelize.STRING,
+  professor_name: {
+    type: Sequelize.STRING,
+    references: {
+      model: Professors,
+      key: 'professor_name',
+   }
+  },
+})
 
 function professorsModel() {
 
