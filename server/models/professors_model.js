@@ -3,92 +3,56 @@
  */
 
 
-var classModel = require("./models/class_models");
+var classModel = require("./class_models");
 
-function professorsModel() {
+var professorsModel = {
+    getName: function() {
 
-};
+    },
+        dataValidator: function(queryJSON) {
+        var errors = [];
+        var response = {};
 
-// Inherit the method of superclass
-professorsModel.prototype = new classModel();
+        if (Object.keys(queryJSON).length == 0){
+            errors.push('No arguments were provided');
+        }
+        var professor = queryJSON.professor;
+        if ((!professor) || professor.length < 1 || professor.length > 128){
+            errors.push('Invalid professor name length.');
+        }
+        var rating_1 = queryJSON.rating_1;
+        if ((!rating_1) || rating_1.length < 1 || rating_1.length > 128){
+            errors.push('Invalid professor name length.');
+        }
 
-//Override the parent method dataValidator
-professorsModel.prototype.dataValidator.create = function(queryJSON) {
-    var errors = [];
-    var response = {};
+        var rating_2 = queryJSON.rating_2;
+        if ((!rating_2) || rating_2.length < 1 || rating_2.length > 128){
+            errors.push('Invalid rating_2 length.');
+        }
 
-    if (Object.keys(queryJSON).length == 0){
-        errors.push('No arguments were provided');
+        var rating_3 = queryJSON.rating_3;
+        if ((!rating_3) || rating_3.length < 1 || rating_3.length > 128){
+            errors.push('Invalid rating_3 length.');
+        }
+
+        if (errors.length > 0){
+            response.status = constants.STATUS_ERROR;
+            response.errors = errors;
+        } else {
+            response.status = constants.STATUS_SUCCESS;
+        }
+    },
+    preprocess: function() {
+
+    },
+
+    postprocess: function() {
+
+    },
+
+    controller: function() {
+
     }
-    var professor = queryJSON.professor;
-    if ((!professor) || professor.length < 1 || professor.length > 128){
-        errors.push('Invalid professor name length.');
-    }
-    var rating_1 = queryJSON.rating_1;
-    if ((!rating_1) || rating_1.length < 1 || rating_1.length > 128){
-        errors.push('Invalid professor name length.');
-    }
-
-    var rating_2 = queryJSON.rating_2;
-    if ((!rating_2) || rating_2.length < 1 || rating_2.length > 128){
-        errors.push('Invalid rating_2 length.');
-    }
-
-    var rating_3 = queryJSON.rating_3;
-    if ((!rating_3) || rating_3.length < 1 || rating_3.length > 128){
-        errors.push('Invalid rating_3 length.');
-    }
-
-    if (errors.length > 0){
-        response.status = constants.STATUS_ERROR;
-        response.errors = errors;
-    } else {
-        response.status = constants.STATUS_SUCCESS;
-    }
-};
-
-professorsModel.prototype.dataValidator.get = function(queryJSON) {
-    var errors = [];
-    var response = {};
-
-    if (Object.keys(queryJSON).length == 0){
-        errors.push('No arguments were provided');
-    }
-    var professor = queryJSON.professor;
-    if ((!professor) || professor.length < 1 || professor.length > 128){
-        errors.push('Invalid professor name length.');
-    }
-
-    if (errors.length > 0){
-        response.status = STATUS_ERROR;
-        response.errors = errors;
-    } else {
-        response.status = STATUS_SUCCESS;
-    }
-};
-
-
-
-//Override the parent method dataValidator
-professorsModel.prototype.preprocess = function() {
-
-};
-
-//Override the parent method dataValidator
-professorsModel.prototype.postprocess = function() {
-
-};
-
-//Override the parent method dataValidator
-professorsModel.prototype.controller = function() {
-
-};
-
-professorsModel.prototype.getReviews = function(prof_name) {
-
-};
-
-professorsModel.prototype.createReviews = function(prof_name) {
 
 };
 
