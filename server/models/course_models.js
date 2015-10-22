@@ -29,10 +29,6 @@ courseModel.prototype.dataValidator.get = function(queryJSON) {
         errors.push('Invalid course size.');
     }
 
-
-
-
-
     if (errors.length > 0){
         response.status = STATUS_ERROR;
         response.errors = errors;
