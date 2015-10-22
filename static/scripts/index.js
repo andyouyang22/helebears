@@ -5,26 +5,26 @@ var Home = function() {
 	var signUp;
 	var departmentList;
 	var templateDepartment;
-	
+
 	var courseList;
 	var templateCourse;
-	
+
 	var basicSearchHolder;
 	var advSearchHolder;
-	
+
 	var defaultColor = "#00b85c";
 	var selectedColor = "#00a653";
 
 	var makeGetRequest = function(url, onSuccess, onFailure) {
-       $.ajax({
-           type: 'GET',
-           url: apiUrl + url,
-           dataType: "json",
-           success: onSuccess,
-           error: onFailure
-       });
+	   $.ajax({
+		   type: 'GET',
+		   url: apiUrl + url,
+		   dataType: "json",
+		   success: onSuccess,
+		   error: onFailure
+	   });
    };
-	
+
 	var attachLogInHandler = function() {
 		logIn.on('click', function() {
 			signUp.css('background-color', defaultColor);
@@ -67,16 +67,16 @@ var Home = function() {
 			$(".advanced-search-form").trigger('reset');
 		});
 	};
-	
-	
+
+
 	var clear_dict_key = function(del_value,request){
 		for(var key in request) {
-    		if(request[key] == del_value) {
-        	delete request[key];
+			if(request[key] == del_value) {
+			delete request[key];
 			};
 		};
 	};
-	
+
 	var attachSubmitSearchHandler = function(){
 		advSearchHolder.on('click', '.submit-search', function (e){
 			e.preventDefault();
@@ -104,13 +104,13 @@ var Home = function() {
 			request = request.replace(/ /g,'%20');
 			alert(JSON.stringify(request) + ' Send get request here');
 			request = '?' + request;
-			
+
 			//makeGetRequest = function(url + request, onSuccess, onFailure)
-			
+
 		});
-		
+
 	};
-	
+
 	var insertCourse = function(course){
 		var newElem = $(templateCourse);
 		newElem.attr('value',course);
@@ -121,7 +121,7 @@ var Home = function() {
 		newElem.addClass('course-added');
 		courseList.append(newElem);
 	};
-	
+
 	var insertCourseList = function(department){
 		courseList.find('option').remove('.course-added')
 		var onSuccess = function(data){
@@ -131,7 +131,7 @@ var Home = function() {
 				insertClass(data.classes[i]);
 			}
 			*/
-		};	
+		};
 		var onFailure = function(){
 			/*print error message
 			console.error('could not get department list');
@@ -142,7 +142,7 @@ var Home = function() {
 		insertCourse('169');
 		insertCourse('249A');
 	};
-	
+
 	var attachCourseListHandler = function(){
 		$(departmentList).on('change',function(){
 			var department = $(this).val();
@@ -150,7 +150,7 @@ var Home = function() {
 			insertCourseList(department);
 		});
 	};
-	
+
 	var insertDepartment = function(dept){
 		var newElem = $(templateDepartment);
 		newElem.attr('value',dept);
@@ -161,7 +161,7 @@ var Home = function() {
 		newElem.addClass('department-added'); //This value is not actually used, however course-added is.
 		//This might provide to be a useful handle later on, however.
 		departmentList.append(newElem);
-		
+
 	};
 	var insertDepartmentList = function() {
 		var onSuccess = function(data){
@@ -171,7 +171,7 @@ var Home = function() {
 				insertDepartment(data.departments[i]);
 			}
 			*/
-		};	
+		};
 		var onFailure = function(){
 			/*print error message
 			console.error('could not get department list');
@@ -183,19 +183,19 @@ var Home = function() {
 		insertDepartment('Astronomy');
 		insertDepartment('History');
 	};
-	
-	
+
+
 	var start = function() {
 		logIn = $('.log-in');
 		signUp = $('.sign-up');
 		departmentList = $('.department-input');
 		templateDepartment = $('.department-input .department-option')[0].outerHTML;
-		
+
 		courseList = $('.course-input');
 		templateCourse = $('.course-input .course-option')[0].outerHTML;
 		basicSearchHolder = $('.basic-search-form');
 		advSearchHolder = $('.advanced-search-form');
-		
+
 		//convert to outerHTML, then use $(templateDepartment) to essentially create a new
 		//object to later attach. If you do not do outerHTML, it will not point your new var to
 		//a new object, and when you try to add it into the html, it does not add properly.
