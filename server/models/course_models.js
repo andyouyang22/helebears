@@ -2,7 +2,7 @@
  * Created by nirshtern on 10/21/15.
  */
 
-var classModel = require("./models/class_models");
+var classModel = require("./class_models");
 
 function courseModel() {
     var department = department;
@@ -30,10 +30,10 @@ courseModel.prototype.dataValidator.get = function(queryJSON) {
     }
 
     if (errors.length > 0){
-        response.status = STATUS_ERROR;
+        response.status = constants.STATUS_ERROR;
         response.errors = errors;
     } else {
-        response.status = STATUS_SUCCESS;
+        response.status = constants.STATUS_SUCCESS;
     }
 };
 

@@ -10,9 +10,6 @@ var departments = require('./routes/departments');
 var schedules = require('./routes/schedules');
 var reviews = require('./routes/reviews');
 
-STATUS_ERROR = -1;
-STATUS_SUCCESS = 1;
-
 var app = express();
 
 // view engine setup

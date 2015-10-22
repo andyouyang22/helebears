@@ -7,10 +7,9 @@
  * @type {{dataValidation: Function, preprocess: Function, postprocess: Function, controller: Function}}
  */
 
-var GLOBAL = require('GLOBAL');
-
-GLOBAL.STATUS_ERROR = -1;
-GLOBAL.STATUS_SUCCESS = 1;
+var constants = {};
+constants.STATUS_ERROR = -1;
+constants.STATUS_SUCCESS = 1;
 
 function classModel() {
 
@@ -30,6 +29,7 @@ classModel.prototype.controller = function(){
     }
 
 module.exports = classModel;
+module.exports = constants;
 
 
 
