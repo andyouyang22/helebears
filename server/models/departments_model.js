@@ -21,10 +21,10 @@ departmentsModel.prototype.dataValidator = function(queryJSON) {
     }
 
     if (errors.length > 0){
-        response.status = STATUS_ERROR;
+        response.status = constants.STATUS_ERROR;
         response.errors = errors;
     } else {
-        response.status = STATUS_SUCCESS;
+        response.status = constants.STATUS_SUCCESS;
     }
 
 };
