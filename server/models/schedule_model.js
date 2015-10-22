@@ -3,36 +3,23 @@
  */
 
 
-var classModel = require("./models/class_models");
+var scheduleModel = {
+    getName: function() {
 
-function scheduleModel() {
+    },
+    dataValidator: function(queryJSON) {
+    },
+    preprocess: function() {
 
-};
+    },
 
-// Inherit the method of superclass
-scheduleModel.prototype = new classModel();
+    postprocess: function() {
 
-//Override the parent method dataValidator
-scheduleModel.prototype.dataValidator = function(queryJSON) {
+    },
 
-};
+    controller: function() {
 
-//Override the parent method dataValidator
-scheduleModel.prototype.preprocess = function() {
-
-};
-
-//Override the parent method dataValidator
-scheduleModel.prototype.postprocess = function() {
-
-};
-
-//Override the parent method dataValidator
-scheduleModel.prototype.controller = function() {
-
-};
-
-scheduleModel.prototype.createUnifiedSchedule = function(unique_id) {
+    }
 
 };
 

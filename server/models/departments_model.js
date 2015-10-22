@@ -12,45 +12,39 @@ var Departments = sequelize.define('Departments', {
   department_name: { type: Sequelize.STRING, primaryKey: true}
 })
 
-function departmentsModel() {
+var departmentModel = {
+    getName: function() {
 
-};
+    },
+    dataValidator: function(queryJSON) {
+        var errors = [];
+        var response = {};
 
-Inherit the method of superclass
-departmentsModel.prototype = new classModel();
+        if (Object.keys(queryJSON).length != 0){
+            errors.push('Unexpected arguments were received');
+        }
 
-//Override the parent method dataValidator
-departmentsModel.prototype.dataValidator = function(queryJSON) {
-    var errors = [];
-    var response = {};
+        if (errors.length > 0){
+            response.status = constants.STATUS_ERROR;
+            response.errors = errors;
+        } else {
+            response.status = constants.STATUS_SUCCESS;
+        }
 
-    if (Object.keys(queryJSON).length != 0){
-        errors.push('Unexpected arguments were received');
+    },
+    preprocess: function() {
+
+    },
+
+    postprocess: function() {
+
+    },
+
+    controller: function() {
+
     }
 
-    if (errors.length > 0){
-        response.status = constants.STATUS_ERROR;
-        response.errors = errors;
-    } else {
-        response.status = constants.STATUS_SUCCESS;
-    }
-
 };
 
-//Override the parent method dataValidator
-departmentsModel.prototype.preprocess = function() {
-
-};
-
-//Override the parent method dataValidator
-departmentsModel.prototype.postprocess = function() {
-
-};
-
-//Override the parent method dataValidator
-departmentsModel.prototype.controller = function() {
-
-};
-
-module.exports = departmentsModel;
+module.exports = departmentModel;
 module.exports.Departments = Departments;

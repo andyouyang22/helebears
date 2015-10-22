@@ -46,53 +46,49 @@ var Courses = sequelize.define('Courses', {
   note: Sequelize.STRING
 })
 
-function courseModel() {
-    var department = department;
-    var course = course || "*";
-};
 
-// Inherit the method of superclass
-courseModel.prototype = new classModel();
+var courseModel = {
+    getName: function() {
 
-//Override the parent method dataValidator
-courseModel.prototype.dataValidator.get = function(queryJSON) {
-    var errors = [];
-    var response = {};
+    },
+    dataValidator: function(queryJSON) {
+        var errors = [];
+        var response = {};
 
-    if (Object.keys(queryJSON).length == 0){
-        errors.push('No query arguments were provided.');
+        if (Object.keys(queryJSON).length == 0){
+            errors.push('No query arguments were provided.');
+        }
+
+        if ((!queryJSON.department) || queryJSON.length < 1 || queryJSON.length > 128) {
+            errors.push('Invalid department size.');
+        }
+
+        if (queryJSON.course && queryJSON.length < 0 && queryJSON.length > 128) {
+            errors.push('Invalid course size.');
+        }
+
+        if (errors.length > 0){
+            response.status = constants.STATUS_ERROR;
+            response.errors = errors;
+        } else {
+            response.status = constants.STATUS_SUCCESS;
+        }
+    },
+    preprocess: function() {
+
+    },
+
+    postprocess: function() {
+
+    },
+
+    controller: function() {
+
     }
 
-    if ((!queryJSON.department) || queryJSON.length < 1 || queryJSON.length > 128) {
-        errors.push('Invalid department size.');
-    }
-
-    if (queryJSON.course && queryJSON.length < 0 && queryJSON.length > 128) {
-        errors.push('Invalid course size.');
-    }
-
-    if (errors.length > 0){
-        response.status = constants.STATUS_ERROR;
-        response.errors = errors;
-    } else {
-        response.status = constants.STATUS_SUCCESS;
-    }
 };
 
-//Override the parent method dataValidator
-courseModel.prototype.preprocess = function() {
 
-};
-
-//Override the parent method dataValidator
-courseModel.prototype.postprocess = function() {
-
-};
-
-//Override the parent method dataValidator
-courseModel.prototype.controller = function() {
-
-};
 
 module.exports = courseModel;
 

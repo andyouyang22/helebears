@@ -11,24 +11,56 @@ var constants = {};
 constants.STATUS_ERROR = -1;
 constants.STATUS_SUCCESS = 1;
 
-function classModel() {
+function Class() {}
+Class.prototype.construct = function() {};
+Class.extend = function(def) {
+    var classDef = function() {
+        if (arguments[0] !== Class) { this.construct.apply(this, arguments); }
+    };
 
-}
+    var proto = new this(Class);
+    var superClass = this.prototype;
 
-classModel.prototype.dataValidator = function(){
-    throw new Error("Abstract method!");
-};
-classModel.prototype.preprocess = function(){
-    throw new Error("Abstract method!");
-};
-classModel.prototype.postprocess = function(){
-    throw new Error("Abstract method!");
-};
-classModel.prototype.controller = function(){
-        throw new Error("Abstract method!");
+    for (var n in def) {
+        var item = def[n];
+        if (item instanceof Function) item.$ = superClass;
+        proto[n] = item;
     }
 
-module.exports = classModel;
+    classDef.prototype = proto;
+
+    //Give this new class the same static extend method
+    classDef.extend = this.extend;
+    return classDef;
+};
+
+var classModel = Class.extend({
+    construct: function() { /* optional constructor method */ },
+
+    getName: function() {
+        return "BaseClass(" + this.getId() + ")";
+    },
+
+    getId: function() {
+        return 1;
+    },
+
+    dataValidator: function(){
+
+    },
+
+    preprocess: function(){
+
+    },
+
+    postprocess: function(){
+
+    }
+});
+
+
+module.exports.classModel = classModel;
+module.exports.Class = Class;
 module.exports = constants;
 
 
