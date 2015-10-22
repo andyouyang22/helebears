@@ -6,9 +6,12 @@ var bodyParser = require('body-parser');
 
 var users = require('./routes/users');
 var courses = require('./routes/courses');
+var departments = require('./routes/departments');
 var schedules = require('./routes/schedules');
 var reviews = require('./routes/reviews');
 
+STATUS_ERROR = -1;
+STATUS_SUCCESS = 1;
 
 var app = express();
 
@@ -29,6 +32,7 @@ app.use('api/users', users);
 app.use('api/courses', courses);
 app.use('api/schedules', schedules);
 app.use('api/reviews', reviews);
+app.use('api/departments',departments);
 
 
 module.exports = app;

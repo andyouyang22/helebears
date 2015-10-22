@@ -6,6 +6,12 @@
  * Abstract model class to use a basic structure for other model classes.
  * @type {{dataValidation: Function, preprocess: Function, postprocess: Function, controller: Function}}
  */
+
+var GLOBAL = require('GLOBAL');
+
+GLOBAL.STATUS_ERROR = -1;
+GLOBAL.STATUS_SUCCESS = 1;
+
 function classModel() {
 
 }
