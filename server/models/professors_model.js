@@ -4,10 +4,10 @@
 
 
 var classModel = require("./class_models");
-
 var sequelize_modules = require("./init")
-var sequelize = sequelize_modules.sequelize;
-var Sequelize = sequelize_modules.Sequelize;
+
+var sequelize = sequelize_modules.sequelize
+var Sequelize = sequelize_modules.Sequelize
 
 var Professors = sequelize.define('Professors', {
   professor_name: { type: Sequelize.STRING, primaryKey: true}
@@ -31,7 +31,7 @@ function professorsModel() {
 
 };
 
-// Inherit the method of superclass
+Inherit the method of superclass
 professorsModel.prototype = new classModel();
 
 //Override the parent method dataValidator
@@ -115,4 +115,7 @@ professorsModel.prototype.createReviews = function(prof_name) {
 };
 
 module.exports = professorsModel;
+module.exports.Professors = Professors;
+
+
 

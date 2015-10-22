@@ -16,7 +16,7 @@ function departmentsModel() {
 
 };
 
-// Inherit the method of superclass
+Inherit the method of superclass
 departmentsModel.prototype = new classModel();
 
 //Override the parent method dataValidator
@@ -53,4 +53,4 @@ departmentsModel.prototype.controller = function() {
 };
 
 module.exports = departmentsModel;
-
+module.exports.Departments = Departments;
