@@ -2,7 +2,15 @@
  * Created by nirshtern on 10/21/15.
  */
 
-var classModel = require("./models/class_models");
+var classModel = require("./class_models");
+
+var sequelize_modules = require("./init")
+var sequelize = sequelize_modules.sequelize;
+var Sequelize = sequelize_modules.Sequelize;
+
+var Departments = sequelize.define('Departments', {
+  department_name: { type: Sequelize.STRING, primaryKey: true}
+})
 
 function departmentsModel() {
 
