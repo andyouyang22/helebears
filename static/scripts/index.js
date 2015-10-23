@@ -123,7 +123,9 @@ var Home = function() {
 	var attachCourseListHandler = function(){
 		$(departmentList).on('change',function(){
 			var department = $(this).val();
-			alert('Send request to server for class list here');
+			department = department.replace(/ /g,'%20');
+			var query = '?' + department;
+			alert(query);
 			insertCourseList(department);
 		});
 	};
@@ -142,19 +144,18 @@ var Home = function() {
 	};
 	var insertDepartmentList = function() {
 		var onSuccess = function(data){
+			var k;
 			//Take the returned list of departments and insert each one.
-			/* var len data.departments.length()
-			for(i=0; i < len; i++){
-				insertDepartment(data.departments[i]);
+			var len = data.results.length()
+			for(k=0; k < len; k++){
+				insertDepartment(data.results.department_name[i]);
 			}
-			*/
+			
 		};
 		var onFailure = function(){
-			/*print error message
 			console.error('could not get department list');
-			*/
 		};
-		// makeGetRequest(url_to_get_departments, onSuccess, onFailure);
+		// makeGetRequest('/api/departments, onSuccess, onFailure);
 		// The bottom ones go away once we have ajax calls
 		insertDepartment('Computer Science');
 		insertDepartment('Astronomy');
