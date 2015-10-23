@@ -1,2 +1,6 @@
 .DS_Store
-.idea/
+.idea
+*.iml
+*.log
+workspace.xml
+.gitignore
