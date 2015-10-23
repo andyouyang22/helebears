@@ -1,7 +1,5 @@
 var Reviews = function() {
 
-	var logIn;
-	var signUp;
 	var templateDepartment;
 	var overallReview;
 	var user_reviews;
@@ -11,9 +9,6 @@ var Reviews = function() {
 
 	var courseList;
 	var templateCourse;
-
-	var defaultColor = "#00b85c";
-	var selectedColor = "#00a653"
 
 	var makeGetRequest = function(url, onSuccess, onFailure) {
 	   $.ajax({
@@ -56,25 +51,6 @@ var Reviews = function() {
 		return error_list;
 
 	}
-	var attachLogInHandler = function() {
-		logIn.on('click', function() {
-			signUp.css('background-color', defaultColor);
-			logIn.css('background-color', selectedColor);
-			$('.sign-up-form').slideUp(function() {
-				$('.log-in-form').slideToggle();
-			});
-		});
-	};
-
-	var attachSignUpHandler = function() {
-		signUp.on('click', function() {
-			logIn.css('background-color', defaultColor);
-			signUp.css('background-color', selectedColor);
-			$('.log-in-form').slideUp(function() {
-				$('.sign-up-form').slideToggle();
-			});
-		});
-	};
 
 	var insertRatingsOverall = function(ratings_dict){
 		name_of_professor = ratings_dict.professor; //Store the name of the professor locally.
@@ -188,8 +164,6 @@ var Reviews = function() {
 		//On the query results page (because the contents inside of reviews.html will be placed inside of
 		//query.html and hidden).
 		//the vars will be moved inside of the other start function as well.
-		logIn = $('.log-in');
-		signUp = $('.sign-up');
 		user_input = $('.review-input');
 
 		overallReview = $('.review-overall');
@@ -198,8 +172,6 @@ var Reviews = function() {
 		user_reviews.html('');
 
 		attachUserInputHandler();
-		attachLogInHandler();
-		attachSignUpHandler();
 
 		insertProfessorOverallRatings('prof_name');
 		insertProfessorUserRatings('prof_name');

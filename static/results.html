@@ -16,11 +16,14 @@
 	<link rel="stylesheet" type="text/css" href="styles/results.css">
 	<!-- Load jQuery -->
 	<script src="scripts/jquery.min.js"></script>
-	<!-- Load reviews page Javscript functionality -->
+	<!-- Load common page functionality -->
+	<script src="scripts/main.js"></script>
+	<!-- Load results page Javscript functionality -->
 	<script src="scripts/results.js"></script>
 	<!-- Run start-up functions after page has loaded -->
 	<script type="text/javascript">
 		$(function() {
+			main();
 			Results.start();
 		});
 	</script>

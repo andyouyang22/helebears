@@ -1,8 +1,6 @@
 
 var Home = function() {
 
-	var logIn;
-	var signUp;
 	var departmentList;
 	var templateDepartment;
 
@@ -11,9 +9,6 @@ var Home = function() {
 
 	var basicSearchHolder;
 	var advSearchHolder;
-
-	var defaultColor = "#00b85c";
-	var selectedColor = "#00a653";
 
 	var makeGetRequest = function(url, onSuccess, onFailure) {
 	   $.ajax({
@@ -24,26 +19,6 @@ var Home = function() {
 		   error: onFailure
 	   });
    };
-
-	var attachLogInHandler = function() {
-		logIn.on('click', function() {
-			signUp.css('background-color', defaultColor);
-			logIn.css('background-color', selectedColor);
-			$('.sign-up-form').slideUp(function() {
-				$('.log-in-form').slideToggle();
-			});
-		});
-	};
-
-	var attachSignUpHandler = function() {
-		signUp.on('click', function() {
-			logIn.css('background-color', defaultColor);
-			signUp.css('background-color', selectedColor);
-			$('.log-in-form').slideUp(function() {
-				$('.sign-up-form').slideToggle();
-			});
-		});
-	};
 
 	var attachAdvancedSearchHandler = function() {
 		var show = $('.show-advanced-search');
@@ -187,13 +162,6 @@ var Home = function() {
 	};
 
 	var start = function() {
-		// Prevent HeleBears logo click event from re-directing
-		$('.pure-menu-link').on('click', function(e) {
-			e.preventDefault();
-		});
-
-		logIn = $('.log-in');
-		signUp = $('.sign-up');
 		departmentList = $('.department-input');
 		templateDepartment = $('.department-input .department-option')[0].outerHTML;
 
@@ -206,8 +174,6 @@ var Home = function() {
 		// create a new object to later attach. If you do not do outerHTML, it will
 		// not point your new var to a new object, and when you try to add it into
 		// the html, it does not add properly.
-		attachLogInHandler();
-		attachSignUpHandler();
 		attachAdvancedSearchHandler();
 		attachCourseListHandler();
 		attachSubmitSearchHandler();

@@ -15,11 +15,14 @@
 	<link rel="stylesheet" type="text/css" href="styles/calendar.css">
 	<!-- Load jQuery -->
 	<script src="scripts/jquery.min.js"></script>
-	<!-- Load home page Javscript functionality -->
+	<!-- Load common page functionality -->
+	<script src="scripts/main.js"></script>
+	<!-- Load calendar page Javscript functionality -->
 	<script src="scripts/calendar.js"></script>
 	<!-- Run start-up functions after page has loaded -->
 	<script type="text/javascript">
 		$(function() {
+			main();
 			Calendar.start();
 		});
 	</script>

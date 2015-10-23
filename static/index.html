@@ -16,6 +16,8 @@
 
 	<!-- Load jQuery -->
 	<script src="scripts/jquery.min.js"></script>
+	<!-- Load common page functionality -->
+	<script src="scripts/main.js"></script>
 	<!-- Load home page Javscript functionality -->
 	<script src="scripts/index.js"></script>
 
@@ -24,6 +26,7 @@
 	<!-- Run start-up functions after page has loaded -->
 	<script type="text/javascript">
 		$(function() {
+			main();
 			Home.start();
 			Results.start();
 			Reviews.start();

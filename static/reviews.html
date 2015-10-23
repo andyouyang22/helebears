@@ -15,11 +15,14 @@
 	<link rel="stylesheet" type="text/css" href="styles/reviews.css">
 	<!-- Load jQuery -->
 	<script src="scripts/jquery.min.js"></script>
+	<!-- Load common page functionality -->
+	<script src="scripts/main.js"></script>
 	<!-- Load reviews page Javscript functionality -->
 	<script src="scripts/reviews.js"></script>
 	<!-- Run start-up functions after page has loaded -->
 	<script type="text/javascript">
 		$(function() {
+			main();
 			Reviews.start();
 		});
 	</script>
