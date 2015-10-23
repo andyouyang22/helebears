@@ -20,6 +20,7 @@ body {
 /* Horizontal menu header */
 
 .pure-menu-horizontal {
+	position: fixed;
 	font-family: 'Roboto Slab', serif;
 	background-color: #00b85c;
 	padding-bottom: 4px;
