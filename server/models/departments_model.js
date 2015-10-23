@@ -41,7 +41,21 @@ var departmentModel = {
     },
 
     controller: function() {
+        // The controller is responsible to navigate between preprocess, process and postprocess and provide
+        // the answer to the client the required format.
 
+        var preprocessedJSON = departmentModel.preprocess(inputJSON);
+        if (preprocessedJSON.status == constants.STATUS_ERROR ) {
+
+        }
+        var processedJSON = sequelizeProcess(preprocessedJSON);
+        if (processedJSON == constants.STATUS_ERROR) {
+
+        }
+        var postprocessedJSON = departmentModel.postprocess(processedJSON);
+        if (postprocessedJSON.status == constants.STATUS_ERROR) {
+
+        }
     }
 
 };

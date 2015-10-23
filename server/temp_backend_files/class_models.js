@@ -7,9 +7,7 @@
  * @type {{dataValidation: Function, preprocess: Function, postprocess: Function, controller: Function}}
  */
 
-var constants = {};
-constants.STATUS_ERROR = -1;
-constants.STATUS_SUCCESS = 1;
+
 
 function Class() {}
 Class.prototype.construct = function() {};
