@@ -1,8 +1,6 @@
 
 var Home = function() {
 
-	var logIn;
-	var signUp;
 	var departmentList;
 	var templateDepartment;
 
@@ -11,9 +9,6 @@ var Home = function() {
 
 	var basicSearchHolder;
 	var advSearchHolder;
-
-	var defaultColor = "#00b85c";
-	var selectedColor = "#00a653";
 
 	var makeGetRequest = function(url, onSuccess, onFailure) {
 	   $.ajax({
@@ -24,26 +19,6 @@ var Home = function() {
 		   error: onFailure
 	   });
    };
-
-	var attachLogInHandler = function() {
-		logIn.on('click', function() {
-			signUp.css('background-color', defaultColor);
-			logIn.css('background-color', selectedColor);
-			$('.sign-up-form').slideUp(function() {
-				$('.log-in-form').slideToggle();
-			});
-		});
-	};
-
-	var attachSignUpHandler = function() {
-		signUp.on('click', function() {
-			logIn.css('background-color', defaultColor);
-			signUp.css('background-color', selectedColor);
-			$('.log-in-form').slideUp(function() {
-				$('.sign-up-form').slideToggle();
-			});
-		});
-	};
 
 	var attachAdvancedSearchHandler = function() {
 		var show = $('.show-advanced-search');
@@ -105,7 +80,7 @@ var Home = function() {
 			alert(JSON.stringify(request) + ' Send get request here');
 			request = '?' + request;
 
-			
+
 			//onSuccess check status code. pass the json and insert dat ish. hide #home-page show #query-results-page
 			//makeGetRequest = function(url + request, onSuccess, onFailure)
 
@@ -179,17 +154,14 @@ var Home = function() {
 			console.error('could not get department list');
 			*/
 		};
-		//makeGetRequest(url_to_get_departments, onSuccess, onFailure);
-		//The bottom ones go away once we have ajax calls
+		// makeGetRequest(url_to_get_departments, onSuccess, onFailure);
+		// The bottom ones go away once we have ajax calls
 		insertDepartment('Computer Science');
 		insertDepartment('Astronomy');
 		insertDepartment('History');
 	};
 
-
 	var start = function() {
-		logIn = $('.log-in');
-		signUp = $('.sign-up');
 		departmentList = $('.department-input');
 		templateDepartment = $('.department-input .department-option')[0].outerHTML;
 
@@ -198,11 +170,10 @@ var Home = function() {
 		basicSearchHolder = $('.basic-search-form');
 		advSearchHolder = $('.advanced-search-form');
 
-		//convert to outerHTML, then use $(templateDepartment) to essentially create a new
-		//object to later attach. If you do not do outerHTML, it will not point your new var to
-		//a new object, and when you try to add it into the html, it does not add properly.
-		attachLogInHandler();
-		attachSignUpHandler();
+		// convert to outerHTML, then use $(templateDepartment) to essentially
+		// create a new object to later attach. If you do not do outerHTML, it will
+		// not point your new var to a new object, and when you try to add it into
+		// the html, it does not add properly.
 		attachAdvancedSearchHandler();
 		attachCourseListHandler();
 		attachSubmitSearchHandler();

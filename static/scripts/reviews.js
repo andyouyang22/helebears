@@ -1,42 +1,37 @@
 var Reviews = function() {
 
-	var logIn;
-	var signUp;
 	var templateDepartment;
 	var overallReview;
 	var user_reviews;
 	var userReviewTemplateHtml;
 	var user_input;
 	var name_of_professor;
-	
+
 	var courseList;
 	var templateCourse;
-	
-	var defaultColor = "#00b85c";
-	var selectedColor = "#00a653"
 
 	var makeGetRequest = function(url, onSuccess, onFailure) {
-       $.ajax({
-           type: 'GET',
-           url: apiUrl + url,
-           dataType: "json",
-           success: onSuccess,
-           error: onFailure
-       });
+	   $.ajax({
+		   type: 'GET',
+		   url: apiUrl + url,
+		   dataType: "json",
+		   success: onSuccess,
+		   error: onFailure
+	   });
    };
-	
+
 	var makePostRequest = function(url, data, onSuccess, onFailure) {
-        $.ajax({
-            type: 'POST',
-            url: url,
-            data: JSON.stringify(data),
-            contentType: "application/json",
-            dataType: "json",
-            success: onSuccess,
-            error: onFailure
-        });
-    };
-	
+		$.ajax({
+			type: 'POST',
+			url: url,
+			data: JSON.stringify(data),
+			contentType: "application/json",
+			dataType: "json",
+			success: onSuccess,
+			error: onFailure
+		});
+	};
+
 	var check_post_request = function(review){
 		var error_list = [];
 		if(review.professor.length == 0)
@@ -51,45 +46,25 @@ var Reviews = function() {
 			error_list.push('rating_3 must be between 1 and 10!');
 		if(review.review.length < 1)
 			error_list.push('review is empty!');
-		if(review.review.length > 2048)	
+		if(review.review.length > 2048)
 			error_list.push('review must be 2048 characters or less!');
 		return error_list;
-		
+
 	}
-	var attachLogInHandler = function() {
-		logIn.on('click', function() {
-			signUp.css('background-color', defaultColor);
-			logIn.css('background-color', selectedColor);
-			$('.sign-up-form').slideUp(function() {
-				$('.log-in-form').slideToggle();
-			});
-		});
-	};
 
-	var attachSignUpHandler = function() {
-		signUp.on('click', function() {
-			logIn.css('background-color', defaultColor);
-			signUp.css('background-color', selectedColor);
-			$('.log-in-form').slideUp(function() {
-				$('.sign-up-form').slideToggle();
-			});
-		});
-	};
-
-	
-	
 	var insertRatingsOverall = function(ratings_dict){
 		name_of_professor = ratings_dict.professor; //Store the name of the professor locally.
-		//This is used so that when we call a post request to post a review, we do not have to call
-		//overallReview.find('.professor-name').html() to do retreive the name.
+		// This is used so that when we call a post request to post a review, we do
+		// not have to call overallReview.find('.professor-name').html() to do
+		// retreive the name.
 		overallReview.find('.professor-name').html(ratings_dict.professor);
 		var ratings_table = overallReview.find('.review-values')[0];
 		ratings_table.rows[0].cells[1].innerHTML = ratings_dict.overall_rating_1
 		ratings_table.rows[1].cells[1].innerHTML = ratings_dict.overall_rating_2;
 		ratings_table.rows[2].cells[1].innerHTML = ratings_dict.overall_rating_3;
-		
+
 	};
-	
+
 	var insertUserRating = function(user_review){
 		var newElem = $(userReviewTemplateHtml);
 		newElem.attr('id',user_review.id);
@@ -100,16 +75,16 @@ var Reviews = function() {
 		newElem.find('.row-3').find('td')[1].innerHTML = user_review.rating_3;
 		newElem.find('.review-user-text').text(user_review.review);
 		user_reviews.append(newElem);
-		
+
 	};
-	
+
 	var insertProfessorOverallRatings = function(professor_name){
 		var onSuccess = function(data){
 			//Return dictionary of {professor: prof_name, rating_1: value, rating_2: value, etc}
 			insertRatingsOverall(data);
 		};
 		var onFailure = function(){
-		//console.error('could not retreive overall ratings');	
+		//console.error('could not retreive overall ratings');
 		};
 		//makeGetRequest(url_to_get_professor's ratings, onSuccess, onFailure);
 		var ratings_dict = {};
@@ -119,7 +94,7 @@ var Reviews = function() {
 		ratings_dict.overall_rating_3 = 10;
 		insertRatingsOverall(ratings_dict);
 	};
-	
+
 	var insertProfessorUserRatings = function(professor_name){
 		var onSuccess = function(data){
 			/*
@@ -128,7 +103,7 @@ var Reviews = function() {
 			*/
 		};
 		var onFailure = function(){
-			//console.error('could not retrieve user ratings');		
+			//console.error('could not retrieve user ratings');
 		};
 		//makeGetRequest(url_to_get_user_ratings_for_professor, onSuccess, onFailure);
 		user_review = {};
@@ -142,7 +117,7 @@ var Reviews = function() {
 		insertUserRating(user_review);
 		insertUserRating(user_review);
 	};
-	
+
 	var attachUserInputHandler = function(){
 		user_input.on('click', '#submit-input', function (e) {
 			e.preventDefault (); // Tell the browser to skip its default click action
@@ -153,18 +128,18 @@ var Reviews = function() {
 			review.rating_1 = user_input.find('.rating-input-1').val();
 			review.rating_2 = user_input.find('.rating-input-2').val();
 			review.rating_3 = user_input.find('.rating-input-3').val();
-			
-       		// smile.title = create.find('.title-input').val();
+
+			// smile.title = create.find('.title-input').val();
 			//smile.space = smileSpace; //smileSpace
 			//smile.story = create.find('.story-input').val();
 			//smile.happiness_level = parseInt(create.find('.happiness-level-input').val());
 			var onSuccess = function(data) {
 				//check for errors
 				//insertUserRating(data.review);
-            };
-			var onFailure = function() { 
-               // console.error('unable to submit post'); 
-            };
+			};
+			var onFailure = function() {
+			   // console.error('unable to submit post');
+			};
 			var errors = check_post_request(review);
 			if(errors.length){
 				var error_string = "";
@@ -178,7 +153,7 @@ var Reviews = function() {
 				//This is also why it does not have an id - becasue it is generated from the server.
 				user_input.find('.review-box').trigger('reset');
 			}
-			
+
 		});
 	};
 	var start = function() {
@@ -189,22 +164,17 @@ var Reviews = function() {
 		//On the query results page (because the contents inside of reviews.html will be placed inside of
 		//query.html and hidden).
 		//the vars will be moved inside of the other start function as well.
-		logIn = $('.log-in');
-		signUp = $('.sign-up');
 		user_input = $('.review-input');
-			
+
 		overallReview = $('.review-overall');
 		user_reviews = $('.all-user-reviews');
 		userReviewTemplateHtml = $(".all-user-reviews .single-review")[0].outerHTML;
 		user_reviews.html('');
-		
+
 		attachUserInputHandler();
-		attachLogInHandler();
-		attachSignUpHandler();
-		
+
 		insertProfessorOverallRatings('prof_name');
 		insertProfessorUserRatings('prof_name');
-		
 	};
 
 	return {
