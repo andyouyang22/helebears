@@ -11,13 +11,6 @@ var Sequelize = sequelize_modules.Sequelize;
 var professors_model = require("./professors_model");
 var Professors = professors_model.Professors;
 
-RATING_1 = 'rating_1';
-RATING_2 = 'rating_2';
-RATING_3 = 'rating_3';
-REVIEW = 'review';
-PROFESSOR_NAME = 'professor_name';
-
-
 var Reviews = sequelize.define("Reviews", {
     rating_1: Sequelize.INTEGER,
     rating_2: Sequelize.INTEGER,
@@ -33,6 +26,10 @@ var Reviews = sequelize.define("Reviews", {
 })
 Reviews.sync()
 
+/**
+ * ReviewsModel - responsible for all interaction with the database model, API communicates directly with this module.
+ * @type {{getName: Function, dataValidator: Function, preprocess: Function, searchQuery: Function, createQuery: Function, postprocess: Function, controller: Function}}
+ */
 var reviewsModel = {
     getName: function () {
 
@@ -116,7 +113,7 @@ var reviewsModel = {
 
     },
 
-    controller: function (res, query_args,type) {
+    controller: function (query_args,type,res) {
         // The controller is responsible to navigate between preprocess, process and postprocess and provide
         // the answer to the client the required format.
             reviewsModel.preprocess(query_args,type,res);
@@ -124,8 +121,6 @@ var reviewsModel = {
 
     }
 }
-
-
 
 
 module.exports.Reviews = Reviews;
