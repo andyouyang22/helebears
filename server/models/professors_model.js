@@ -27,7 +27,8 @@ var Reviews = sequelize.define("Reviews", {
    }
   },
 })
-
+Professors.sync()
+Reviews.sync()
 
 var professorsModel = {
     getName: function() {
