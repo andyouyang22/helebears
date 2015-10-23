@@ -106,7 +106,7 @@ var Home = function() {
 			request = '?' + request;
 
 			
-			//onSuccess check status code. pass the json and insert dat ish.
+			//onSuccess check status code. pass the json and insert dat ish. hide #home-page show #query-results-page
 			//makeGetRequest = function(url + request, onSuccess, onFailure)
 
 		});
