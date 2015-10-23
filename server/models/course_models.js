@@ -90,5 +90,4 @@ var courseModel = {
 
 
 
-module.exports = courseModel;
-
+module.exports.Courses = Courses;

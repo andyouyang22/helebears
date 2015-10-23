@@ -4,6 +4,16 @@
 
 var classModel = require("./class_models");
 
+var sequelize_modules = require("./init")
+var sequelize = sequelize_modules.sequelize;
+var Sequelize = sequelize_modules.Sequelize;
+
+var Users = sequelize.define("Users", {
+  name: { type: Sequelize.STRING, primaryKey: true},
+  password: Sequelize.STRING
+
+})
+
 
 var usersModel = {
     getName: function() {
@@ -48,5 +58,5 @@ var usersModel = {
 
 };
 
-module.exports = userModel;
+module.exports = usersModel;
 
