@@ -87,11 +87,16 @@ var Calendar = function() {
 		return ccn
 	};
 
-	var start = function() {
-		$('.results-entry .course-name').on('click', function() {
-			$('.results-sections').slideToggle();
+	var attachSectionsHandler = function(ccn) {
+		course = ".results-course.ccn-" + ccn;
+		header = course + " .course-name";
+		next = $(course).next('.results-sections');
+		$(header).on('click', function() {
+			next.slideToggle();
 		});
+	};
 
+	var start = function() {
 		course = $('#template.calendar-course');
 		course.removeAttr('id');
 		template = course[0].outerHTML;

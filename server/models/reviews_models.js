@@ -20,7 +20,7 @@ var Reviews = sequelize.define("Reviews", {
         type: Sequelize.STRING,
         references: {
             model: Professors,
-            key: 'professor_name',
+            key: 'professor_name'
         }
     },
 })
