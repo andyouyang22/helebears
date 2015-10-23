@@ -276,7 +276,6 @@ var Results = function() {
 		//insertProfessorOverallRatings('prof_name');
 		//insertProfessorUserRatings('prof_name');
 		var res = {};
-		var test = {};
 		res.results = [];
 		response = {};
 		response.course = 'course';
