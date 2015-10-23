@@ -20,10 +20,13 @@ body {
 /* Horizontal menu header */
 
 .pure-menu-horizontal {
+	display: block;
 	position: fixed;
+	z-index: 1;
 	font-family: 'Roboto Slab', serif;
 	background-color: #00b85c;
 	padding-bottom: 4px;
+	border-bottom: 3px solid white;
 }
 
 .pure-menu-link {
