@@ -3,7 +3,6 @@
  */
 
 
-var classModel = require("./class_models");
 
 var sequelize_modules = require("./init")
 
@@ -27,7 +26,8 @@ var Reviews = sequelize.define("Reviews", {
    }
   },
 })
-
+Professors.sync()
+Reviews.sync()
 
 var professorsModel = {
     getName: function() {
@@ -81,7 +81,7 @@ var professorsModel = {
 
 };
 
-module.exports = professorsModel;
+// module.exports = professorsModel;
 module.exports.Professors = Professors;
 
 
