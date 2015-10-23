@@ -78,11 +78,29 @@ var Home = function() {
 			request = request.replace(/,/g,'&');
 			request = request.replace(/ /g,'%20');
 			alert(JSON.stringify(request) + ' Send get request here');
-			request = '?' + request;
+			request = request;
 
+
+			var onSuccess = function(data){
+				//Take the returned list of classes and insert each one.
+				var len = data.results.length()
+				for(i=0; i < len; i++){
+					insertCourse(data.results[i].name);
+				};
+			
+			};
+			var onFailure = function(){
+				console.error('could not get department list');
+			};
+
+		//makeGetRequest(/api/courses? + department_query, onSuccess, onFailure);
+		//the bottom ones go away once we have ajax calls
+		insertCourse('169');
+		insertCourse('249A');
+	};
 
 			//onSuccess check status code. pass the json and insert dat ish. hide #home-page show #query-results-page
-			//makeGetRequest = function(url + request, onSuccess, onFailure)
+			//makeGetRequest = function(url? + request, onSuccess, onFailure)
 
 		});
 
@@ -104,16 +122,14 @@ var Home = function() {
 		//top line removes old list
 		var onSuccess = function(data){
 			//Take the returned list of classes and insert each one.
-			var len data.results.length()
+			var len = data.results.length()
 			for(i=0; i < len; i++){
 				insertCourse(data.results[i].name);
 			}
 			
 		};
 		var onFailure = function(){
-			/*print error message
 			console.error('could not get department list');
-			*/
 		};
 
 		//makeGetRequest(/api/courses? + department_query, onSuccess, onFailure);
