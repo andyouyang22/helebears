@@ -99,22 +99,24 @@ var Home = function() {
 		courseList.append(newElem);
 	};
 
-	var insertCourseList = function(department){
-		courseList.find('option').remove('.course-added')
+	var insertCourseList = function(department_query){
+		courseList.find('option').remove('.course-added');
+		//top line removes old list
 		var onSuccess = function(data){
 			//Take the returned list of classes and insert each one.
-			/* var len data.classes.length()
+			var len data.results.length()
 			for(i=0; i < len; i++){
-				insertClass(data.classes[i]);
+				insertCourse(data.results[i].name);
 			}
-			*/
+			
 		};
 		var onFailure = function(){
 			/*print error message
 			console.error('could not get department list');
 			*/
 		};
-		//makeGetRequest(url_to_get_classes, onSuccess, onFailure);
+
+		//makeGetRequest(/api/courses? + department_query, onSuccess, onFailure);
 		//the bottom ones go away once we have ajax calls
 		insertCourse('169');
 		insertCourse('249A');
@@ -124,7 +126,7 @@ var Home = function() {
 		$(departmentList).on('change',function(){
 			var department = $(this).val();
 			department = department.replace(/ /g,'%20');
-			var query = '?' + department;
+			var query = department;
 			alert(query);
 			insertCourseList(department);
 		});
@@ -157,9 +159,12 @@ var Home = function() {
 		};
 		// makeGetRequest('/api/departments, onSuccess, onFailure);
 		// The bottom ones go away once we have ajax calls
+		
+		
 		insertDepartment('Computer Science');
 		insertDepartment('Astronomy');
 		insertDepartment('History');
+		
 	};
 
 	var start = function() {
