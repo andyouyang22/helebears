@@ -36,29 +36,29 @@ var departmentModel = {
 
     },
 
-    postprocess: function() {
-
+    postprocess: function(res) {
+        Departments.findAll().then(
+                function(departments){
+                    var results = []
+                    for(var i = 0; i < departments.length; i++){
+                        results.push(departments[i].dataValues)
+                    }
+                    res.json({status:1, "results":results})
+                }).error(function(err) {
+                    res.json({status:-1, errors:["Unable to correctly retreive all departments"]})
+                })
     },
 
-    controller: function() {
+    controller: function(res) {
         // The controller is responsible to navigate between preprocess, process and postprocess and provide
         // the answer to the client the required format.
-
-        var preprocessedJSON = departmentModel.preprocess(inputJSON);
-        if (preprocessedJSON.status == constants.STATUS_ERROR ) {
-
-        }
-        var processedJSON = sequelizeProcess(preprocessedJSON);
-        if (processedJSON == constants.STATUS_ERROR) {
-
-        }
-        var postprocessedJSON = departmentModel.postprocess(processedJSON);
-        if (postprocessedJSON.status == constants.STATUS_ERROR) {
-
-        }
+        postprocess(res).then(
+            function(){
+                console.log(res)
+            })
     }
 
 };
 
-module.exports = departmentModel;
+module.exports.departmentModel = departmentModel;
 module.exports.Departments = Departments;

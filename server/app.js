@@ -12,9 +12,6 @@ var reviews = require('./routes/reviews');
 
 var app = express();
 
-var constants = {};
-constants.STATUS_ERROR = -1;
-constants.STATUS_SUCCESS = 1;
 
 // view engine setup
 //app.set('views', path.join(__dirname, 'views'));
@@ -33,8 +30,7 @@ app.use('api/users', users);
 app.use('api/courses', courses);
 app.use('api/schedules', schedules);
 app.use('api/reviews', reviews);
-app.use('api/departments',departments);
+app.use('/api/departments',departments);
 
 
 module.exports = app;
-module.exports = constants;
