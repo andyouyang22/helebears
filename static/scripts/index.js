@@ -105,6 +105,8 @@ var Home = function() {
 			alert(JSON.stringify(request) + ' Send get request here');
 			request = '?' + request;
 
+			
+			//onSuccess check status code. pass the json and insert dat ish.
 			//makeGetRequest = function(url + request, onSuccess, onFailure)
 
 		});

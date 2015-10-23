@@ -17,11 +17,11 @@
 	<!-- Load jQuery -->
 	<script src="scripts/jquery.min.js"></script>
 	<!-- Load reviews page Javscript functionality -->
-	<script src="scripts/reviews.js"></script>
+	<script src="scripts/results.js"></script>
 	<!-- Run start-up functions after page has loaded -->
 	<script type="text/javascript">
 		$(function() {
-			Reviews.start();
+			Results.start();
 		});
 	</script>
 </head>
@@ -86,11 +86,11 @@
 
 	<div class="pure-g space"></div>
 
-	<div class="pure-g user-reviews-page-holder">
+	<div class="pure-g results-page-holder" id="query-results-page">
 		<!-- Above is the html element that we show and hide when clicking the professor name on the -->
 		<!-- Query results page. When we click back, we hide this element and show the other page -->
 
-		<div class='pure-u-1-1 all-user-results'>
+		<div class='pure-u-1-1 all-class-results' id="query-results-container">
 			<!-- The all-user-reviews class holds all user reviews. This is the div that we -->
 			<!-- Insert all of the other user reviews into (class of single-review) -->
 
@@ -102,38 +102,40 @@
 		<div class="pure-u-3-5 review review-user">
 			<div class="pure-g review-box">
 				<div class="pure-u-1-1">
-					<table class = "pure-table full-width" id="course-header">
+					<table class = "pure-table full-width header-table">
 						<tr class= "course-header-element">
 							<td class="stretch">Course_Name</td>
-							<td class="stretch">Professor_Name</td>
+							<td class="stretch">
+							<input class="pure-button professor-button query-button" type="submit" value="Prof">
+							</td>
 							<td class="stretch">CCN</td>
 							<td class="stretch">Lecture_time</td>
-							<td class="stretch">asdfasdf</td>
+							<!-- <td class="stretch">asdfasdf</td> -->
 						</tr>								
 					</table>
-					<hr>
 				</div>
 				<div class="pure-u-1-1 section-div">
+					<hr>
 					<table class = "pure-table full-width section-table">
 						<tr class = "section-tr">
-							<td class="section-td">Disc</td>
+							<td class="section-td">REMOVE</td>
 							<td class="section-td">CCN</td>
 							<td class="section-td">Time</td>
 							<td class="section-td">enrolled</td>
 							<td class="section-td">limit</td>
 							<td class="section-td">
-							<input class="pure-button add-section query-button" id="section-input" type="submit" value="Add">
+							<input class="pure-button add-section query-button" type="submit" value="Add">
 							<input class="pure-button drop-lab query-button" style="display:none" type="submit" value="Drop">
 							</td>
 						</tr>
 					</table>
-					<hr>
 				</div>
 				
 				<div class="pure-u-1-1 lab-div">
+					<hr>
 					<table class = "pure-table full-width lab-table">
 						<tr class = "lab-tr">
-							<td class="lab-td">LAB</td>
+							<td class="lab-td">REMOVE</td>
 							<td class="lab-td">CCN</td>
 							<td class="lab-td">Time</td>
 							<td class="lab-td">enrolled</td>
@@ -149,7 +151,7 @@
 				
 				
 				
-				<div class="pure-u-1-3">
+				<div class="pure-u-1-3" style = "display:none">
 					<table class="pure-table review-values">
 						<tr class='row-1'>
 							<td>Clarity of Content</td>
