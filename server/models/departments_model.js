@@ -32,27 +32,34 @@ var departmentModel = {
         }
 
     },
-    preprocess: function() {
+    preprocess: function(query_args,type,res) {
+        if (type === 'get'){
+            departmentModel.searchQuery(query_args,res);
+        }
+
+        if (type == 'post'){}
 
     },
-
-    postprocess: function(res) {
+    searchQuery: function(filter,res) {
         Departments.findAll().then(
-                function(departments){
-                    var results = []
-                    for(var i = 0; i < departments.length; i++){
-                        results.push(departments[i].dataValues)
-                    }
-                    res.json({status:1, "results":results})
-                }).error(function(err) {
-                    res.json({status:-1, errors:["Unable to correctly retreive all departments"]})
-                })
+            function(departments){
+                var results = []
+                for(var i = 0; i < departments.length; i++){
+                    results.push(departments[i].dataValues)
+                }
+                res.json({status:1, results:results})
+            }).catch(function(err) {
+                res.json({status:-1, errors:["Unable to correctly retrieve all departments",err]})
+            })
+    },
+    postprocess: function(queryResults, res) {
+
     },
 
-    controller: function(res) {
+    controller: function(query_args,type,res) {
         // The controller is responsible to navigate between preprocess, process and postprocess and provide
         // the answer to the client the required format.
-        departmentModel.postprocess(res)
+        departmentModel.preprocess(query_args,type,res)
     }
 
 };

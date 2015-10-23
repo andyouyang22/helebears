@@ -4,30 +4,16 @@
 
 
 
-var sequelize_modules = require("./init")
+var sequelize_modules = require("./init");
 
-var sequelize = sequelize_modules.sequelize
-var Sequelize = sequelize_modules.Sequelize
+var sequelize = sequelize_modules.sequelize;
+var Sequelize = sequelize_modules.Sequelize;
 
 var Professors = sequelize.define('Professors', {
   professor_name: { type: Sequelize.STRING, primaryKey: true}
-})
+});
 
-var Reviews = sequelize.define("Reviews", {
-  rating_1: Sequelize.INTEGER,
-  rating_2: Sequelize.INTEGER,
-  rating_3: Sequelize.INTEGER,
-  review: Sequelize.STRING,
-  professor_name: {
-    type: Sequelize.STRING,
-    references: {
-      model: Professors,
-      key: 'professor_name',
-   }
-  },
-})
-Professors.sync()
-Reviews.sync()
+Professors.sync();
 
 var professorsModel = {
     getName: function() {
@@ -67,22 +53,42 @@ var professorsModel = {
             response.status = constants.STATUS_SUCCESS;
         }
     },
-    preprocess: function() {
+    preprocess: function(query_args,type,res) {
+        if (type === 'get') {
+            professorsModel.searchQuery(query_args, res);
+        }
 
+        if (type === 'post'){}
     },
 
     postprocess: function() {
 
     },
 
-    controller: function() {
+    searchQuery: function(filter,res) {
+        Professors.findAll({where: filter}).then(
+            function (professors) {
+                var results = []
+                for (var i = 0; i < professors.length; i++) {
+                    results.push(professors[i].dataValues)
+                }
+                res.json({status: 1, results: results})
+            }).catch(function (err) {
+                res.json({status: -1, errors: ['Unable to get reviews',err]})
+            })
+    },
+
+    controller: function(query_args,type,res) {
+        // The controller is responsible to navigate between preprocess, process and postprocess and provide
+        // the answer to the client the required format.
+        professorsModel.preprocess(query_args,type,res);
 
     }
 
 };
 
-// module.exports = professorsModel;
 module.exports.Professors = Professors;
+module.exports.professorsModel = professorsModel;
 
 
 
