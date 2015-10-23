@@ -13,7 +13,7 @@ var Users = sequelize.define("Users", {
   password: Sequelize.STRING
 
 })
-
+Users.sync()
 
 var usersModel = {
     getName: function() {

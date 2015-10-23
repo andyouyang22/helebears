@@ -11,6 +11,7 @@ var Sequelize = sequelize_modules.Sequelize;
 var Departments = sequelize.define('Departments', {
   department_name: { type: Sequelize.STRING, primaryKey: true}
 })
+Departments.sync()
 
 var departmentModel = {
     getName: function() {
