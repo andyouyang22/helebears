@@ -13,21 +13,7 @@ var Professors = sequelize.define('Professors', {
   professor_name: { type: Sequelize.STRING, primaryKey: true}
 })
 
-var Reviews = sequelize.define("Reviews", {
-  rating_1: Sequelize.INTEGER,
-  rating_2: Sequelize.INTEGER,
-  rating_3: Sequelize.INTEGER,
-  review: Sequelize.STRING,
-  professor_name: {
-    type: Sequelize.STRING,
-    references: {
-      model: Professors,
-      key: 'professor_name',
-   }
-  },
-})
 Professors.sync()
-Reviews.sync()
 
 var professorsModel = {
     getName: function() {
@@ -81,7 +67,7 @@ var professorsModel = {
 
 };
 
-// module.exports = professorsModel;
+// module.exports = reviewsModel;
 module.exports.Professors = Professors;
 
 
