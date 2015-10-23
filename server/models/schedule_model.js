@@ -41,5 +41,5 @@ var scheduleModel = {
 
 };
 
-module.exports = scheduleModel;
+// module.exports = scheduleModel;
 

@@ -26,10 +26,10 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 
 app.use('/',express.static(__dirname + '/../static'));
-app.use('api/users', users);
-app.use('api/courses', courses);
-app.use('api/schedules', schedules);
-app.use('api/reviews', reviews);
+app.use('/api/users', users);
+app.use('/api/courses', courses);
+app.use('/api/schedules', schedules);
+app.use('/api/reviews', reviews);
 app.use('/api/departments',departments);
 
 

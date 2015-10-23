@@ -81,7 +81,7 @@ var professorsModel = {
 
 };
 
-module.exports = professorsModel;
+// module.exports = professorsModel;
 module.exports.Professors = Professors;
 
 
