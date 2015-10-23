@@ -3,7 +3,6 @@
  */
 
 
-var classModel = require("./class_models");
 
 var sequelize_modules = require("./init")
 

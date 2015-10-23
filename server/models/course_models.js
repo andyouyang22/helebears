@@ -2,7 +2,6 @@
  * Created by nirshtern on 10/21/15.
  */
 
-var classModel = require("./class_models");
 var sequelize_modules = require("./init");
 var departments_models = require("./departments_model")
 var professors_model = require("./professors_model")
