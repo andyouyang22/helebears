@@ -43,6 +43,7 @@ var Home = function() {
 		});
 	};
 
+	
 
 	var clear_dict_key = function(del_value,request){
 		for(var key in request) {
@@ -51,6 +52,50 @@ var Home = function() {
 			};
 		};
 	};
+
+	var insertClass = function(cla){
+		var i;
+		var newElem = $(classSingleTemplateHtml);
+		newElem.find('.header-table').find('td')[0].innerHTML = cla.course;
+		newElem.find('.header-table').find('td').find('input').attr('value',cla.professor);
+		newElem.find('.header-table').find('td')[2].innerHTML = cla.CCN;
+		newElem.find('.header-table').find('td')[3].innerHTML = cla.time;
+
+		var section_list = cla.sections;
+
+		for(i = 0; i < section_list.length; i++){
+			var newSectionLab = section_list[i];
+			if(newSectionLab.type == 'section'){
+				newElem.find('.section-table').find('td')[0].innerHTML = newSectionLab.type;
+				newElem.find('.section-table').find('td')[1].innerHTML = newSectionLab.CCN;
+				newElem.find('.section-table').find('td')[2].innerHTML = newSectionLab.time;
+				newElem.find('.section-table').find('td')[3].innerHTML = newSectionLab.enrolled;
+				newElem.find('.section-table').find('td')[4].innerHTML = newSectionLab.limit;
+			};
+			if(newSectionLab.type == 'lab'){
+				newElem.find('.lab-table').find('td')[0].innerHTML = newSectionLab.type;
+				newElem.find('.lab-table').find('td')[1].innerHTML = newSectionLab.CCN;
+				newElem.find('.lab-table').find('td')[2].innerHTML = newSectionLab.time;
+				newElem.find('.lab-table').find('td')[3].innerHTML = newSectionLab.enrolled;
+				newElem.find('.lab-table').find('td')[4].innerHTML = newSectionLab.limit;
+			};
+		};
+		if (newElem.find('.lab-table').find('td')[0].innerHTML == 'REMOVE')
+			newElem.find('.lab-div').remove();
+		if (newElem.find('.section-table').find('td')[0].innerHTML == 'REMOVE')
+			newElem.find('.section-div').remove();
+		all_classes.append(newElem);
+	};
+
+
+	var insertQueryResults = function(response){
+		var j;
+		for(j = 0; j < response.results.length; j++){
+				console.log(j);
+				insertClass(response.results[j]);
+			};
+	};
+
 
 	var attachSubmitSearchHandler = function(){
 		advSearchHolder.on('click', '.submit-search', function (e){
@@ -77,12 +122,15 @@ var Home = function() {
 			request = request.replace(/:/g,'=');
 			request = request.replace(/,/g,'&');
 			request = request.replace(/ /g,'%20');
-			alert(JSON.stringify(request) + ' Send get request here');
+			//alert(JSON.stringify(request) + ' Send get request here');
 			request = request;
-
+			//alert('inside attach handler');
+			insertQueryResults('hi');
 
 			var onSuccess = function(data){
 				//Take the returned list of classes and insert each one.
+				Res.insertQueryResults(data);
+
 				var len = data.results.length()
 				for(i=0; i < len; i++){
 					insertCourse(data.results[i].name);
@@ -97,7 +145,6 @@ var Home = function() {
 		//the bottom ones go away once we have ajax calls
 		insertCourse('169');
 		insertCourse('249A');
-	};
 
 			//onSuccess check status code. pass the json and insert dat ish. hide #home-page show #query-results-page
 			//makeGetRequest = function(url? + request, onSuccess, onFailure)
@@ -132,7 +179,7 @@ var Home = function() {
 			console.error('could not get department list');
 		};
 
-		//makeGetRequest(/api/courses? + department_query, onSuccess, onFailure);
+		//makeGetRequest(/api/courses?department=department_query, onSuccess, onFailure);
 		//the bottom ones go away once we have ajax calls
 		insertCourse('169');
 		insertCourse('249A');
