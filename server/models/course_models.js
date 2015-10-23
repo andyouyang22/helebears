@@ -94,20 +94,33 @@ var courseModel = {
             response.status = constants.STATUS_SUCCESS;
         }
     },
-    preprocess: function() {
+    preprocess: function(inputJSON) {
 
     },
 
-    postprocess: function() {
+    postprocess: function(inputJSON) {
 
     },
+    controller: function(inputJSON) {
+        // The controller is responsible to navigate between preprocess, process and postprocess and provide
+        // the answer to the client the required format.
 
-    controller: function() {
+        var preprocessedJSON = courseModel.preprocess(inputJSON);
+        if (preprocessedJSON.status == constants.STATUS_ERROR ) {
 
+        }
+        var processedJSON = sequelizeProcess(preprocessedJSON);
+        if (processedJSON == constants.STATUS_ERROR) {
+
+        }
+        var postprocessedJSON = courseModel.postprocess(processedJSON);
+        if (postprocessedJSON.status == constants.STATUS_ERROR) {
+
+        }
     }
 
 };
 
 
-
 module.exports.Courses = Courses;
+
