@@ -26,6 +26,8 @@ var Reviews = sequelize.define("Reviews", {
     },
 })
 Reviews.sync()
+a = Reviews.build({rating_1: 5, rating_2: 3, rating_3: 4, review: "Helloooo", professor_name:"Kozaki"})
+a.save()
 
 var reviewsModel = {
     getName: function () {
