@@ -4,16 +4,16 @@
 
 
 
-var sequelize_modules = require("./init")
+var sequelize_modules = require("./init");
 
-var sequelize = sequelize_modules.sequelize
-var Sequelize = sequelize_modules.Sequelize
+var sequelize = sequelize_modules.sequelize;
+var Sequelize = sequelize_modules.Sequelize;
 
 var Professors = sequelize.define('Professors', {
   professor_name: { type: Sequelize.STRING, primaryKey: true}
-})
+});
 
-Professors.sync()
+Professors.sync();
 
 var professorsModel = {
     getName: function() {

@@ -21,7 +21,7 @@ var Courses = sequelize.define('Courses', {
     primaryKey: true,
     references: {
       model: Professors,
-      key: 'professor_name',
+      key: 'professor_name'
    }
   },
   department_name: {
@@ -29,7 +29,7 @@ var Courses = sequelize.define('Courses', {
     primaryKey: true,
     references: {
       model: Departments,
-      key: 'department_name',
+      key: 'department_name'
    }
   },
   type:  Sequelize.STRING,
@@ -43,7 +43,7 @@ var Courses = sequelize.define('Courses', {
   enrolled: Sequelize.INTEGER,
   waitlist: Sequelize.INTEGER,
   note: Sequelize.STRING
-})
+});
 
 var Sections = sequelize.define("Sections", {
   discussion: {type: Sequelize.STRING, primaryKey: true},
@@ -57,15 +57,16 @@ var Sections = sequelize.define("Sections", {
   waitlist: Sequelize.INTEGER,
   name_and_number: {
     type: Sequelize.STRING,
-    references: {
+      primaryKey: true,
+      references: {
       model: Courses,
-      key: 'name_and_number',
+      key: 'name_and_number'
    }
   }
-})
+});
 
-//Sections.sync()
-//Courses.sync()
+Sections.sync();
+Courses.sync();
 
 var courseModel = {
     getName: function() {
@@ -107,6 +108,7 @@ var courseModel = {
                     }
                     res.json({status:1, "results":results})
                 }).error(function(err) {
+                    console.log(err)
                     res.json({status:-1, errors:["Unable to correctly retreive all courses"]})
                 })
     },

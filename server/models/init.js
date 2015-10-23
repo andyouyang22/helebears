@@ -12,5 +12,5 @@ var con_string = process.env.DATABASE_URL || 'postgres://postgres:123@localhost:
 var sequelize = new Sequelize(con_string);
 sequelize.sync()
 
-module.exports.Sequelize = Sequelize
-module.exports.sequelize = sequelize
+module.exports.Sequelize = Sequelize;
+module.exports.sequelize = sequelize;
