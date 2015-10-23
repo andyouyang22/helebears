@@ -1,0 +1,35 @@
+
+/* Professor review table */
+
+.full-width{
+	width:100%;
+}
+
+td.stretch{
+	font-weight: bold;
+	width:100%;	
+	font-size: 80%;
+}
+
+.query-button{
+	font-size: 60%;	
+}
+
+td.section-td{
+	width:100%;
+	font-size: 80%;
+}
+
+td.lab-td{
+	width:100%;
+	font-size: 80%;
+}
+
+.section-tr{
+	height:10px;	
+}
+.course-header-element{
+	width:100%;
+}
+
+
