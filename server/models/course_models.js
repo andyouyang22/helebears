@@ -56,13 +56,25 @@ var Sections = sequelize.define("Sections", {
   enrolled: Sequelize.INTEGER,
   waitlist: Sequelize.INTEGER,
   name_and_number: {
-    type: Sequelize.STRING,
-      primaryKey: true,
-      references: {
-      model: Courses,
-      key: 'name_and_number'
-   }
-  }
+      type: Sequelize.STRING,
+      primaryKey: true
+  },
+    professor_name: {
+        type: Sequelize.STRING,
+        primaryKey: true,
+        references: {
+            model: Professors,
+            key: 'professor_name'
+        }
+    },
+    department_name: {
+        type: Sequelize.STRING,
+        primaryKey: true,
+        references: {
+            model: Departments,
+            key: 'department_name'
+        }
+    }
 });
 
 
