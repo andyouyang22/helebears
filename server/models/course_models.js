@@ -64,8 +64,12 @@ var Sections = sequelize.define("Sections", {
   }
 })
 
-//Sections.sync()
-//Courses.sync()
+Sections.sync()
+Courses.sync()
+
+a = Sections.build({discussion:"003", type: "DIS", instructor: "ALex", ccn: 1000, time: "MW", location: "Soda", limit: 10, enrolled: 5, watlist: 2, name_and_number: "633C 11"})
+a.save()
+Sections.findAll().then(function(sects){console.log(sects)})
 
 var courseModel = {
     getName: function() {
