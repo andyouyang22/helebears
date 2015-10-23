@@ -80,7 +80,10 @@
 		</header>
 	</div>
 
+	<div class="pure-g space"></div>
+
 	<div class="pure-g main-body">
+
 		<div class="pure-u-1-2">
 			<div class="calendar">
 				<div class="calendar-axis-vertical">
@@ -245,8 +248,116 @@
 					<div class="calendar-slot"></div>
 				</div>
 			</div>
+
 		</div>
-		<div class="pure-u-1-2"></div>
+
+		<div class="pure-u-1-2">
+			<div class="results">
+				<div class="results-entry results-course">
+					<div class="course-name">Computer Science 168</div>
+					<div class="course-description">Internet Architecture and Protocol</div>
+					<div class="course-instructor">Scott Shenker</div>
+					<div class="course-time">TR 5-6:30PM</div>
+				</div>
+				<div class="results-entry results-sections" style="display:none">
+					<div class="results-sections-header">Discussions</div>
+					<div class="results-sections-col results-sections-monday">
+						<div class="results-sections-col-header">Mon</div>
+						<div class="results-section"></div>
+						<div class="results-section"></div>
+					</div>
+					<div class="results-sections-col results-sections-tuesday">
+						<div class="results-sections-col-header">Tues</div>
+					</div>
+					<div class="results-sections-col results-sections-wednesday">
+						<div class="results-sections-col-header">Wed</div>
+						<div class="results-section"></div>
+						<div class="results-section"></div>
+						<div class="results-section"></div>
+						<div class="results-section"></div>
+						<div class="results-section"></div>
+					</div>
+					<div class="results-sections-col results-sections-thursday">
+						<div class="results-sections-col-header">Thurs</div>
+						<div class="results-section"></div>
+					</div>
+					<div class="results-sections-col results-sections-friday">
+						<div class="results-sections-col-header">Fri</div>
+						<div class="results-section"></div>
+						<div class="results-section"></div>
+						<div class="results-section"></div>
+					</div>
+				</div>
+
+
+				<div class="pure-g results-page-holder" id="query-results-page">
+					<!-- Above is the html element that we show and hide when clicking the professor name on the Query results page. When we click back, we hide this element and show the other page -->
+
+					<div class='pure-u-1-1 all-class-results' id="query-results-container">
+						<!-- The all-user-reviews class holds all user reviews. This is the div that we insert all of the other user reviews into (class of single-review) -->
+
+						<div class="pure-g single-class">
+							<!-- A div oc class single-review is returned by the javascript. The data required to fill out a user review is supplied from the backend in JSON format -->
+
+						<div class="pure-u-1-5"></div>
+						<div class="pure-u-3-5 review review-user">
+							<div class="pure-g review-box">
+								<div class="pure-u-1-1">
+									<table class = "pure-table full-width header-table">
+										<tr class= "course-header-element">
+											<td class="stretch">Course_Name</td>
+											<td class="stretch">
+											<input class="pure-button professor-button query-button" type="submit" value="Prof">
+											</td>
+											<td class="stretch">CCN</td>
+											<td class="stretch">Lecture_time</td>
+											<!-- <td class="stretch">asdfasdf</td> -->
+										</tr>
+									</table>
+								</div>
+								<div class="pure-u-1-1 section-div">
+									<hr>
+									<table class = "pure-table full-width section-table">
+										<tr class = "section-tr">
+											<td class="section-td">REMOVE</td>
+											<td class="section-td">CCN</td>
+											<td class="section-td">Time</td>
+											<td class="section-td">enrolled</td>
+											<td class="section-td">limit</td>
+											<td class="section-td">
+											<input class="pure-button add-section query-button" type="submit" value="Add">
+											<input class="pure-button drop-lab query-button" style="display:none" type="submit" value="Drop">
+											</td>
+										</tr>
+									</table>
+								</div>
+
+								<div class="pure-u-1-1 lab-div">
+									<hr>
+									<table class = "pure-table full-width lab-table">
+										<tr class = "lab-tr">
+											<td class="lab-td">REMOVE</td>
+											<td class="lab-td">CCN</td>
+											<td class="lab-td">Time</td>
+											<td class="lab-td">enrolled</td>
+											<td class="lab-td">limit</td>
+											<td class="lab-td">
+												<input class="pure-button add-lab query-button" type="submit" value="Add">
+												<input class="pure-button drop-lab query-button" style ="display:none" type="submit" value="Drop">
+											</td>
+										</tr>
+									</table>
+								</div>
+
+							</div>
+						</div>
+						<div class="pure-u-1-5"></div>
+						</div>
+					</div>
+				</div>
+			</div>
+
+		</div>
 	</div>
 
 </body>

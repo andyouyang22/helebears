@@ -6,6 +6,7 @@ var Calendar = function() {
 
 	var courseColor = "#3399ff";
 
+	// Hard-coding the position of classes based on starting time
 	var courseTop = {
 		'8am'    : 33,
 		'830am'  : 50,
@@ -87,6 +88,10 @@ var Calendar = function() {
 	};
 
 	var start = function() {
+		$('.results-entry .course-name').on('click', function() {
+			$('.results-sections').slideToggle();
+		});
+
 		course = $('#template.calendar-course');
 		course.removeAttr('id');
 		template = course[0].outerHTML;

@@ -55,7 +55,6 @@ var Results = function() {
 		if(review.review.length > 2048)
 			error_list.push('review must be 2048 characters or less!');
 		return error_list;
-
 	}
 
 	var insertClass = function(cla){

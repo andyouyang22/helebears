@@ -1,6 +1,6 @@
 
 .main-body {
-	padding-top: 50px;
+	padding-right: 50px;
 }
 
 /* Schedule graphic */
@@ -8,8 +8,8 @@
 .calendar {
 	position: relative;
 	float: left;
-	margin: 50px;
-	margin-bottom: 0px;
+	margin-left: 50px;
+	margin-right: 50px;
 	height: 518px;
 	width: calc(100% - 100px);
 }
@@ -66,6 +66,7 @@
 }
 
 .calendar-course:hover {
+	cursor: pointer;
 	opacity: 0.6;
 }
 
@@ -80,4 +81,82 @@
 	margin-bottom: 3px;
 	color: #eeeeee;
 	font-size: 70%;
+}
+
+/* Results */
+
+.results {
+	height: 518px;
+	padding-left: 20px;
+	padding-right: 20px;
+	overflow-y: scroll;
+}
+
+.results-entry {
+	margin-top: 5px;
+	margin-bottom: 5px;
+	width: 100%;
+	padding: 12px;
+	border: 1px solid #eeeeee;
+	border-radius: 8px;
+}
+
+/* Results course entry */
+
+.results-course {
+	padding-top: 4px;
+	background-image: linear-gradient(#3399ff 30px, white 30px);
+	background-image: -o-linear-gradient(#3399ff 30px, white 30px);
+	background-image: -moz-linear-gradient(#3399ff 30px, white 30px);
+	background-image: -webkit-linear-gradient(#3399ff 30px, white 30px);
+	background-image: -ms-linear-gradient(#3399ff 30px, white 30px);
+}
+
+.results-course div {
+	font-size: 80%;
+}
+
+.results-course .course-name {
+	color: #eeeeee;
+	margin-bottom: 8px;
+	font-size: 100%;
+	font-family: 'Roboto Slab' serif;
+}
+
+.results-course .course-name:hover {
+	cursor: pointer;
+}
+
+/* Results sections list */
+
+.results-sections {
+	border: 1px solid #eeeeee;
+}
+
+.results-sections-header {
+	width: 100%;
+	border-bottom: 1px solid black;
+	margin-bottom: 5px;
+}
+
+.results-sections-col {
+	display: inline-block;
+	width: calc(100% / 5 - 15px);
+	border: 1px solid #eeeeee;
+}
+
+.results-sections-col-header {
+	font-size: 80%;
+}
+
+.results-section {
+	width: 90%;
+	float: left;
+	height: 30px;
+	border: 1px solid green;
+	border-radius: 3px;
+}
+
+.results-section:hover {
+	background-color: #eeeeee;
 }
