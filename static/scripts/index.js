@@ -105,7 +105,7 @@ var Home = function() {
 			alert(JSON.stringify(request) + ' Send get request here');
 			request = '?' + request;
 
-			
+
 			//onSuccess check status code. pass the json and insert dat ish. hide #home-page show #query-results-page
 			//makeGetRequest = function(url + request, onSuccess, onFailure)
 
@@ -179,15 +179,19 @@ var Home = function() {
 			console.error('could not get department list');
 			*/
 		};
-		//makeGetRequest(url_to_get_departments, onSuccess, onFailure);
-		//The bottom ones go away once we have ajax calls
+		// makeGetRequest(url_to_get_departments, onSuccess, onFailure);
+		// The bottom ones go away once we have ajax calls
 		insertDepartment('Computer Science');
 		insertDepartment('Astronomy');
 		insertDepartment('History');
 	};
 
-
 	var start = function() {
+		// Prevent HeleBears logo click event from re-directing
+		$('.pure-menu-link').on('click', function(e) {
+			e.preventDefault();
+		});
+
 		logIn = $('.log-in');
 		signUp = $('.sign-up');
 		departmentList = $('.department-input');
@@ -198,9 +202,10 @@ var Home = function() {
 		basicSearchHolder = $('.basic-search-form');
 		advSearchHolder = $('.advanced-search-form');
 
-		//convert to outerHTML, then use $(templateDepartment) to essentially create a new
-		//object to later attach. If you do not do outerHTML, it will not point your new var to
-		//a new object, and when you try to add it into the html, it does not add properly.
+		// convert to outerHTML, then use $(templateDepartment) to essentially
+		// create a new object to later attach. If you do not do outerHTML, it will
+		// not point your new var to a new object, and when you try to add it into
+		// the html, it does not add properly.
 		attachLogInHandler();
 		attachSignUpHandler();
 		attachAdvancedSearchHandler();

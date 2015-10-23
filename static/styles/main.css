@@ -38,10 +38,13 @@ body {
 	padding-bottom: 10px;
 }
 
-/* There's a little bit of an issue with the hover after one of the options has been selected */
 .pure-menu-link:hover {
 	cursor: pointer;
 	background-color: #00a653;
+}
+
+.pure-menu-link:focus {
+	background-color: inherit;
 }
 
 .pure-menu-heading {
