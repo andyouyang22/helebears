@@ -64,8 +64,8 @@ var Sections = sequelize.define("Sections", {
   }
 })
 
-Sections.sync()
-Courses.sync()
+//Sections.sync()
+//Courses.sync()
 
 var courseModel = {
     getName: function() {

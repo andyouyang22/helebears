@@ -6,8 +6,9 @@ var reviewsModel = reviews_models.reviewsModel;
 
 
 /* GET request for getting reviews of a specific professor */
-router.get('/', function(req, res, next) {
-
+router.get('/', function(req, res) {
+    var query_args = req.query;
+    reviewsModel.controller(res,query_args);
 });
 
 /* POST request for creating a review for a professor */

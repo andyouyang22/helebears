@@ -67,6 +67,8 @@ var professorsModel = {
 
 };
 
+//var p = Professors.build({professor_name: "Denero"})
+//p.save()
 // module.exports = reviewsModel;
 module.exports.Professors = Professors;
 
