@@ -10,6 +10,14 @@ var Home = function() {
 	var basicSearchHolder;
 	var advSearchHolder;
 
+	//FROM RESULTS.JS
+	var classSingle;
+	var all_lasses;
+	var classSingleTemplateHtml;
+	var sectionTableTemplateHtml;
+	var labTableTemplateHtml;
+
+
 	var makeGetRequest = function(url, onSuccess, onFailure) {
 	   $.ajax({
 		   type: 'GET',
@@ -122,18 +130,51 @@ var Home = function() {
 			request = request.replace(/:/g,'=');
 			request = request.replace(/,/g,'&');
 			request = request.replace(/ /g,'%20');
-			//alert(JSON.stringify(request) + ' Send get request here');
+			alert(JSON.stringify(request) + ' Send get request here');
 			request = request;
 			//alert('inside attach handler');
-			insertQueryResults('hi');
+
+		//DELETE ALL OF THIS WHEN BACKEND READY
+		var res = {};
+		res.results = [];
+		response = {};
+		response.course = 'course';
+		response.professor = 'prof';
+		response.CCN = '123123'
+		response.time = 'time'
+		var sections = [];
+		var s1= {};
+		var c1 = {};
+
+		s1.type = 'section'
+		s1.CCN = 'CCN'
+		s1.time = 'asdf'
+		s1.enrolled= 35;
+		s1.limit = 24;
+		sections.push(s1);
+
+		c1.type = 'lab'
+		c1.CCN = 'CCN'
+		c1.time = 'asdf'
+		c1.enrolled= 35;
+		c1.limit = 24;
+		sections.push(c1);
+		response.sections = sections;
+		res.results.push(response);
+		res.results.push(response);
+		insertQueryResults(res);
+		//DELETE ALL OF THIS WHEN BACKEND READY
 
 			var onSuccess = function(data){
 				//Take the returned list of classes and insert each one.
-				Res.insertQueryResults(data);
+				if(data.status == 1){
+					insertQueryResults(data);
+					$('#query-results-container').show();
+					$('#home-page').hide();
 
-				var len = data.results.length()
-				for(i=0; i < len; i++){
-					insertCourse(data.results[i].name);
+				};
+				if(data.status == -1){
+					alert('there was an error returned from server');
 				};
 			
 			};
@@ -141,13 +182,13 @@ var Home = function() {
 				console.error('could not get department list');
 			};
 
-		//makeGetRequest(/api/courses? + department_query, onSuccess, onFailure);
-		//the bottom ones go away once we have ajax calls
+		
+		//GO AWAY WHEN BACKEND CONNECTED
 		insertCourse('169');
 		insertCourse('249A');
 
 			//onSuccess check status code. pass the json and insert dat ish. hide #home-page show #query-results-page
-			//makeGetRequest = function(url? + request, onSuccess, onFailure)
+			//makeGetRequest(/api/courses? + request + department_query, onSuccess, onFailure);
 
 		});
 
@@ -223,7 +264,7 @@ var Home = function() {
 		// makeGetRequest('/api/departments, onSuccess, onFailure);
 		// The bottom ones go away once we have ajax calls
 		
-		
+		//GET RID OF THIS WHEN READY FOR BACKEND
 		insertDepartment('Computer Science');
 		insertDepartment('Astronomy');
 		insertDepartment('History');
@@ -231,13 +272,25 @@ var Home = function() {
 	};
 
 	var start = function() {
+
+		//FROM ORIGINAL INDEX.HTML
 		departmentList = $('.department-input');
 		templateDepartment = $('.department-input .department-option')[0].outerHTML;
-
 		courseList = $('.course-input');
 		templateCourse = $('.course-input .course-option')[0].outerHTML;
 		basicSearchHolder = $('.basic-search-form');
 		advSearchHolder = $('.advanced-search-form');
+
+		//FROM ORIGINAL RESULTS.JS HTML
+		classSingle = $('.single-class');
+		all_classes = $('.all-class-results');
+		classSingleTemplateHtml = $(".all-class-results .single-class")[0].outerHTML;
+		sectionTableTemplateHtml = $(".section-div")[0].outerHTML;
+		labTableTemplateHtml = $(".lab-div")[0].outerHTML;
+		all_classes.html('');
+
+
+
 
 		// convert to outerHTML, then use $(templateDepartment) to essentially
 		// create a new object to later attach. If you do not do outerHTML, it will
@@ -247,6 +300,8 @@ var Home = function() {
 		attachCourseListHandler();
 		attachSubmitSearchHandler();
 		insertDepartmentList();
+
+
 	};
 
 	return {
