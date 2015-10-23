@@ -2,7 +2,6 @@
  * Created by nirshtern on 10/21/15.
  */
 
-var classModel = require("./class_models");
 var sequelize_modules = require("./init");
 var departments_models = require("./departments_model")
 var professors_model = require("./professors_model")
@@ -46,6 +45,27 @@ var Courses = sequelize.define('Courses', {
   note: Sequelize.STRING
 })
 
+var Sections = sequelize.define("Sections", {
+  discussion: {type: Sequelize.STRING, primaryKey: true},
+  type: {type: Sequelize.STRING, primaryKey: true},
+  instructor: Sequelize.STRING,
+  ccn: Sequelize.INTEGER,
+  time: Sequelize.STRING,
+  location: Sequelize.STRING,
+  limit: Sequelize.INTEGER,
+  enrolled: Sequelize.INTEGER,
+  waitlist: Sequelize.INTEGER,
+  name_and_number: {
+    type: Sequelize.STRING,
+    references: {
+      model: Courses,
+      key: 'name_and_number',
+   }
+  }
+})
+
+Sections.sync()
+Courses.sync()
 
 var courseModel = {
     getName: function() {

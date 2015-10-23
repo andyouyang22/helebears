@@ -19,6 +19,7 @@ var Schedules = sequelize.define("Schedules", {
    }
   }
 })
+Schedules.sync()
 
 var scheduleModel = {
     getName: function() {
