@@ -5,7 +5,7 @@ var departments_models = require("../models/departments_model")
 var departmentModel = departments_models.departmentModel
 /* GET request for departments */
 router.get('/', function(req, res, next) {
-	departmentModel.postprocess(res)
+	departmentModel.controller(res)
 });
 
 module.exports = router;

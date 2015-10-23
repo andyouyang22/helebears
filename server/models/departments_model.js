@@ -52,7 +52,7 @@ var departmentModel = {
     controller: function(res) {
         // The controller is responsible to navigate between preprocess, process and postprocess and provide
         // the answer to the client the required format.
-        postprocess(res)
+        departmentModel.postprocess(res)
     }
 
 };

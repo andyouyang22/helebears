@@ -98,29 +98,28 @@ var courseModel = {
 
     },
 
-    postprocess: function(inputJSON) {
-
+    postprocess: function(res, filter) {
+      Courses.findAll({where:filter}).then(
+                function(courses){
+                    var results = []
+                    for(var i = 0; i < courses.length; i++){
+                        results.push(courses[i].dataValues)
+                    }
+                    res.json({status:1, "results":results})
+                }).error(function(err) {
+                    res.json({status:-1, errors:["Unable to correctly retreive all courses"]})
+                })
     },
-    controller: function(inputJSON) {
+    controller: function(res, filter) {
         // The controller is responsible to navigate between preprocess, process and postprocess and provide
         // the answer to the client the required format.
+        courseModel.postprocess(res, filter)
 
-        var preprocessedJSON = courseModel.preprocess(inputJSON);
-        if (preprocessedJSON.status == constants.STATUS_ERROR ) {
-
-        }
-        var processedJSON = sequelizeProcess(preprocessedJSON);
-        if (processedJSON == constants.STATUS_ERROR) {
-
-        }
-        var postprocessedJSON = courseModel.postprocess(processedJSON);
-        if (postprocessedJSON.status == constants.STATUS_ERROR) {
-
-        }
+        
     }
 
 };
 
 
 module.exports.Courses = Courses;
-
+module.exports.courseModel = courseModel
