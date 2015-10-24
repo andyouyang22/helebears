@@ -160,6 +160,10 @@ var Home = function() {
 			$('#user-reviews-page').show();
 			$('#home-page').hide();
 
+			query_results_page.hide();
+			user_reviews_page.show();
+			home_page.hide();
+
 			if(data.status == 1){
 
 				var leng = data.results.length();
@@ -313,7 +317,6 @@ var Home = function() {
 		insertQueryResults(res);
 		course_header = $('.course-header-element');
 		attachLoadProfessorReviewsHandler();
-
 		//DELETE ALL OF THIS ABOVE WHEN BACKEND READY
 
 			var onSuccess = function(data){
@@ -323,8 +326,11 @@ var Home = function() {
 					insertQueryResults(data);
 					course_header = $('.course-header-element');
 					attachLoadProfessorReviewsHandler();
-					$('#query-results-container').show();
-					$('#home-page').hide();
+					//$('#query-results-container').show();
+					//$('#home-page').hide();
+					query_results_page.show();
+					user_reviews_page.hide();
+					home_page.hide();
 
 				};
 				if(data.status == -1){
@@ -516,6 +522,8 @@ var Home = function() {
 		query_results_page.hide();
 		user_reviews_page.hide();
 		home_page.show();
+
+
 
 	};
 
