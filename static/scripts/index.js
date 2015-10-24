@@ -520,7 +520,15 @@ var Home = function() {
 		});
 	};
 
-
+	var attachCancelHandler = function() {
+		button = $('#cancel-review');
+		button.on('click', function(e) {
+			e.preventDefault();
+			user_reviews_page.slideUp();
+			home_page.slideUp();
+			query_results_page.slideDown();
+		});
+	};
 
 
 	var start = function() {
@@ -533,10 +541,8 @@ var Home = function() {
 		basicSearchHolder = $('.basic-search-form');
 		advSearchHolder = $('.advanced-search-form');
 
-
 		//ADDED BUT WOULD BE ON RESULTS.JS
 		course_header = $('.course-header-element');
-
 
 		//FROM ORIGINAL RESULTS.JS
 		classSingle = $('.single-class');
@@ -574,6 +580,8 @@ var Home = function() {
 		query_results_page.hide();
 		user_reviews_page.hide();
 		home_page.show();
+
+		attachCancelHandler();
 
 		//remove everything below this when ready
 		/*
