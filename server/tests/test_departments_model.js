@@ -56,7 +56,7 @@ describe('============== Departments ==============', function() {
   		done()
   	})
     it('Test Adding Department and Deleting it', function(done){
-      Departments.create({department_name: "*!!!!!"}).then(function(result){
+      Departments.create({department_name: "**!!!!!"}).then(function(result){
         result.destroy().then(function(){
           done()
         }).error(function(exx){
@@ -69,8 +69,8 @@ describe('============== Departments ==============', function() {
       })
     })
     it('Test Adding Two Departments with Same Name', function(done){
-      Departments.create({department_name: "*!!!!!"}).then(function(result){
-        Departments.create({department_name: "*!!!!!"}).then(function(result){
+      Departments.create({department_name: "**!!!!!"}).then(function(result){
+        Departments.create({department_name: "**!!!!!"}).then(function(result){
           throw "Two professors should not have the same name"
           done()}
         ).error(function(exx){

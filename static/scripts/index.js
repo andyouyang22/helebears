@@ -20,18 +20,21 @@ var Home = function() {
 	//FOR RESULTS.JS
 	var course_header;
 
-
+	//FOR REVIEWS.JS
 	var user_input;
 	var overallReview;
 	var user_reviews;
 	var userReviewTemplateHtml;
 
+	var query_results_page;
+	var user_reviews_page;
+	var home_page;
 
 
 	var makeGetRequest = function(url, onSuccess, onFailure) {
 	   $.ajax({
 		   type: 'GET',
-		   url: apiUrl + url,
+		   url: url,
 		   dataType: "json",
 		   success: onSuccess,
 		   error: onFailure
@@ -143,19 +146,38 @@ var Home = function() {
 		var ratings_dict = {};
 
 		//REMOVE BELOW WHEN READY FOR AJAX
+
+		/*
 		ratings_dict.professor = professor_name;
 		ratings_dict.overall_rating_1 = 10;
 		ratings_dict.overall_rating_2 = 10;
 		ratings_dict.overall_rating_3 = 10;
+		*/
 		//REMOVE ABOVE WHEN READY FOR AJAX
 		insertRatingsOverall(ratings_dict);
 	};
+	//REMOVE?
 
 	var insertProfessorUserRatings = function(professor_name){
 		var onSuccess = function(data){
 			$('#query-results-container').hide();
 			$('#user-reviews-page').show();
 			$('#home-page').hide();
+
+			var ratings_dict = {};
+
+			//REMOVE BELOW WHEN READY FOR AJAX
+			ratings_dict.professor = professor_name;
+			ratings_dict.overall_rating_1 = 10;
+			ratings_dict.overall_rating_2 = 10;
+			ratings_dict.overall_rating_3 = 10;
+			//REMOVE ABOVE WHEN READY FOR AJAX
+			insertRatingsOverall(ratings_dict);
+
+
+			query_results_page.hide();
+			user_reviews_page.show();
+			home_page.hide();
 
 			if(data.status == 1){
 
@@ -174,6 +196,7 @@ var Home = function() {
 		};
 
 		//DELETE BELOW WHEN READY FOR AJAX
+		/*
 		user_review = {};
 		user_review.id = 123;
 		user_review.time = 'Jan 15th, 2015';
@@ -184,9 +207,10 @@ var Home = function() {
 		user_review.review = 'a user review inputted through javascript (send the function 2ce)!';
 		insertUserRating(user_review);
 		insertUserRating(user_review);
+		*/
 		//DELETE ABOVE WHEN READY FOR AJAX
 		//makeGetRequest(/api/overallreviews?professor = professor_name, onSuccess, onFailure);
-		//makeGetRequest(/api/reviews?professor = professor_name, onSuccess, onFailure);
+		makeGetRequest('/api/reviews?professor_name=' + professor_name, onSuccess, onFailure);
 
 	};
 
@@ -197,7 +221,7 @@ var Home = function() {
 			e.preventDefault();
 			var prof_name = $(this).attr('value');
 			user_reviews.html('');
-			insertProfessorOverallRatings(prof_name);
+			//insertProfessorOverallRatings(prof_name);
 			insertProfessorUserRatings(prof_name);
 			//INSERT OVERALL RATINGS
 			//INSERT USER RATINGS
@@ -208,11 +232,12 @@ var Home = function() {
 	var insertClass = function(cla){
 		var i;
 		var newElem = $(classSingleTemplateHtml);
-		newElem.find('.header-table').find('td')[0].innerHTML = cla.course;
-		newElem.find('.header-table').find('td').find('input').attr('value',cla.professor);
-		newElem.find('.header-table').find('td')[2].innerHTML = cla.CCN;
+		newElem.find('.header-table').find('td')[0].innerHTML = cla.name_and_number;
+		newElem.find('.header-table').find('td').find('input').attr('value',cla.professor_name);
+		newElem.find('.header-table').find('td')[2].innerHTML = cla.ccn;
 		newElem.find('.header-table').find('td')[3].innerHTML = cla.time;
 
+		/*
 		var section_list = cla.sections;
 
 		for(i = 0; i < section_list.length; i++){
@@ -236,6 +261,8 @@ var Home = function() {
 			newElem.find('.lab-div').remove();
 		if (newElem.find('.section-table').find('td')[0].innerHTML == 'REMOVE')
 			newElem.find('.section-div').remove();
+		*/
+
 		all_classes.append(newElem);
 	};
 
@@ -256,7 +283,7 @@ var Home = function() {
 			var classDays = ['M','T','W','R','F','S'];
 			var dayList = advSearchHolder.find('.days');
 			var classDaysChecked = '';
-			request.department = basicSearchHolder.find('.department-input').val();
+			request.department_name = basicSearchHolder.find('.department-input').val();
 			request.courseID = basicSearchHolder.find('.course-input').val();
 			request.classStartTime = advSearchHolder.find('.start-time').val();
 			request.classEndTime = advSearchHolder.find('.end-time').val();
@@ -279,6 +306,7 @@ var Home = function() {
 			//alert('inside attach handler');
 
 		//DELETE ALL OF THIS WHEN BACKEND READY
+		/*
 		all_classes.html('');
 		var res = {};
 		res.results = [];
@@ -310,7 +338,7 @@ var Home = function() {
 		insertQueryResults(res);
 		course_header = $('.course-header-element');
 		attachLoadProfessorReviewsHandler();
-
+		*/
 		//DELETE ALL OF THIS ABOVE WHEN BACKEND READY
 
 			var onSuccess = function(data){
@@ -320,8 +348,11 @@ var Home = function() {
 					insertQueryResults(data);
 					course_header = $('.course-header-element');
 					attachLoadProfessorReviewsHandler();
-					$('#query-results-container').show();
-					$('#home-page').hide();
+					//$('#query-results-container').show();
+					//$('#home-page').hide();
+					query_results_page.show();
+					user_reviews_page.hide();
+					home_page.hide();
 
 				};
 				if(data.status == -1){
@@ -334,12 +365,15 @@ var Home = function() {
 			};
 
 		
-		//GO AWAY WHEN BACKEND CONNECTED
+		//DELETE BELOW WHEN READY FOR AJAX
+		/*
 		insertCourse('169');
 		insertCourse('249A');
+		*/
+		//DELETE ABOVE WHEN READY FOR AJAX
 
 			//onSuccess check status code. pass the json and insert dat ish. hide #home-page show #query-results-page
-			//makeGetRequest(/api/courses? + request + department_query, onSuccess, onFailure);
+			makeGetRequest('/api/courses?' + request, onSuccess, onFailure);
 
 		});
 
@@ -371,10 +405,14 @@ var Home = function() {
 			console.error('could not get department list');
 		};
 
-		//makeGetRequest(/api/courses?department=department_query, onSuccess, onFailure);
+		makeGetRequest('/api/courses?department_name=' + department_query, onSuccess, onFailure);
 		//the bottom ones go away once we have ajax calls
+		/*
+		//DELETE BELOW WHEN READY FOR AJAX
 		insertCourse('169');
 		insertCourse('249A');
+		//DELETE ABOVE WHEN READY FOR AJAX
+		*/
 	};
 
 	var attachCourseListHandler = function(){
@@ -412,14 +450,17 @@ var Home = function() {
 		var onFailure = function(){
 			console.error('could not get department list');
 		};
-		// makeGetRequest('/api/departments, onSuccess, onFailure);
+		makeGetRequest('/api/department', onSuccess, onFailure);
 		// The bottom ones go away once we have ajax calls
 		
-		//GET RID OF THIS WHEN READY FOR BACKEND
+
+		//DELETE BELOW WHEN READY FOR AJAX
+		/*
 		insertDepartment('Computer Science');
 		insertDepartment('Astronomy');
 		insertDepartment('History');
-		
+		*/
+		//DELETE ABOVE WHEN READY FOR AJAX
 	};
 
 	var attachUserInputHandler = function(){
@@ -494,6 +535,9 @@ var Home = function() {
 		userReviewTemplateHtml = $(".all-user-reviews .single-review")[0].outerHTML;
 		user_reviews.html('');
 
+		query_results_page = $('#query-results-container');
+		user_reviews_page = $('#user-reviews-page');
+		home_page = $('#home-page');
 
 
 
@@ -506,6 +550,11 @@ var Home = function() {
 		attachSubmitSearchHandler();
 		attachLoadProfessorReviewsHandler();
 		insertDepartmentList();
+
+		query_results_page.hide();
+		user_reviews_page.hide();
+		home_page.show();
+
 
 
 	};
