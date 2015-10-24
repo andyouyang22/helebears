@@ -57,9 +57,9 @@ var Home = function() {
 
 	var check_post_request = function(review){
 		var error_list = [];
-		if(review.professor.length == 0)
+		if(review.professor_name.length == 0)
 			error_list.push('Professor is empty!');
-		if(review.professor.length > 64)
+		if(review.professor_name.length > 64)
 			error_list.push('Professor name must be 64 characters or less!');
 		if((review.rating_1 < 1)||(review.rating_1 > 10))
 			error_list.push('rating_1 must be between 1 and 10!');
@@ -472,7 +472,7 @@ var Home = function() {
 			e.preventDefault (); // Tell the browser to skip its default click action
 			//var smile = {}; // Prepare the smile object to send to the server
 			var review = {};
-			review.professor = name_of_professor;
+			review.professor_name = name_of_professor;
 			review.review = user_input.find('.rating-input-text').val();
 			review.rating_1 = user_input.find('.rating-input-1').val();
 			review.rating_2 = user_input.find('.rating-input-2').val();
