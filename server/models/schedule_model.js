@@ -40,6 +40,3 @@ var scheduleModel = {
     }
 
 };
-
-// module.exports = scheduleModel;
-

@@ -57,6 +57,3 @@ var usersModel = {
     }
 
 };
-
-// module.exports = usersModel;
-

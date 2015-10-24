@@ -123,33 +123,6 @@ var reviewsModel = {
 }
 
 
-//var r = Reviews.build({rating_1:9, rating_2:10, rating_3:9, review:"This Professor... overall good experience", professor_name: "Necula"})
-//r.save()
-//
-//var r = Reviews.build({rating_1:7, rating_2:7, rating_3:8, review:"I like the way he explains...great lectures. ", professor_name: "Kashi"})
-//r.save()
-//var r = Reviews.build({rating_1:10, rating_2:9, rating_3:4, review:"Great presentation.", professor_name: "Alex"})
-//r.save()
-//var r = Reviews.build({rating_1:7, rating_2:8, rating_3:9, review:"", professor_name: "Jay"})
-//r.save()
-//var r = Reviews.build({rating_1:5, rating_2:7, rating_3:7, review:"Not every Professor gets a review from me...", professor_name: "Ben-David"})
-//r.save()
-//var r = Reviews.build({rating_1:8, rating_2:8, rating_3:8, review:"I hope you'll read this review.. it will help you decide about the class", professor_name: "Ben-David"})
-//r.save()
-//var r = Reviews.build({rating_1:7, rating_2:7, rating_3:5, review:"Awesome", professor_name: "Garcia"})
-//r.save()
-//var r = Reviews.build({rating_1:10, rating_2:7, rating_3:8, review:"Perfect", professor_name: "Garcia"})
-//r.save()
-//var r = Reviews.build({rating_1:5, rating_2:3, rating_3:9, review:"Terrible", professor_name: "Garcia"})
-//r.save()
-//var r = Reviews.build({rating_1:8, rating_2:6, rating_3:9, review:"ahhh..I'm not sure what to say", professor_name: "Benjamin Jones"})
-//r.save()
-//var r = Reviews.build({rating_1:10, rating_2:10, rating_3:10, review:"Should retire already...", professor_name: "Lenovo"})
-//r.save()
-//var r = Reviews.build({rating_1:4, rating_2:5, rating_3:6, review:"I like the topic, but...", professor_name: "McDavid"})
-//r.save()
-
-
 module.exports.Reviews = Reviews;
 module.exports.reviewsModel = reviewsModel;
 
