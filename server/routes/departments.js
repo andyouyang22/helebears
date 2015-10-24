@@ -9,4 +9,5 @@ router.get('/', function(req, res) {
 	departmentModel.controller(query_args,'get',res)
 });
 
+
 module.exports = router;

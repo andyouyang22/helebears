@@ -97,8 +97,9 @@ var Home = function() {
 	var insertUserRating = function(user_review){
 		var newElem = $(userReviewTemplateHtml);
 		newElem.attr('id',user_review.id);
-		newElem.find('.time').text(user_review.time);
-		newElem.find('.user-name').text(user_review.name);
+		newElem.find('.time').text(user_review.createdAt);
+		//newElem.find('.user-name').text(user_review.name);
+		newElem.find('.user-name').text('Username');
 		newElem.find('.row-1').find('td')[1].innerHTML = user_review.rating_1;
 		newElem.find('.row-2').find('td')[1].innerHTML = user_review.rating_2;
 		newElem.find('.row-3').find('td')[1].innerHTML = user_review.rating_3;
@@ -129,6 +130,7 @@ var Home = function() {
 
 	};
 
+	//REMOVE?
 	var insertProfessorOverallRatings = function(professor_name){
 		var onSuccess = function(data){
 			//Return dictionary of {professor: prof_name, rating_1: value, rating_2: value, etc}
@@ -151,13 +153,26 @@ var Home = function() {
 
 	var insertProfessorUserRatings = function(professor_name){
 		var onSuccess = function(data){
-			
-			for user_review in data:
-				insertUserRating(user_review);
+			$('#query-results-container').hide();
+			$('#user-reviews-page').show();
+			$('#home-page').hide();
+
+			if(data.status == 1){
+
+				var leng = data.results.length();
+				var m;
+				for(m=0; m < leng; m++){
+					insertUserRating(data.results[m]);
+				};
+			if(data.status == -1){
+				alert("error returned from the server");
+			};
 		};
+	};
 		var onFailure = function(){
 			console.error('could not retrieve user ratings');
 		};
+
 		//DELETE BELOW WHEN READY FOR AJAX
 		user_review = {};
 		user_review.id = 123;
