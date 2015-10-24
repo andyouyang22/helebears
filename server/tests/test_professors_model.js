@@ -55,8 +55,8 @@ describe('============== Professors ==============', function() {
   		professorsModel.controller({}, res)
   		done()
   	})
-  	it('Test Adding Professor and Filtering by it', function(done){
-  		Professors.create({professor_name: "!!!!!"}).then(function(result){
+  	it('Test Adding Professor and Deleting it', function(done){
+  		Professors.create({professor_name: "*!!!!!"}).then(function(result){
   			result.destroy().then(function(){
   				done()
   			}).error(function(exx){
@@ -68,5 +68,25 @@ describe('============== Professors ==============', function() {
   			done()
   		})
   	})
+  	it('Test Adding Two Professors with Same Name', function(done){
+  		Professors.create({professor_name: "*!!!!!"}).then(function(result){
+  			Professors.create({professor_name: "*!!!!!"}).then(function(result){
+  				throw "Two professors should not have the same name"
+  				done()}
+  			).error(function(exx){
+  				result.destroy().then(function(){
+  					done()
+	  			}).error(function(exx){
+	  				throw exx
+	  				done()
+	  			})
+  			})
+  			
+  		}).error(function(exx){
+  			throw exx
+  			done()
+  		})
+  	})
+
 
 });
