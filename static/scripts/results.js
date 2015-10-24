@@ -93,9 +93,9 @@ var Results = function() {
 	var insertQueryResults = function(response){
 		var j;
 		for(j = 0; j < response.results.length; j++){
-				console.log(j);
-				insertClass(response.results[j]);
-			};
+			console.log(j);
+			insertClass(response.results[j]);
+		};
 	};
 
 	var start = function() {
