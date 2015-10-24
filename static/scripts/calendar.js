@@ -48,6 +48,28 @@ var Calendar = function() {
 		'f' : '.calendar-friday',
 	};
 
+	var makeGetRequest = function(url, onSuccess, onFailure) {
+	   $.ajax({
+		   type: 'GET',
+		   url: apiUrl + url,
+		   dataType: "json",
+		   success: onSuccess,
+		   error: onFailure
+	   });
+   };
+
+	var makePostRequest = function(url, data, onSuccess, onFailure) {
+		$.ajax({
+			type: 'POST',
+			url: url,
+			data: JSON.stringify(data),
+			contentType: "application/json",
+			dataType: "json",
+			success: onSuccess,
+			error: onFailure
+		});
+	};
+
 	/**
 	 * Adds the course with the given information to the calendar.
 	 * @param {Object} c dictionary containing the following information:
@@ -110,11 +132,20 @@ var Calendar = function() {
 		result.slideDown();
 	}
 
+	/**
+	 * Remove the course with the specified CCN from the calendar, as well as its
+	 * associated sections list.
+	 * @param {string} ccn
+	 */
 	var removeCourseFromResults = function(ccn) {
 		ccn = ".results-course.ccn-" + ccn;
+		next = $(ccn).next('.results-sections');
+		next.slideUp(function() {
+			next.remove();
+		});
 		$(ccn).slideUp(function() {
 			$(ccn).remove();
-		})
+		});
 	};
 
 	var attachSectionsHandler = function(ccn) {
@@ -127,6 +158,8 @@ var Calendar = function() {
 	};
 
 	var start = function() {
+		attachSectionsHandler("26601")
+
 		course = $('.template.calendar-course');
 		course.removeClass('template');
 		calendarCourseTemplate = course[0].outerHTML;
