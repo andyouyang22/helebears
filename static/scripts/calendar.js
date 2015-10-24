@@ -2,7 +2,7 @@
 var Calendar = function() {
 
 	// HTML template for inserting courses into the calendar
-	var template;
+	var calendarCourseTemplate;
 
 	var courseColor = "#3399ff";
 
@@ -48,6 +48,28 @@ var Calendar = function() {
 		'f' : '.calendar-friday',
 	};
 
+	var makeGetRequest = function(url, onSuccess, onFailure) {
+	   $.ajax({
+		   type: 'GET',
+		   url: apiUrl + url,
+		   dataType: "json",
+		   success: onSuccess,
+		   error: onFailure
+	   });
+   };
+
+	var makePostRequest = function(url, data, onSuccess, onFailure) {
+		$.ajax({
+			type: 'POST',
+			url: url,
+			data: JSON.stringify(data),
+			contentType: "application/json",
+			dataType: "json",
+			success: onSuccess,
+			error: onFailure
+		});
+	};
+
 	/**
 	 * Adds the course with the given information to the calendar.
 	 * @param {Object} c dictionary containing the following information:
@@ -59,14 +81,15 @@ var Calendar = function() {
 	 *   {string} ccn
 	 */
 	var addCourseToCalendar = function(c) {
-		var course = $(template);
+		var course = $(calendarCourseTemplate);
 		course.addClass("ccn-" + c.ccn);
+		course.find('.course-name').text(c.name);
+		course.find('.course-location').text(c.location);
+
 		course.css({
 			'top'    : courseTop[c.start],
 			'height' : courseHeight[c.length + ""],
 		});
-		course.find('.course-name').text(c.name);
-		course.find('.course-location').text(c.location);
 
 		var courses = courseDay[c.day] + " .calendar-col-courses";
 		$(courses).append(course);
@@ -84,7 +107,45 @@ var Calendar = function() {
 		$(ccn).slideUp(function() {
 			$(ccn).remove();
 		});
-		return ccn
+	};
+
+	/**
+	 * Adds the course with the given information to the results body.
+	 * @param {Object} c dictionary containing the following information:
+	 *   {string} name (e.g. Computer Science 169)
+	 *   {string} description (e.g. Software Engineering)
+	 *   {string} location
+	 *   {string} days (e.g. MWF)
+	 *   {string} time (e.g. 12:30-2PM)
+	 *   {string} ccn
+	 */
+	var addCourseToResults = function(c) {
+		var result = $(resultsCourseTemplate);
+		result.addClass("ccn-" + c.ccn);
+		result.find('.course-name').text(c.name);
+		result.find('.course-description').text(c.description);
+		result.find('.course-instructor').text(c.instructor);
+		time = c.days + " " + c.time;
+		result.find('.course-time').text(time);
+
+		$('.results').prepend(result);
+		result.slideDown();
+	}
+
+	/**
+	 * Remove the course with the specified CCN from the calendar, as well as its
+	 * associated sections list.
+	 * @param {string} ccn
+	 */
+	var removeCourseFromResults = function(ccn) {
+		ccn = ".results-course.ccn-" + ccn;
+		next = $(ccn).next('.results-sections');
+		next.slideUp(function() {
+			next.remove();
+		});
+		$(ccn).slideUp(function() {
+			$(ccn).remove();
+		});
 	};
 
 	var attachSectionsHandler = function(ccn) {
@@ -97,14 +158,22 @@ var Calendar = function() {
 	};
 
 	var start = function() {
-		course = $('#template.calendar-course');
-		course.removeAttr('id');
-		template = course[0].outerHTML;
+		attachSectionsHandler("26601")
+
+		course = $('.template.calendar-course');
+		course.removeClass('template');
+		calendarCourseTemplate = course[0].outerHTML;
+
+		result = $('.template.results-course');
+		course.removeClass('template');
+		resultsCourseTemplate = result[0].outerHTML;
 	};
 
 	return {
-		start        : start,
-		addCourse    : addCourse,
-		removeCourse : removeCourse,
+		start                    : start,
+		addCourseToCalendar      : addCourseToCalendar,
+		removeCourseFromCalendar : removeCourseFromCalendar,
+		addCourseToResults       : addCourseToResults,
+		removeCourseFromResults  : removeCourseFromResults,
 	};
 }();

@@ -3,6 +3,10 @@
 	padding-right: 50px;
 }
 
+.template {
+	display: none;
+}
+
 /* Schedule graphic */
 
 .calendar {
