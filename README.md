@@ -3,6 +3,7 @@
 This is the main repository for the HeleBears project of Computer Science 169, Fall 2015.
 
 How to run:
+
 Enter the server folder.
 Once there, run the server using the following command:
 
