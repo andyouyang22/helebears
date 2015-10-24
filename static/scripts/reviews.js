@@ -50,19 +50,6 @@ var Reviews = function() {
 			error_list.push('review must be 2048 characters or less!');
 		return error_list;
 
-	}
-
-	var insertRatingsOverall = function(ratings_dict){
-		name_of_professor = ratings_dict.professor; //Store the name of the professor locally.
-		// This is used so that when we call a post request to post a review, we do
-		// not have to call overallReview.find('.professor-name').html() to do
-		// retreive the name.
-		overallReview.find('.professor-name').html(ratings_dict.professor);
-		var ratings_table = overallReview.find('.review-values')[0];
-		ratings_table.rows[0].cells[1].innerHTML = ratings_dict.overall_rating_1
-		ratings_table.rows[1].cells[1].innerHTML = ratings_dict.overall_rating_2;
-		ratings_table.rows[2].cells[1].innerHTML = ratings_dict.overall_rating_3;
-
 	};
 
 	var insertUserRating = function(user_review){
@@ -78,6 +65,19 @@ var Reviews = function() {
 
 	};
 
+	var insertRatingsOverall = function(ratings_dict){
+		name_of_professor = ratings_dict.professor; //Store the name of the professor locally.
+		// This is used so that when we call a post request to post a review, we do
+		// not have to call overallReview.find('.professor-name').html() to do
+		// retreive the name.
+		overallReview.find('.professor-name').html(ratings_dict.professor);
+		var ratings_table = overallReview.find('.review-values')[0];
+		ratings_table.rows[0].cells[1].innerHTML = ratings_dict.overall_rating_1
+		ratings_table.rows[1].cells[1].innerHTML = ratings_dict.overall_rating_2;
+		ratings_table.rows[2].cells[1].innerHTML = ratings_dict.overall_rating_3;
+
+	};
+
 	var insertProfessorOverallRatings = function(professor_name){
 		var onSuccess = function(data){
 			//Return dictionary of {professor: prof_name, rating_1: value, rating_2: value, etc}
@@ -88,10 +88,13 @@ var Reviews = function() {
 		};
 		//makeGetRequest(url_to_get_professor's ratings, onSuccess, onFailure);
 		var ratings_dict = {};
+
+		//REMOVE BELOW WHEN READY FOR AJAX
 		ratings_dict.professor = professor_name;
 		ratings_dict.overall_rating_1 = 8;
 		ratings_dict.overall_rating_2 = 9;
 		ratings_dict.overall_rating_3 = 10;
+		//REMOVE ABOVE WHEN READY FOR AJAX
 		insertRatingsOverall(ratings_dict);
 	};
 
