@@ -102,9 +102,10 @@ var Home = function() {
 	var insertUserRating = function(user_review){
 		var newElem = $(userReviewTemplateHtml);
 		newElem.attr('id',user_review.id);
-		newElem.find('.time').text(user_review.createdAt);
+		var tempDate = new Date(user_review.createdAt);
+		newElem.find('.time').text(tempDate.toDateString());
 		//newElem.find('.user-name').text(user_review.name);
-		newElem.find('.user-name').text('Username');
+		newElem.find('.user-name').text('User Review');
 		newElem.find('.row-1').find('td')[1].innerHTML = user_review.rating_1;
 		newElem.find('.row-2').find('td')[1].innerHTML = user_review.rating_2;
 		newElem.find('.row-3').find('td')[1].innerHTML = user_review.rating_3;
