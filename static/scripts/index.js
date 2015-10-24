@@ -30,8 +30,8 @@ var Home = function() {
 	var user_reviews_page;
 	var home_page;
 	var helebears_button;
-	var bigUrl = 'https://protected-refuge-7067.herokuapp.com';
-
+	//var bigUrl = 'https://protected-refuge-7067.herokuapp.com';
+	var bigUrl = '';
 
 	var makeGetRequest = function(url, onSuccess, onFailure) {
 	   $.ajax({
@@ -189,7 +189,8 @@ var Home = function() {
 					insertUserRating(data.results[m]);
 				};
 			if(data.status == -1){
-				alert("error returned from the server");
+				//alert("error returned from the server");
+				console.error('error returned from the server');
 			};
 		};
 	};
@@ -234,32 +235,31 @@ var Home = function() {
 	var insertClass = function(cla){
 		var i;
 		var newElem = $(classSingleTemplateHtml);
-		newElem.find('.header-table').find('td')[0].innerHTML = cla.name_and_number;
+		newElem.find('.header-table').find('td')[0].innerHTML = cla.department_name + ': ' + cla.name_and_number;
 		newElem.find('.header-table').find('td').find('input').attr('value',cla.professor_name);
-		newElem.find('.header-table').find('td')[2].innerHTML = cla.ccn;
+		newElem.find('.header-table').find('td')[2].innerHTML = 'CCN: '+ cla.ccn;
 		newElem.find('.header-table').find('td')[3].innerHTML = cla.time;
 
-		/*
+
 		var section_list = cla.sections;
 
 		for(i = 0; i < section_list.length; i++){
 			var newSectionLab = section_list[i];
-			if(newSectionLab.type == 'section'){
+			if(newSectionLab.type == 'Discussion'){
 				newElem.find('.section-table').find('td')[0].innerHTML = newSectionLab.type;
-				newElem.find('.section-table').find('td')[1].innerHTML = newSectionLab.CCN;
+				newElem.find('.section-table').find('td')[1].innerHTML = newSectionLab.ccn;
 				newElem.find('.section-table').find('td')[2].innerHTML = newSectionLab.time;
-				newElem.find('.section-table').find('td')[3].innerHTML = newSectionLab.enrolled;
+				newElem.find('.section-table').find('td')[3].innerHTML = newSectionLab.instructor;
 				newElem.find('.section-table').find('td')[4].innerHTML = newSectionLab.limit;
 			};
-			if(newSectionLab.type == 'lab'){
+			if(newSectionLab.type == 'Lab'){
 				newElem.find('.lab-table').find('td')[0].innerHTML = newSectionLab.type;
-				newElem.find('.lab-table').find('td')[1].innerHTML = newSectionLab.CCN;
+				newElem.find('.lab-table').find('td')[1].innerHTML = newSectionLab.ccn;
 				newElem.find('.lab-table').find('td')[2].innerHTML = newSectionLab.time;
-				newElem.find('.lab-table').find('td')[3].innerHTML = newSectionLab.enrolled;
+				newElem.find('.lab-table').find('td')[3].innerHTML = newSectionLab.instructor;
 				newElem.find('.lab-table').find('td')[4].innerHTML = newSectionLab.limit;
 			};
 		};
-		*/
 		if (newElem.find('.lab-table').find('td')[0].innerHTML == 'REMOVE')
 			newElem.find('.lab-div').remove();
 		if (newElem.find('.section-table').find('td')[0].innerHTML == 'REMOVE')
@@ -303,7 +303,7 @@ var Home = function() {
 			request = request.replace(/:/g,'=');
 			request = request.replace(/,/g,'&');
 			request = request.replace(/ /g,'%20');
-			alert(JSON.stringify(request) + ' Send get request here');
+			//alert(JSON.stringify(request) + ' Send get request here');
 			request = request;
 			//alert('inside attach handler');
 
@@ -358,7 +358,8 @@ var Home = function() {
 
 				};
 				if(data.status == -1){
-					alert('there was an error returned from server');
+					//alert('there was an error returned from server');
+					console.error('there was an error returned from server');
 				};
 
 			};
@@ -423,7 +424,7 @@ var Home = function() {
 			var department = $(this).val();
 			department = department.replace(/ /g,'%20');
 			var query = department;
-			alert(query);
+			//alert(query);
 			insertCourseList(department);
 		});
 	};
@@ -496,7 +497,7 @@ var Home = function() {
 			//smile.happiness_level = parseInt(create.find('.happiness-level-input').val());
 			var onSuccess = function(data) {
 				//check for errors
-				alert('successful post');
+				//alert('successful post');
 				insertUserRating(data.review[0]);
 				user_input.find('.review-box').trigger('reset');
 			};
