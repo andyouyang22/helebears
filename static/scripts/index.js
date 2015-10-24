@@ -6,6 +6,11 @@ var Home = function() {
 
 	var courseList;
 	var templateCourse;
+    /* Login/Signup handlers */
+    var logIn;
+    var signUp;
+    var defaultColor = "#00b85c";
+    var selectedColor = "#00a653";
 
 	var basicSearchHolder;
 	var advSearchHolder;
@@ -30,8 +35,8 @@ var Home = function() {
 	var user_reviews_page;
 	var home_page;
 	var helebears_button;
-	//var bigUrl = 'https://protected-refuge-7067.herokuapp.com';
-	var bigUrl = '';
+	var bigUrl = 'https://protected-refuge-7067.herokuapp.com';
+	//var bigUrl = '';
 
 	var makeGetRequest = function(url, onSuccess, onFailure) {
 	   $.ajax({
@@ -52,6 +57,26 @@ var Home = function() {
 			dataType: "json",
 			success: onSuccess,
 			error: onFailure
+		});
+	};
+
+	var attachLogInHandler = function() {
+		logIn.on('click', function() {
+			signUp.css('background-color', defaultColor);
+			logIn.css('background-color', selectedColor);
+			$('.sign-up-form').slideUp(function() {
+				$('.log-in-form').slideToggle();
+			});
+		});
+	};
+
+	var attachSignUpHandler = function() {
+		signUp.on('click', function() {
+			logIn.css('background-color', defaultColor);
+			signUp.css('background-color', selectedColor);
+			$('.log-in-form').slideUp(function() {
+				$('.sign-up-form').slideToggle();
+			});
 		});
 	};
 
@@ -536,6 +561,8 @@ var Home = function() {
 	var start = function() {
 
 		//FROM ORIGINAL INDEX.JS
+        logIn = $('.log-in');
+        signUp = $('.sign-up');
 		departmentList = $('.department-input');
 		templateDepartment = $('.department-input .department-option')[0].outerHTML;
 		courseList = $('.course-input');
@@ -571,6 +598,8 @@ var Home = function() {
 		// create a new object to later attach. If you do not do outerHTML, it will
 		// not point your new var to a new object, and when you try to add it into
 		// the html, it does not add properly.
+        attachLogInHandler();
+        attachSignUpHandler();
 		attachAdvancedSearchHandler();
 		attachCourseListHandler();
 		attachSubmitSearchHandler();
@@ -578,6 +607,7 @@ var Home = function() {
 		attachUserInputHandler();
 		insertDepartmentList();
 		attachHelebearsButtonHandler();
+
 
 		query_results_page.hide();
 		user_reviews_page.hide();
