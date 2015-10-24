@@ -1,5 +1,5 @@
 var assert = require('assert');
-var reviews_models = require("../models/reviews_models")
+var reviews_models = require("../../models/reviews_models")
 
 var reviewsModel = reviews_models.reviewsModel
 var Reviews = reviews_models.Reviews
@@ -55,13 +55,4 @@ describe('============== Reviews ==============', function() {
   		reviewsModel.controller({}, res)
   		done()
   	})
-    it('Test double review okay', function(done){
-      Reviews.create({rating_1: 5, rating_2: 5, rating_3: 5, review:" ", professor_name: " 2 "}).then(function(r1){
-         Reviews.create({rating_1: 5, rating_2: 5, rating_3: 5, review:" ", professor_name: " 2 "}).then(function(r2){
-            r1.destroy({ force: true })
-            r2.destroy({ force: true })
-         })
-      })
-      done()
-    })
 });

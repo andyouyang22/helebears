@@ -64,7 +64,13 @@ var Calendar = function() {
 		'History': 'Hist',
 		'Statistics': 'Stat',
 		'Undergraduate Business Administration': 'UGBA',
-	}
+	};
+
+	// A list of the courses currently loaded in the frontend
+	var results = [];
+
+	// A list of the courses currently shown in the schedule
+	var schedule = [];
 
 	var makeGetRequest = function(url, onSuccess, onFailure) {
 	   $.ajax({
@@ -243,6 +249,14 @@ var Calendar = function() {
 		});
 	}
 
+	var attachWriteReviewHandler = function(ccn) {
+		ccn = ".results-course.ccn-" + ccn;
+
+		$(ccn).find('.write-review').on('click', function() {
+			$(ccn).next('results-sections').slideUp();
+		});
+	}
+
 	var start = function() {
 		attachSectionsHandler("26601")
 
@@ -256,11 +270,6 @@ var Calendar = function() {
 		resultsSectionsTemplate = sections[0].outerHTML;
 
 		attachAddCourseHandler("26661")
-
-		// results = $('.results-course');
-		// for (i = 0; i < results.length; i++) {
-		// 	attachAddCourseHandler()
-		// }
 	};
 
 	return {
