@@ -156,6 +156,7 @@ var Home = function() {
 		//REMOVE ABOVE WHEN READY FOR AJAX
 		insertRatingsOverall(ratings_dict);
 	};
+	//REMOVE?
 
 	var insertProfessorUserRatings = function(professor_name){
 		var onSuccess = function(data){
@@ -198,7 +199,7 @@ var Home = function() {
 		*/
 		//DELETE ABOVE WHEN READY FOR AJAX
 		//makeGetRequest(/api/overallreviews?professor = professor_name, onSuccess, onFailure);
-		//makeGetRequest(/api/reviews?professor = professor_name, onSuccess, onFailure);
+		makeGetRequest('/api/reviews?professor_name=' + professor_name, onSuccess, onFailure);
 
 	};
 
@@ -250,7 +251,7 @@ var Home = function() {
 		if (newElem.find('.section-table').find('td')[0].innerHTML == 'REMOVE')
 			newElem.find('.section-div').remove();
 		*/
-		
+
 		all_classes.append(newElem);
 	};
 
@@ -271,7 +272,7 @@ var Home = function() {
 			var classDays = ['M','T','W','R','F','S'];
 			var dayList = advSearchHolder.find('.days');
 			var classDaysChecked = '';
-			request.department = basicSearchHolder.find('.department-input').val();
+			request.department_name = basicSearchHolder.find('.department-input').val();
 			request.courseID = basicSearchHolder.find('.course-input').val();
 			request.classStartTime = advSearchHolder.find('.start-time').val();
 			request.classEndTime = advSearchHolder.find('.end-time').val();
@@ -361,7 +362,7 @@ var Home = function() {
 		//DELETE ABOVE WHEN READY FOR AJAX
 
 			//onSuccess check status code. pass the json and insert dat ish. hide #home-page show #query-results-page
-			//makeGetRequest(/api/courses? + request + department_query, onSuccess, onFailure);
+			makeGetRequest('/api/courses?' + request, onSuccess, onFailure);
 
 		});
 
@@ -393,7 +394,7 @@ var Home = function() {
 			console.error('could not get department list');
 		};
 
-		//makeGetRequest(/api/courses?department=department_query, onSuccess, onFailure);
+		makeGetRequest('/api/courses?department_name=' + department_query, onSuccess, onFailure);
 		//the bottom ones go away once we have ajax calls
 		/*
 		//DELETE BELOW WHEN READY FOR AJAX
@@ -438,7 +439,7 @@ var Home = function() {
 		var onFailure = function(){
 			console.error('could not get department list');
 		};
-		// makeGetRequest('/api/departments, onSuccess, onFailure);
+		makeGetRequest('/api/department', onSuccess, onFailure);
 		// The bottom ones go away once we have ajax calls
 		
 
