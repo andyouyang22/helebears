@@ -7,9 +7,13 @@ Within the server folder do:
 	debug=server npm start
 
 How to run tests:
+
 Unit Tests:
+
 	./node_modules/.bin/mocha tests/unit_tests/
+
 Functional Tests:
+
 	./node_modules/.bin/mocha tests/functional_tests/
 
 
