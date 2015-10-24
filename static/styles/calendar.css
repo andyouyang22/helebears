@@ -162,6 +162,8 @@
 	height: 30px;
 	border: 1px solid green;
 	border-radius: 3px;
+	font-size: 60%;
+	text-align: center;
 }
 
 .results-section:hover {

@@ -156,19 +156,19 @@ var Calendar = function() {
 		ccn = ".results-course.ccn-" + ccn;
 		sections = $(resultsSectionsTemplate);
 		sections.removeClass('template');
+		sections.css('display', 'none');
 
 		for (i = 0; i < s.length; i++) {
 			col = ".results-sections-" + day[s[i].day];
 			section = $('<div class="results-section"></div>');
 			section.text(s[i].time);
 
-			debugger
-
 			sections.find(col).append(section)
 		};
 
 		$(ccn).after(sections);
-		attachSectionsHandler(ccn);
+		// Extract just the 5-digit CCN, not the whole class string
+		attachSectionsHandler(ccn.slice(ccn.length - 5));
 	};
 
 	/**
@@ -187,17 +187,23 @@ var Calendar = function() {
 		});
 	};
 
+	/**
+	 * Add functionality to results entry so that when a course title is clicked,
+	 * its list of sections is expanded (if any).
+	 * @param {stirng} ccn the lecture for which we wish to add this functionaltiy
+	 */
 	var attachSectionsHandler = function(ccn) {
 		course = ".results-course.ccn-" + ccn;
 		header = course + " .course-name";
 		next = $(course).next('.results-sections');
+
 		$(header).on('click', function() {
 			next.slideToggle();
 		});
 	};
 
 	var start = function() {
-		attachSectionsHandler("26601")
+		attachSectionsHandler(".results-course.ccn-26601")
 
 		course = $('.template.calendar-course');
 		calendarCourseTemplate = course[0].outerHTML;
