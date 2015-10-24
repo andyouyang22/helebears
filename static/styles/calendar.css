@@ -127,6 +127,10 @@
 	font-family: 'Roboto Slab' serif;
 }
 
+.results-course .course-description {
+	margin-bottom: 5px;
+}
+
 .results-course .course-name:hover {
 	cursor: pointer;
 	color: #cccccc;

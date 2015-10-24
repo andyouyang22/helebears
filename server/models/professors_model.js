@@ -87,6 +87,33 @@ var professorsModel = {
 
 };
 
+//var p = Professors.build({professor_name: "Necula"})
+//p.save()
+//
+//var p = Professors.build({professor_name: "Jay"})
+//p.save()
+//var p = Professors.build({professor_name: "Kashi"})
+//p.save()
+//var p = Professors.build({professor_name: "Babak"})
+//p.save()
+//var p = Professors.build({professor_name: "Alex"})
+//p.save()
+//var p = Professors.build({professor_name: "Garcia"})
+//p.save()
+//var p = Professors.build({professor_name: "Ben-David"})
+//p.save()
+//var p = Professors.build({professor_name: "Gupta"})
+//p.save()
+//var p = Professors.build({professor_name: "Lee"})
+//p.save()
+//var p = Professors.build({professor_name: "Benjamin Jones"})
+//p.save()
+//var p = Professors.build({professor_name: "McDavid"})
+//p.save()
+//var p = Professors.build({professor_name: "Lenovo"})
+//p.save()
+
+
 module.exports.Professors = Professors;
 module.exports.professorsModel = professorsModel;
 
