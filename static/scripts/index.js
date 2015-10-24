@@ -34,7 +34,7 @@ var Home = function() {
 	var makeGetRequest = function(url, onSuccess, onFailure) {
 	   $.ajax({
 		   type: 'GET',
-		   url: apiUrl + url,
+		   url: url,
 		   dataType: "json",
 		   success: onSuccess,
 		   error: onFailure
@@ -163,6 +163,17 @@ var Home = function() {
 			$('#query-results-container').hide();
 			$('#user-reviews-page').show();
 			$('#home-page').hide();
+
+			var ratings_dict = {};
+
+			//REMOVE BELOW WHEN READY FOR AJAX
+			ratings_dict.professor = professor_name;
+			ratings_dict.overall_rating_1 = 10;
+			ratings_dict.overall_rating_2 = 10;
+			ratings_dict.overall_rating_3 = 10;
+			//REMOVE ABOVE WHEN READY FOR AJAX
+			insertRatingsOverall(ratings_dict);
+
 
 			query_results_page.hide();
 			user_reviews_page.show();
