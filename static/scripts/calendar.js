@@ -203,7 +203,7 @@ var Calendar = function() {
 	};
 
 	var start = function() {
-		attachSectionsHandler(".results-course.ccn-26601")
+		attachSectionsHandler("26601")
 
 		course = $('.template.calendar-course');
 		calendarCourseTemplate = course[0].outerHTML;

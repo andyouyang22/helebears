@@ -136,6 +136,14 @@
 	color: #cccccc;
 }
 
+.results-course .buttons {
+	position: relative;
+	float: right;
+	font-size: 60%;
+	margin-left: 6px;
+	top: -18px;
+}
+
 /* Results sections list */
 
 .results-sections {
