@@ -12,29 +12,29 @@ var Calendar = function() {
 
 	// Hard-coding the position of classes based on starting time
 	var courseTop = {
-		'8am'    : 33,
-		'830am'  : 50,
-		'9am'    : 67,
-		'930am'  : 85,
-		'10am'   : 102,
+		'0800am' : 33,
+		'0830am' : 50,
+		'0900am' : 67,
+		'0930am' : 85,
+		'1000am' : 102,
 		'1030am' : 120,
-		'11am'   : 137,
+		'1100am' : 137,
 		'1130am' : 155,
-		'12pm'   : 172,
+		'1200pm' : 172,
 		'1230pm' : 190,
-		'1pm'    : 207,
-		'130pm'  : 225,
-		'2pm'    : 242,
-		'230pm'  : 260,
-		'3pm'    : 277,
-		'330pm'  : 295,
-		'4pm'    : 312,
-		'430pm'  : 330,
-		'5pm'    : 347,
-		'530pm'  : 365,
-		'6pm'    : 382,
-		'630pm'  : 400,
-		'7pm'    : 417,
+		'0100pm' : 207,
+		'0130pm' : 225,
+		'0200pm' : 242,
+		'0230pm' : 260,
+		'0300pm' : 277,
+		'0330pm' : 295,
+		'0400pm' : 312,
+		'0430pm' : 330,
+		'0500pm' : 347,
+		'0530pm' : 365,
+		'0600pm' : 382,
+		'0630pm' : 400,
+		'0700pm' : 417,
 	};
 
 	var courseHeight = {
@@ -56,6 +56,15 @@ var Calendar = function() {
 		'f' : 'friday',
 		'F' : 'friday',
 	};
+
+	var abbrev = {
+		'Astronomy': 'Astro',
+		'Chemistry': 'Chem',
+		'Computer Science': 'CS',
+		'History': 'Hist',
+		'Statistics': 'Stat',
+		'Undergraduate Business Administration': 'UGBA',
+	}
 
 	var makeGetRequest = function(url, onSuccess, onFailure) {
 	   $.ajax({
@@ -92,6 +101,7 @@ var Calendar = function() {
 	var addCourseToCalendar = function(c) {
 		var course = $(calendarCourseTemplate);
 		course.removeClass('template');
+		course.css('display', 'none');
 
 		course.addClass("ccn-" + c.ccn);
 		course.find('.course-name').text(c.name);
@@ -102,7 +112,7 @@ var Calendar = function() {
 			'height' : courseHeight[c.length + ""],
 		});
 
-		var courses = ".calenday-" + day[c.day] + " .calendar-col-courses";
+		var courses = ".calendar-" + day[c.day] + " .calendar-col-courses";
 		$(courses).append(course);
 		course.slideDown();
 
@@ -202,8 +212,39 @@ var Calendar = function() {
 		});
 	};
 
+	/**
+	 * Add functionality to add course to the calendar when the corresponding
+	 * results entry is selected.
+	 * @param {string} ccn the lecture which we are trying to add to the calendar
+	 */
+	var attachAddCourseHandler = function(ccn) {
+		ccn = ".results-course.ccn-" + ccn;
+
+		$(ccn).find('.add-course').on('click', function() {
+			// This is VERY temporary
+			course = {
+				'name'     : 'CS 170',
+				'location' : '155 Dwinelle',
+				'day'      : 'W',
+				'start'    : '0500pm',
+				'length'   : 90,
+				'ccn'      : ccn,
+			}
+			addCourseToCalendar(course);
+			course = {
+				'name'     : 'CS 170',
+				'location' : '155 Dwinelle',
+				'day'      : 'F',
+				'start'    : '0500pm',
+				'length'   : 90,
+				'ccn'      : ccn,
+			}
+			addCourseToCalendar(course);
+		});
+	}
+
 	var start = function() {
-		attachSectionsHandler(".results-course.ccn-26601")
+		attachSectionsHandler("26601")
 
 		course = $('.template.calendar-course');
 		calendarCourseTemplate = course[0].outerHTML;
@@ -213,12 +254,21 @@ var Calendar = function() {
 
 		sections = $('.template.results-sections');
 		resultsSectionsTemplate = sections[0].outerHTML;
+
+		attachAddCourseHandler("26661")
+
+		// results = $('.results-course');
+		// for (i = 0; i < results.length; i++) {
+		// 	attachAddCourseHandler()
+		// }
 	};
 
 	return {
 		start                    : start,
+
 		addCourseToCalendar      : addCourseToCalendar,
 		removeCourseFromCalendar : removeCourseFromCalendar,
+
 		addCourseToResults       : addCourseToResults,
 		addSectionsToResults     : addSectionsToResults,
 		removeCourseFromResults  : removeCourseFromResults,

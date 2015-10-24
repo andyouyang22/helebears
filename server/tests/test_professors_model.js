@@ -56,7 +56,7 @@ describe('============== Professors ==============', function() {
   		done()
   	})
   	it('Test Adding Professor and Deleting it', function(done){
-  		Professors.create({professor_name: "*!!!!!"}).then(function(result){
+  		Professors.create({professor_name: "**!!!!!"}).then(function(result){
   			result.destroy().then(function(){
   				done()
   			}).error(function(exx){
@@ -69,8 +69,8 @@ describe('============== Professors ==============', function() {
   		})
   	})
   	it('Test Adding Two Professors with Same Name', function(done){
-  		Professors.create({professor_name: "*!!!!!"}).then(function(result){
-  			Professors.create({professor_name: "*!!!!!"}).then(function(result){
+  		Professors.create({professor_name: "**!!!!!"}).then(function(result){
+  			Professors.create({professor_name: "**!!!!!"}).then(function(result){
   				throw "Two professors should not have the same name"
   				done()}
   			).error(function(exx){
