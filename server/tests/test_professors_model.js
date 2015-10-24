@@ -55,5 +55,18 @@ describe('============== Professors ==============', function() {
   		professorsModel.controller({}, res)
   		done()
   	})
+  	it('Test Adding Professor and Filtering by it', function(done){
+  		Professors.create({professor_name: "!!!!!"}).then(function(result){
+  			result.destroy().then(function(){
+  				done()
+  			}).error(function(exx){
+  				throw exx
+  				done()
+  			})
+  		}).error(function(exx){
+  			throw exx
+  			done()
+  		})
+  	})
 
 });
