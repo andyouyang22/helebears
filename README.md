@@ -3,10 +3,12 @@
 This is the main repository for the HeleBears project of Computer Science 169, Fall 2015.
 
 How to run:
+
 Within the server folder do: 
+
 	debug=server npm start
 
-How to run tests:
+How to run tests (within the server folder):
 
 Unit Tests:
 
