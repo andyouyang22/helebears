@@ -58,7 +58,7 @@ var Calendar = function() {
 	 *   {number} length (in minutes)
 	 *   {string} ccn
 	 */
-	var addCourse = function(c) {
+	var addCourseToCalendar = function(c) {
 		var course = $(template);
 		course.addClass("ccn-" + c.ccn);
 		course.css({
@@ -79,7 +79,7 @@ var Calendar = function() {
 	 * Remove the course with the specified CCN from the calendar.
 	 * @param {string} ccn
 	 */
-	var removeCourse = function(ccn) {
+	var removeCourseFromCalendar = function(ccn) {
 		ccn = ".calendar-course.ccn-" + ccn;
 		$(ccn).slideUp(function() {
 			$(ccn).remove();
