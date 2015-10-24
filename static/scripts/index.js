@@ -29,7 +29,7 @@ var Home = function() {
 	var query_results_page;
 	var user_reviews_page;
 	var home_page;
-
+	var helebears_button;
 	var bigUrl = 'https://protected-refuge-7067.herokuapp.com';
 
 
@@ -259,11 +259,11 @@ var Home = function() {
 				newElem.find('.lab-table').find('td')[4].innerHTML = newSectionLab.limit;
 			};
 		};
+		*/
 		if (newElem.find('.lab-table').find('td')[0].innerHTML == 'REMOVE')
 			newElem.find('.lab-div').remove();
 		if (newElem.find('.section-table').find('td')[0].innerHTML == 'REMOVE')
 			newElem.find('.section-div').remove();
-		*/
 
 		all_classes.append(newElem);
 	};
@@ -286,7 +286,7 @@ var Home = function() {
 			var dayList = advSearchHolder.find('.days');
 			var classDaysChecked = '';
 			request.department_name = basicSearchHolder.find('.department-input').val();
-			request.courseID = basicSearchHolder.find('.course-input').val();
+			request.name = basicSearchHolder.find('.course-input').val();
 			request.classStartTime = advSearchHolder.find('.start-time').val();
 			request.classEndTime = advSearchHolder.find('.end-time').val();
 			for(i = 0; i < classDays.length; i++){
@@ -467,6 +467,18 @@ var Home = function() {
 		//DELETE ABOVE WHEN READY FOR AJAX
 	};
 
+	var attachHelebearsButtonHandler = function(){
+		helebears_button.on('click',function(e){
+			e.preventDefault();
+			$(".basic-search-form").trigger('reset');
+			$(".advanced-search-form").trigger('reset');
+			query_results_page.hide();
+			user_reviews_page.hide();
+			home_page.show();
+		});
+
+	};
+
 	var attachUserInputHandler = function(){
 		user_input.on('click', '#submit-input', function (e) {
 			e.preventDefault (); // Tell the browser to skip its default click action
@@ -545,7 +557,7 @@ var Home = function() {
 		user_reviews_page = $('#user-reviews-page');
 		home_page = $('#home-page');
 
-
+		helebears_button = $('#helebears-button');
 
 		// convert to outerHTML, then use $(templateDepartment) to essentially
 		// create a new object to later attach. If you do not do outerHTML, it will
@@ -557,16 +569,18 @@ var Home = function() {
 		attachLoadProfessorReviewsHandler();
 		attachUserInputHandler();
 		insertDepartmentList();
+		attachHelebearsButtonHandler();
 
 		query_results_page.hide();
 		user_reviews_page.hide();
 		home_page.show();
 
 		//remove everything below this when ready
+		/*
 		query_results_page.show();
 		user_reviews_page.show();
 		home_page.show();
-
+		*/
 	};
 
 	return {
