@@ -112,7 +112,7 @@ var Home = function() {
 		user_reviews.append(newElem);
 
 	};
-	
+
 
 	var clear_dict_key = function(del_value,request){
 		for(var key in request) {
@@ -360,14 +360,14 @@ var Home = function() {
 				if(data.status == -1){
 					alert('there was an error returned from server');
 				};
-			
+
 			};
 			var onFailure = function(data){
 				console.error('could not get course list');
 				console.log(JSON.stringify(data));
 			};
 
-		
+
 		//DELETE BELOW WHEN READY FOR AJAX
 		/*
 		insertCourse('169');
@@ -402,7 +402,7 @@ var Home = function() {
 			for(i=0; i < len; i++){
 				insertCourse(data.results[i].name);
 			}
-			
+
 		};
 		var onFailure = function(){
 			console.error('could not get department list');
@@ -448,7 +448,7 @@ var Home = function() {
 			for(k=0; k < len; k++){
 				insertDepartment(data.results[k].department_name);
 			}
-			
+
 		};
 		var onFailure = function(data){
 			console.error('could not get department list');
@@ -456,7 +456,7 @@ var Home = function() {
 		};
 		makeGetRequest('/api/departments', onSuccess, onFailure);
 		// The bottom ones go away once we have ajax calls
-		
+
 
 		//DELETE BELOW WHEN READY FOR AJAX
 		/*
@@ -524,7 +524,7 @@ var Home = function() {
 
 		//ADDED BUT WOULD BE ON RESULTS.JS
 		course_header = $('.course-header-element');
-	
+
 
 		//FROM ORIGINAL RESULTS.JS
 		classSingle = $('.single-class');
