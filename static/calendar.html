@@ -84,7 +84,7 @@
 
 	<div class="pure-g main-body">
 
-		<div class="pure-u-1-2">
+		<div class="pure-u-1-2 left">
 			<div class="calendar">
 				<div class="calendar-axis-vertical">
 					<div class="calendar-axis-vertical-label">8am</div>
@@ -250,7 +250,22 @@
 			</div>
 		</div>
 
-		<div class="pure-u-1-2">
+		<div class="pure-u-1-2 right">
+
+			<form class="pure-form basic-search-form">
+				<!-- Basic Search form; initially displayed -->
+				<fieldset class="pure-group basic-search">
+					<legend class="search-form-title">Search Courses</legend>
+					<select class="department-input" name="department">
+						<option class="default-option department-option" selected disabled>Department</option>
+					</select>
+					<select class="course-input" name="course">
+						<option class="default-option course-option" value='Course' selected disabled>Course</option>
+					</select>
+					<a class="pure-button submit-search" href="query.html">Search</a>
+				</fieldset>
+			</form>
+
 			<div class="results">
 				<div class="results-entry results-course template">
 					<div class="course-name"></div>
