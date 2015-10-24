@@ -117,9 +117,27 @@ var courseModel = {
                 function(courses){
                     var results = []
                     for(var i = 0; i < courses.length; i++){
+                        courses[i].dataValues['sections'] = [];
                         results.push(courses[i].dataValues)
                     }
-                    res.json({status:1, "results":results})
+
+
+                    Sections.findAll().then(
+                        function(sections){
+                            for(var sec = 0; sec < sections.length; sec++){
+                                var section = sections[sec].dataValues;
+                                for(var i = 0; i< results.length; i++){
+                                    if (section.name_and_number === results[i].name_and_number){
+                                        console.log(section);
+                                        console.log(results[i]);
+                                        results[i]['sections'].push(section);
+                                    }
+                                }
+                            }
+                            res.json({status:1, "results":results})
+                        }
+                    );
+
                 }).error(function(err) {
                     console.log(err)
                     res.json({status:-1, errors:["Unable to correctly retreive all courses"]})
