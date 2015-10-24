@@ -30,11 +30,13 @@ var Home = function() {
 	var user_reviews_page;
 	var home_page;
 
+	var bigUrl = 'https://protected-refuge-7067.herokuapp.com';
+
 
 	var makeGetRequest = function(url, onSuccess, onFailure) {
 	   $.ajax({
 		   type: 'GET',
-		   url: url,
+		   url: bigUrl + url,
 		   dataType: "json",
 		   success: onSuccess,
 		   error: onFailure
@@ -44,7 +46,7 @@ var Home = function() {
    var makePostRequest = function(url, data, onSuccess, onFailure) {
 		$.ajax({
 			type: 'POST',
-			url: url,
+			url: bigUrl + url,
 			data: JSON.stringify(data),
 			contentType: "application/json",
 			dataType: "json",
@@ -181,7 +183,7 @@ var Home = function() {
 
 			if(data.status == 1){
 
-				var leng = data.results.length();
+				var leng = data.results.length;
 				var m;
 				for(m=0; m < leng; m++){
 					insertUserRating(data.results[m]);
@@ -360,8 +362,9 @@ var Home = function() {
 				};
 			
 			};
-			var onFailure = function(){
-				console.error('could not get department list');
+			var onFailure = function(data){
+				console.error('could not get course list');
+				console.log(JSON.stringify(data));
 			};
 
 		
@@ -395,7 +398,7 @@ var Home = function() {
 		//top line removes old list
 		var onSuccess = function(data){
 			//Take the returned list of classes and insert each one.
-			var len = data.results.length()
+			var len = data.results.length;
 			for(i=0; i < len; i++){
 				insertCourse(data.results[i].name);
 			}
@@ -441,16 +444,17 @@ var Home = function() {
 		var onSuccess = function(data){
 			var k;
 			//Take the returned list of departments and insert each one.
-			var len = data.results.length()
+			var len = data.results.length;
 			for(k=0; k < len; k++){
-				insertDepartment(data.results.department_name[i]);
+				insertDepartment(data.results[k].department_name);
 			}
 			
 		};
-		var onFailure = function(){
+		var onFailure = function(data){
 			console.error('could not get department list');
+			console.log(JSON.stringify(data));
 		};
-		makeGetRequest('/api/department', onSuccess, onFailure);
+		makeGetRequest('/api/departments', onSuccess, onFailure);
 		// The bottom ones go away once we have ajax calls
 		
 
@@ -480,7 +484,9 @@ var Home = function() {
 			//smile.happiness_level = parseInt(create.find('.happiness-level-input').val());
 			var onSuccess = function(data) {
 				//check for errors
-				//insertUserRating(data.review);
+				alert('successful post');
+				insertUserRating(data.review[0]);
+				user_input.find('.review-box').trigger('reset');
 			};
 			var onFailure = function() {
 			   // console.error('unable to submit post');
@@ -492,11 +498,11 @@ var Home = function() {
 						error_string = error_string + errors[i] + '\n';
 					alert(error_string);
 			}else{
-				//makePostRequest(url_of_post_request,review,onSuccess,onFailure);
-				insertUserRating(review);
+				makePostRequest('/api/reviews/create',review,onSuccess,onFailure);
+				//insertUserRating(review);
 				//note: The above line is removed when actually posting a review.
 				//This is also why it does not have an id - becasue it is generated from the server.
-				user_input.find('.review-box').trigger('reset');
+				//user_input.find('.review-box').trigger('reset');
 			}
 
 		});
@@ -549,13 +555,17 @@ var Home = function() {
 		attachCourseListHandler();
 		attachSubmitSearchHandler();
 		attachLoadProfessorReviewsHandler();
+		attachUserInputHandler();
 		insertDepartmentList();
 
 		query_results_page.hide();
 		user_reviews_page.hide();
 		home_page.show();
 
-
+		//remove everything below this when ready
+		query_results_page.show();
+		user_reviews_page.show();
+		home_page.show();
 
 	};
 
