@@ -1,7 +1,5 @@
 var Results = function() {
 
-	var logIn;
-	var signUp;
 	var templateDepartment;
 	var overallReview;
 	var user_reviews;
@@ -119,8 +117,6 @@ var Results = function() {
 		all_classes.html('');
 
 		// attachUserInputHandler();
-		// attachLogInHandler();
-		// attachSignUpHandler();
 
 		// insertProfessorOverallRatings('prof_name');
 		// insertProfessorUserRatings('prof_name');

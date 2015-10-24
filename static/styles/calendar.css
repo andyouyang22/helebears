@@ -3,6 +3,10 @@
 	padding-right: 50px;
 }
 
+.template {
+	display: none;
+}
+
 /* Schedule graphic */
 
 .calendar {
@@ -86,16 +90,16 @@
 /* Results */
 
 .results {
-	height: 500px;
-	padding-left: 20px;
-	padding-right: 20px;
+	height: 490px;
+	padding-left: 80px;
+	margin-right: 80px;
 	overflow-y: scroll;
 }
 
 .results-entry {
 	margin-top: 5px;
 	margin-bottom: 5px;
-	width: 100%;
+	width: 90%;
 	padding: 12px;
 	border: 1px solid #eeeeee;
 	border-radius: 8px;
@@ -136,14 +140,12 @@
 
 .results-sections-header {
 	width: 100%;
-	border-bottom: 1px solid black;
 	margin-bottom: 5px;
 }
 
 .results-sections-col {
 	display: inline-block;
-	width: calc(100% / 5 - 15px);
-	border: 1px solid #eeeeee;
+	width: calc(100% / 5 - 5px);
 }
 
 .results-sections-col-header {
