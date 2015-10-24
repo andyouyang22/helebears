@@ -1,6 +1,7 @@
 var assert = require('assert');
 var professors_model = require("../models/professors_model")
 
+var professorsModel = professors_model.professorsModel
 var Professors = professors_model.Professors
 
 
@@ -27,4 +28,32 @@ describe('============== Professors ==============', function() {
     		done()
     	})
   	})
+  	it('Attempt to create a professor with an invalid key', function(done){
+  		Professors.create({professors:"PleaseError"}).then(function(result){
+  			throw "Professors did not properly error out"
+  			done()
+  		}).error(function(err){
+  			done()
+  		})
+  	})
+  	it('Test searchQuery()', function(done){
+  		res = {}
+  		res.json = function(v){}
+  		professorsModel.searchQuery({}, res)
+  		done()
+
+  	})
+  	it('Test preprocess()', function(done){
+  		res = {}
+  		res.json = function(v){}
+  		professorsModel.preprocess({}, res)
+  		done()
+  	})
+  	it('Test controller()', function(done){
+  		res = {}
+  		res.json = function(v){}
+  		professorsModel.controller({}, res)
+  		done()
+  	})
+
 });
