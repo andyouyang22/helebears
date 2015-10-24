@@ -20,12 +20,15 @@ var Home = function() {
 	//FOR RESULTS.JS
 	var course_header;
 
-
+	//FOR REVIEWS.JS
 	var user_input;
 	var overallReview;
 	var user_reviews;
 	var userReviewTemplateHtml;
 
+	var query_results_page;
+	var user_reviews_page;
+	var home_page;
 
 
 	var makeGetRequest = function(url, onSuccess, onFailure) {
@@ -494,6 +497,9 @@ var Home = function() {
 		userReviewTemplateHtml = $(".all-user-reviews .single-review")[0].outerHTML;
 		user_reviews.html('');
 
+		query_results_page = $('#query-results-container');
+		user_reviews_page = $('#user-reviews-page');
+		home_page = $('#home-page');
 
 
 
@@ -507,6 +513,9 @@ var Home = function() {
 		attachLoadProfessorReviewsHandler();
 		insertDepartmentList();
 
+		query_results_page.hide();
+		user_reviews_page.hide();
+		home_page.show();
 
 	};
 
