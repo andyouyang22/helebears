@@ -76,6 +76,7 @@ module.exports = function(passport) {
 
                         var newUser = Users.build({email:email,password: UserMethods.generateHash(password)});
                         newUser.save();
+                        return done(null,newUser);
                     }
 
                 });
