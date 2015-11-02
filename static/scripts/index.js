@@ -188,9 +188,10 @@ var Home = function() {
 
 	var insertProfessorUserRatings = function(professor_name){
 		var onSuccess = function(data){
-			$('#query-results-container').hide();
-			$('#user-reviews-page').show();
-			$('#home-page').hide();
+			//$('#query-results-container').hide();
+			//$('#user-reviews-page').show();
+			//$('#home-page').hide();
+			show_page(2);
 
 			var ratings_dict = {};
 
@@ -203,9 +204,10 @@ var Home = function() {
 			insertRatingsOverall(ratings_dict);
 
 
-			query_results_page.hide();
-			user_reviews_page.show();
-			home_page.hide();
+			//query_results_page.hide();
+			//user_reviews_page.show();
+			//home_page.hide();
+			show_page(1);
 
 			if(data.status == 1){
 
@@ -378,9 +380,11 @@ var Home = function() {
 					attachLoadProfessorReviewsHandler();
 					//$('#query-results-container').show();
 					//$('#home-page').hide();
-					query_results_page.show();
-					user_reviews_page.hide();
-					home_page.hide();
+					//query_results_page.show();
+					//user_reviews_page.hide();
+					//home_page.hide();
+					show_page(1);
+					
 
 				};
 				if(data.status == -1){
@@ -499,9 +503,10 @@ var Home = function() {
 			e.preventDefault();
 			$(".basic-search-form").trigger('reset');
 			$(".advanced-search-form").trigger('reset');
-			query_results_page.hide();
-			user_reviews_page.hide();
-			home_page.show();
+			//query_results_page.hide();
+			//user_reviews_page.hide();
+			//home_page.show();
+			show_page(0);
 		});
 
 	};
