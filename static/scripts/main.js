@@ -1,6 +1,6 @@
 show_page = function(page_number){
 	var h = $('#home-page');
-	var q = $('#query-results-container');
+	var q = $('#query-results-page');
 	var u = $('#user-reviews-page');
 	var page_list = [h, q, u];
 	var count;
