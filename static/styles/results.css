@@ -26,8 +26,15 @@ td.lab-td{
 }
 
 .section-tr{
-	height:10px;	
+	height:10px;
+	border: 1px solid #999999;
 }
+
+.lab-tr{
+	height:10px;
+	border: 1px solid #999999;
+}
+
 .course-header-element{
 	width:100%;
 }
