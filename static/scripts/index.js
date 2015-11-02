@@ -59,7 +59,7 @@ var Home = function() {
 			error: onFailure
 		});
 	};
-
+/*
 	var attachLogInHandler = function() {
 		logIn.on('click', function() {
 			signUp.css('background-color', defaultColor);
@@ -79,7 +79,7 @@ var Home = function() {
 			});
 		});
 	};
-
+*/
 	var check_post_request = function(review){
 		var error_list = [];
 		if(review.professor_name.length == 0)
@@ -509,7 +509,6 @@ var Home = function() {
 	var attachUserInputHandler = function(){
 		user_input.on('click', '#submit-input', function (e) {
 			e.preventDefault (); // Tell the browser to skip its default click action
-			//var smile = {}; // Prepare the smile object to send to the server
 			var review = {};
 			review.professor_name = name_of_professor;
 			review.review = user_input.find('.rating-input-text').val();
@@ -528,7 +527,7 @@ var Home = function() {
 				user_input.find('.review-box').trigger('reset');
 			};
 			var onFailure = function() {
-			   // console.error('unable to submit post');
+			   console.error('unable to submit post');
 			};
 			var errors = check_post_request(review);
 			if(errors.length){
@@ -598,8 +597,8 @@ var Home = function() {
 		// create a new object to later attach. If you do not do outerHTML, it will
 		// not point your new var to a new object, and when you try to add it into
 		// the html, it does not add properly.
-        attachLogInHandler();
-        attachSignUpHandler();
+      //  attachLogInHandler();
+     //   attachSignUpHandler();
 		attachAdvancedSearchHandler();
 		attachCourseListHandler();
 		attachSubmitSearchHandler();
@@ -608,11 +607,12 @@ var Home = function() {
 		insertDepartmentList();
 		attachHelebearsButtonHandler();
 
-
+/*
 		query_results_page.hide();
 		user_reviews_page.hide();
 		home_page.show();
-
+*/
+		show_page(0);
 		attachCancelHandler();
 
 		//remove everything below this when ready
