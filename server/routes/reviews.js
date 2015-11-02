@@ -1,4 +1,5 @@
 var express = require('express');
+
 var router = express.Router();
 
 var reviews_models = require("../models/reviews_models");
@@ -16,6 +17,5 @@ router.post('/create',function(req, res) {
     var query_args = req.body;
     reviewsModel.controller(query_args,'post',res);
 });
-
 
 module.exports = router;
