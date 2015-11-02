@@ -17,10 +17,12 @@ var Home = function() {
 
 	//FROM ORIGINAL RESULTS.JS
 	var classSingle;
-	var all_lasses;
+	var all_classes;
 	var classSingleTemplateHtml;
 	var sectionTableTemplateHtml;
 	var labTableTemplateHtml;
+	var section_trTemplateHtml;
+	var lab_trTemplateHtml;
 
 	//FOR RESULTS.JS
 	var course_header;
@@ -273,25 +275,33 @@ var Home = function() {
 		for(i = 0; i < section_list.length; i++){
 			var newSectionLab = section_list[i];
 			if(newSectionLab.type == 'Discussion'){
-				newElem.find('.section-table').find('td')[0].innerHTML = newSectionLab.type;
-				newElem.find('.section-table').find('td')[1].innerHTML = newSectionLab.ccn;
-				newElem.find('.section-table').find('td')[2].innerHTML = newSectionLab.time;
-				newElem.find('.section-table').find('td')[3].innerHTML = newSectionLab.instructor;
-				newElem.find('.section-table').find('td')[4].innerHTML = newSectionLab.limit;
+				var section_tr = $(section_trTemplateHtml);
+				//if this doesnt work, replace all section_tr.find('td') with:
+				//newElem.find('.section-table').find('td')
+				section_tr.find('td')[0].innerHTML = newSectionLab.type;
+				section_tr.find('td')[1].innerHTML = newSectionLab.ccn;
+				section_tr.find('td')[2].innerHTML = newSectionLab.time;
+				section_tr.find('td')[3].innerHTML = newSectionLab.instructor;
+				section_tr.find('td')[4].innerHTML = newSectionLab.limit;
+				newElem.find('.section-table').find('tbody').append(section_tr);
 			};
 			if(newSectionLab.type == 'Lab'){
-				newElem.find('.lab-table').find('td')[0].innerHTML = newSectionLab.type;
-				newElem.find('.lab-table').find('td')[1].innerHTML = newSectionLab.ccn;
-				newElem.find('.lab-table').find('td')[2].innerHTML = newSectionLab.time;
-				newElem.find('.lab-table').find('td')[3].innerHTML = newSectionLab.instructor;
-				newElem.find('.lab-table').find('td')[4].innerHTML = newSectionLab.limit;
+				var lab_tr = $(lab_trTemplateHtml);
+				lab_tr.find('td')[0].innerHTML = newSectionLab.type;
+				lab_tr.find('td')[1].innerHTML = newSectionLab.ccn;
+				lab_tr.find('td')[2].innerHTML = newSectionLab.time;
+				lab_tr.find('td')[3].innerHTML = newSectionLab.instructor;
+				lab_tr.find('td')[4].innerHTML = newSectionLab.limit;
+				newElem.find('.lab-table').find('tbody').append(lab_tr);
 			};
 		};
-		if (newElem.find('.lab-table').find('td')[0].innerHTML == 'REMOVE')
-			newElem.find('.lab-div').remove();
-		if (newElem.find('.section-table').find('td')[0].innerHTML == 'REMOVE')
-			newElem.find('.section-div').remove();
-
+		//if (newElem.find('.lab-table').find('td')[0].innerHTML == 'REMOVE')
+		//	newElem.find('.lab-div').remove();
+		//if (newElem.find('.section-table').find('td')[0].innerHTML == 'REMOVE')
+		//	newElem.find('.section-div').remove();
+		newElem.find('.lab-table').find('tr')[0].remove();
+		newElem.find('.section-table').find('tr')[0].remove();
+		
 		all_classes.append(newElem);
 	};
 
@@ -580,6 +590,8 @@ var Home = function() {
 		classSingle = $('.single-class');
 		all_classes = $('.all-class-results');
 		classSingleTemplateHtml = $(".all-class-results .single-class")[0].outerHTML;
+		section_trTemplateHtml = $('.section-tr')[0].outerHTML;
+		lab_trTemplateHtml = $('.lab-tr')[0].outerHTML;
 		sectionTableTemplateHtml = $(".section-div")[0].outerHTML;
 		labTableTemplateHtml = $(".lab-div")[0].outerHTML;
 		all_classes.html('');
