@@ -1,7 +1,6 @@
 var express = require('express');
 var app = express();
 
-//var path = require('path');
 var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var morgan = require('morgan');
@@ -17,7 +16,7 @@ var session = require('express-session');
 var passport = require('passport');
 var flash = require('connect-flash');
 
-// set up our express application
+// Set up our Express application
 app.use(morgan('dev')); // log every request to the console
 app.use(cookieParser()); // read cookies (needed for auth)
 app.use(bodyParser.json()); // get information from html forms
@@ -34,20 +33,18 @@ app.use(passport.initialize());
 app.use(passport.session()); // persistent login sessions
 app.use(flash()); // use connect-flash for flash messages stored in session
 
+// Un-comment after placing favicon in /public
+// app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
 
-// uncomment after placing your favicon in /public
-//app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
+// Load our routes; pass in our app and fully configured passport
+require('./routes/index.js')(app, passport);
 
-require('./routes/index.js')(app, passport); // load our routes and pass in our app and fully configured passport
-
-
-app.use('/homepage',express.static(__dirname + '/../static'));
+app.use('/homepage', express.static(__dirname + '/../static'));
 app.use('/api/users', users);
 app.use('/api/courses', courses);
 app.use('/api/schedules', schedules);
 app.use('/api/reviews', reviews);
-app.use('/api/departments',departments);
-
+app.use('/api/departments', departments);
 
 
 module.exports = app;
