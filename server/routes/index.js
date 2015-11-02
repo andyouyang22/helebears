@@ -1,4 +1,4 @@
-//var express = require('express');
+var express = require('express');
 //var router = express.Router();
 
 /* GET home page. */
@@ -19,7 +19,7 @@ module.exports = function(app, passport) {
 
     // process the login form
     app.post('/login', passport.authenticate('local-login', {
-        successRedirect : '/profile', // redirect to the secure profile section
+        successRedirect : '/homepage', // redirect to the secure profile section
         failureRedirect : '/login', // redirect back to the login page if there is an error
         failureFlash : true // allow flash messages
     }));
@@ -43,16 +43,18 @@ module.exports = function(app, passport) {
     });
 
 
-
-    app.get('/homepage', isLoggedIn, function(req,res) {
-        app.use('/',express.static(__dirname + '/../static'));
-    });
-
     app.get('/profile', isLoggedIn, function(req, res) {
         res.render('profile.ejs', {
             user : req.user // get the user out of session and pass to template
         });
     });
+
+
+    app.get('/homepage', isLoggedIn, function(req, res, next) {
+        next();
+    });
+
+    app.use('/homepage',express.static(__dirname + '/../static'));
 
     // route middleware to make sure a user is logged in
     function isLoggedIn(req, res, next) {

@@ -41,7 +41,7 @@ app.use(flash()); // use connect-flash for flash messages stored in session
 require('./routes/index.js')(app, passport); // load our routes and pass in our app and fully configured passport
 
 
-//app.use('/',express.static(__dirname + '/../static'));
+app.use('/homepage',express.static(__dirname + '/../static'));
 app.use('/api/users', users);
 app.use('/api/courses', courses);
 app.use('/api/schedules', schedules);
