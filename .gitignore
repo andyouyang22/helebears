@@ -3,4 +3,4 @@
 *.iml
 *.log
 workspace.xml
-.gitignore
+node_modules
