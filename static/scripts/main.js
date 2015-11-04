@@ -9,7 +9,7 @@ show_page = function(page_number){
 		if(count == page_number)
 			page_list[count].slideDown();
 		else
-			page_list[count].slideUp();
+			page_list[count].hide();
 	};
 	
 };
