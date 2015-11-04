@@ -1,4 +1,3 @@
-
 var Home = function() {
 
 	var departmentList;

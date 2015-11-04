@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+	<title>HeleBears</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<!-- Import Pure.css -->
+	<link rel="stylesheet" href="http://yui.yahooapis.com/pure/0.6.0/pure-min.css">
+	<!-- Import 'Roboto Slab' font from Google Fonts -->
+	<link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Roboto+Slab:400,700">
+	<link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Roboto:400,700">
+	<!-- Load main CSS file last to override Pure classes -->
+	<link rel="stylesheet" type="text/css" href="styles/main.css">
+	<link rel="stylesheet" type="text/css" href="styles/results.css">
+	<link rel="stylesheet" type="text/css" href="styles/reviews.css">
+	<link rel="stylesheet" type="text/css" href="styles/login.css">
+	<!-- Load jQuery -->
+	<script src="scripts/jquery.min.js"></script>
+	<!-- Load common page functionality -->
+	<script src="scripts/main.js"></script>
+	<!-- Load home page Javscript functionality -->
+	<!-- <script src="scripts/results.js"></script> -->
+	<!-- <script src="scripts/reviews.js"></script> -->
+	<script src="scripts/index.js"></script>
+	<!-- Run start-up functions after page has loaded -->
+	<script type="text/javascript">
+		$(function() {
+			Main.start();
+			Home.start();
+			<!-- Results.start(); -->
+			<!-- Reviews.start(); -->
+		});
+	</script>
+</head>
+<body>
+	<div class="pure-menu pure-menu-horizontal">
+		<header>
+			<!-- CSS bug when logo is clicked -->
+			<a href="#" id="helebears-button" class="pure-menu-heading pure-menu-link">HeleBears</a>
+			<ul class="pure-menu-list">
+				<li class="pure-menu-item button">
+					<a class="pure-menu-link log-in">Log In</a>
+				</li>
+				<li class="pure-menu-item button">
+					<a class="pure-menu-link sign-up">Sign Up</a>
+				</li>
+			</ul>
+			<form class="pure-form pure-form-aligned log-in-form drop-down-form" onsubmit="return false">
+				<!-- the onsubmit="return false" allows the default actions to run without refreshing page on submit -->
+				<fieldset>
+					<div class="pure-control-group">
+						<label for="username">Username</label>
+						<input type="text" name="username" placeholder="Username" required>
+					</div>
+					<div class="pure-control-group">
+						<label for="password">Password</label>
+						<input type="password" name="password" placeholder="Password" required>
+					</div>
+				</fieldset>
+				<div class="pure-controls">
+					<label class="pure-checkbox" for="remember-me">
+						<input name="remember-me" type="checkbox"> Remember me
+					</label>
+					<button class="pure-button submit-log-in" type="submit">Log In</button>
+				</div>
+			</form>
+			<form class="pure-form pure-form-aligned sign-up-form drop-down-form" onsubmit="return false">
+				<fieldset>
+					<div class="pure-control-group">
+						<label for="username">Username</label>
+						<input type="text" name="username" placeholder="Username" required>
+					</div>
+					<div class="pure-control-group">
+						<label for="password">Enter password</label>
+						<input type="password" name="password" placeholder="Password" required>
+					</div>
+					<div class="pure-control-group">
+						<label for="password">Confirm password</label>
+						<input type="password" name="password" placeholder="Password" required>
+					</div>
+				</fieldset>
+				<div class="pure-controls">
+					<button class="pure-button submit-sign-up" type="submit">Sign Up</button>
+				</div>
+			</form>
+		</header>
+	</div>
+
+	<div class="pure-g space"></div>
+
+	<div class="pure-g" id="home-page">
+		<div class="pure-u-1-3"></div>
+		<div class="pure-u-1-3">
+			<form class="pure-form basic-search-form">
+				<!-- Basic Search form; initially displayed -->
+				<fieldset class="pure-group basic-search">
+					<legend class="search-form-title">Search Courses</legend>
+					<select class="department-input" name="department">
+						<option class="default-option department-option" selected disabled>Department</option>
+					</select>
+					<select class="course-input" name="course">
+						<option class="default-option course-option" value='Course' selected disabled>Course</option>
+					</select>
+
+				</fieldset>
+			</form>
+			<form class="pure-form advanced-search-form">
+				<!-- Advanced Search form; initially hidden -->
+				<fieldset class="pure-group advanced-search">
+					<button class="pure-button hide-advanced-search">Hide</button>
+				</fieldset>
+				<fieldset class="pure-group advanced-search">
+					<legend class="advanced-form-title">Advanced</legend>
+					<!--
+					<select class="professor-input" name="professor">
+						<option class="default-option" selected disabled>Professor</option>
+						<option value="g-necula">George Necula</option>
+						<option value="c-papadimitriou">Christos Papadimitriou</option>
+						<option value="e-brewer">Eric Brewer</option>
+					</select>
+					-->
+					<label class="pure-checkbox d" for="Monday">
+						<input class='days' id="Monday" type="checkbox">Monday
+					</label>
+					<label class="pure-checkbox d" for="Tuesday">
+						<input class='days' id="Tuesday" type="checkbox">Tuesday
+					</label>
+					<label class="pure-checkbox d" for="Wednesday">
+						<input class='days' id="Wednesday" type="checkbox">Wednesday
+					</label>
+					<label class="pure-checkbox d" for="Thursday">
+						<input class='days' id="Thursday" type="checkbox">Thursday
+					</label>
+					<label class="pure-checkbox d" for="Friday">
+						<input class='days' id="Friday" type="checkbox">Friday
+					</label>
+					<label class="pure-checkbox d" for="Saturday">
+						<input class='days' id="Saturday" type="checkbox">Saturday
+					</label>
+
+					<select class="start-time hot-input" name="start-time">
+						<option class="default-option" value='Start-Time' selected disabled>Start Time</option>
+						<option value="0800">8:00 AM</option>
+						<option value="0900">9:00 AM</option>
+						<option value="1000">10:00 AM</option>
+						<option value="1100">11:00 AM</option>
+						<option value="1200">12:00 PM</option>
+						<option value="1300">1:00 PM</option>
+						<option value="1400">2:00 PM</option>
+						<option value="1500">3:00 PM</option>
+						<option value="1600">4:00 PM</option>
+						<option value="1700">5:00 PM</option>
+					</select>
+					<select class="end-time hot-input" name="end-time">
+						<option class="default-option" value="End-Time" selected disabled>End Time</option>
+						<option value="0800">8:00 AM</option>
+						<option value="0900">9:00 AM</option>
+						<option value="1000">10:00 AM</option>
+						<option value="1100">11:00 AM</option>
+						<option value="1200">12:00 PM</option>
+						<option value="1300">1:00 PM</option>
+						<option value="1400">2:00 PM</option>
+						<option value="1500">3:00 PM</option>
+						<option value="1600">4:00 PM</option>
+						<option value="1700">5:00 PM</option>
+					</select>
+
+				</fieldset>
+				<!-- Submit button -->
+				<fieldset class="pure-group">
+					<button class="pure-button show-advanced-search" style="display:none">Advanced Search</button>
+					<!-- When the button is pressed, show the div.advanced-search-paramaters, and change name to 'Return' -->
+					<!-- When it is pressed again, clear the values in div.advanced-search-paramaters, and change name to -->
+					<!-- Advanced Search. This is done with javascript on.click. -->
+					<a class="pure-button submit-search" href="query.html">Search</a>
+					<!-- On click, send a GET request to specified URL with query results from inside of the select and text boxes -->
+					<!-- Get request should go to url such as /api/smiles?dept=Computer%20Science&units=&time=MW%2012-2P&class=169 -->
+				</fieldset>
+			</form>
+		</div>
+		<div class="pure-u-1-3"></div>
+	</div>
+
+	<div class="pure-g" id="login-status-page">
+		<div class="pure-u-1-5"></div>
+		<div class="pure-u-3-5">
+			<div class="pure-g review-box" id="successful-log-in">
+				<div class="pure-u-1-1 log-in-page-div">
+				You have successfully logged in! Press the HeleBears button in the top left to continue.
+				</div>
+			</div>
+			
+			<div class="pure-g review-box" id="successful-sign-up">
+				<div class="pure-u-1-1 log-in-page-div">
+				You have successfully signed up! Please log in to your account.
+				</div>
+			</div>
+			
+			<div class="pure-g review-box" id="unsuccessful-log-in">
+				<div class="pure-u-1-1 log-in-page-div error-div">
+				Error_list
+				</div>
+			</div>
+			
+		</div>
+		<div class="pure-u-1-5"></div>
+	</div>
+	
+	
+</body>
+</html>

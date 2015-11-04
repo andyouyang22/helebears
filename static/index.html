@@ -11,6 +11,7 @@
 	<link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Roboto:400,700">
 	<!-- Load main CSS file last to override Pure classes -->
 	<link rel="stylesheet" type="text/css" href="styles/main.css">
+	<link rel="stylesheet" type="text/css" href="styles/login.css">
 	<link rel="stylesheet" type="text/css" href="styles/results.css">
 	<link rel="stylesheet" type="text/css" href="styles/reviews.css">
 
@@ -37,7 +38,7 @@
 		<header>
 			<!-- CSS bug when logo is clicked -->
 			<a href="#" id="helebears-button" class="pure-menu-heading pure-menu-link">HeleBears</a>
-			<ul class="pure-menu-list">
+			<ul class="pure-menu-list" id='log-in-sign-up-button-container'>
 				<li class="pure-menu-item button">
 					<a class="pure-menu-link log-in">Log In</a>
 				</li>
@@ -404,11 +405,40 @@
 						</div>
 					</div>
 					<div class="pure-u-1-5"></div>
+				</div> <!-- closes single class -->
+			</div> <!-- closes all class results -->
+	<!-- had an extra div here before? -->
+	</div> <!-- closes results page -->
+	
+	<div class="pure-g" id="login-status-page">
+		<div class="pure-u-1-5"></div>
+		<div class="pure-u-3-5">
+			<div class="pure-g review-box" id="successful-log-in">
+				<div class="pure-u-1-1 log-in-page-div">
+				You have successfully logged in! Press the HeleBears button in the top left to continue.
 				</div>
 			</div>
+			
+			<div class="pure-g review-box" id="successful-sign-up">
+				<div class="pure-u-1-1 log-in-page-div">
+				You have successfully signed up! Please log in to your account.
+				</div>
+			</div>
+			
+			<div class="pure-g review-box" id="unsuccessful-log-in">
+				<div class="pure-u-1-1 log-in-page-div error-div">
+				Error_list
+				</div>
+			</div>
+			
 		</div>
-
-	</div>
+		<div class="pure-u-1-5"></div>
+	</div> <!-- closes login-status-page -->
+	
+	
+	
+	
+	
 
 </body>
 </html>
