@@ -566,6 +566,7 @@ var Home = function() {
 			user_reviews_page.slideUp();
 			home_page.slideUp();
 			query_results_page.slideDown();
+			//show_page(1);
 		});
 	};
 
@@ -602,7 +603,7 @@ var Home = function() {
 		userReviewTemplateHtml = $(".all-user-reviews .single-review")[0].outerHTML;
 		user_reviews.html('');
 
-		query_results_page = $('#query-results-container');
+		query_results_page = $('#query-results-page');
 		user_reviews_page = $('#user-reviews-page');
 		home_page = $('#home-page');
 

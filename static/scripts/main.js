@@ -7,9 +7,9 @@ show_page = function(page_number){
 	var count;
 	for(count = 0; count < page_list.length; count++){
 		if(count == page_number)
-			page_list[count].show();
+			page_list[count].slideDown();
 		else
-			page_list[count].hide();
+			page_list[count].slideUp();
 	};
 	
 };
