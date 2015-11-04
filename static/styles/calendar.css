@@ -1,15 +1,20 @@
 
-.main-body {
-	padding-right: 50px;
+#main-body {
+	padding-top: 90px;
+	padding-left: 20px;
+	padding-right: 100px;
+	font-family: 'Roboto' sans-serif;
 }
 
-.template {
-	display: none;
+#container-right {
+	padding-left: 30px;
+	width: calc(50% - 30px);
 }
 
-/* Schedule graphic */
+/* Calendar */
 
 .calendar {
+	margin-top: 10px;
 	position: relative;
 	float: left;
 	margin-left: 50px;
@@ -18,41 +23,154 @@
 	width: calc(100% - 100px);
 }
 
-.calendar-axis-vertical {
+.calendar-axis {
 	display: inline-block;
-	position: absolute;
+	float: left;
 	text-align: right;
-	top: 14px;
-	height: 468px;
+	padding-top: 18px;
 	font-size: 60%;
-	line-height: 35px;
+	line-height: 34px;
+	width: 30px;
+	padding-right: 8px;
 }
 
-.calendar-col {
-	position: relative;
-	display: inline-block;
-	background-color: #eeeeee;
-	height: calc(100% - 32px);
-	width: calc((100% - 40px) / 5);
-	left: 34px;
-	margin-right: -3px;
+.calendar-grid {
+	width: calc(100% - 40px);
 }
 
-.calendar-col-header {
-	text-align: center;
-	width: 100%;
-	height: 32px;
-	line-height: 32px;
-	text-align: center;
+.calendar-header {
+	color: #eeeeee;
 	font-family: 'Roboto Slab' serif;
+	background-color: #00b85c;
+	line-height: 35px;
+	cursor: default;
+}
+
+.calendar-header tr th {
+	width: calc(20%);
+	font-weight: normal;
+	border-right: 2px solid white;
+}
+
+.calendar-row {
+	height: 34px;
+	background-color: #eeeeee;
+	border-bottom: 1px solid white;
+}
+
+.calendar-row td {
+	border-right: 2px solid white;
+}
+
+/* Search */
+
+.search {
+	padding-bottom: 10px;
+}
+
+.search-title {
+	font-size: 100%;
+}
+
+.search fieldset select {
+	margin-right: 5px;
+	font-size: 80%;
+}
+
+.search-dept {
+	width: 160px;
+}
+
+.search-course {
+	width: 80px;
+}
+
+.search-submit {
+	float: right;
 	color: #eeeeee;
 	background-color: #00b85c;
+	font-family: 'Roboto Slab' serif;
+	font-size: 90%;
 }
 
-.calendar-slot {
-	border-bottom: 1px solid white;
-	height: 34px;
+/* Results */
+
+.results {
+	position: relative;
+	left: -10px;
+	overflow-y: scroll;
+	height: 390px;
+	width: 100%;
+	font-size: 80%;
+	padding-left: 10px;
+	border-left: 1px solid #3399ff;
 }
+
+.results-course-lecture {
+	margin-top: 5px;
+	margin-bottom: 5px;
+	padding: 12px;
+	border: 1px solid #eeeeee;
+	border-radius: 8px;
+	padding-top: 6px;
+	background-image: linear-gradient(#3399ff 30px, white 30px);
+	background-image: -o-linear-gradient(#3399ff 30px, white 30px);
+	background-image: -moz-linear-gradient(#3399ff 30px, white 30px);
+	background-image: -webkit-linear-gradient(#3399ff 30px, white 30px);
+	background-image: -ms-linear-gradient(#3399ff 30px, white 30px);
+}
+
+.results-course-lec-name {
+	color: #eeeeee;
+	margin-bottom: 8px;
+	font-size: 110%;
+	font-family: 'Roboto Slab' serif;
+}
+
+.results-course-lec-name:hover {
+	cursor: pointer;
+	color: #dddddd;
+}
+
+.results-course-lec-desc {
+	margin-bottom: 5px;
+}
+
+.results-course-sections {
+	border: 1px solid #3399ff;
+	border-radius: 8px;
+	padding: 5px;
+}
+
+.results-course-sections-col {
+	display: inline-block;
+	width: calc(20% - 2px);
+	text-align: center;
+	vertical-align: top;
+}
+
+.results-course-sections-col-header {
+	margin-bottom: 5px;
+}
+
+.results-course-sections-sec {
+	margin-bottom: 2px;
+	padding-top: 5px;
+	padding-bottom: 5px;
+	font-size: 80%;
+	border: 1px solid #dddddd;
+	border-radius: 3px;
+}
+
+.results-course-sections-sec:hover {
+	background-color: #eeeeee;
+	cursor: pointer;
+}
+
+
+/* This was the CSS used originally before React was integrated. Since the
+ * insertCourses functionality still doesn't work, the CSS for the Calendar
+ * courses hasn't been updates yet. */
 
 .calendar-course {
 	position: absolute;
@@ -85,106 +203,4 @@
 	margin-bottom: 3px;
 	color: #eeeeee;
 	font-size: 70%;
-}
-
-/* Results */
-
-.pure-u-1-2.right {
-	height: 490px;
-	padding-left: 60px;
-	margin-right: 60px;
-	width: 38%;
-}
-
-.results {
-	overflow-y: scroll;
-	height: 390px;
-	width: 100%;
-	padding-right: 20px;
-}
-
-.basic-search-form {
-	font-size: 80%;
-	margin-bottom: 20px;
-}
-
-.results-entry {
-	margin-top: 5px;
-	margin-bottom: 5px;
-	padding: 12px;
-	border: 1px solid #eeeeee;
-	border-radius: 8px;
-}
-
-/* Results course entry */
-
-.results-course {
-	padding-top: 4px;
-	background-image: linear-gradient(#3399ff 30px, white 30px);
-	background-image: -o-linear-gradient(#3399ff 30px, white 30px);
-	background-image: -moz-linear-gradient(#3399ff 30px, white 30px);
-	background-image: -webkit-linear-gradient(#3399ff 30px, white 30px);
-	background-image: -ms-linear-gradient(#3399ff 30px, white 30px);
-}
-
-.results-course div {
-	font-size: 80%;
-}
-
-.results-course .course-name {
-	color: #eeeeee;
-	margin-bottom: 8px;
-	font-size: 100%;
-	font-family: 'Roboto Slab' serif;
-}
-
-.results-course .course-description {
-	margin-bottom: 5px;
-}
-
-.results-course .course-name:hover {
-	cursor: pointer;
-	color: #cccccc;
-}
-
-.results-course .buttons {
-	position: relative;
-	float: right;
-	font-size: 60%;
-	margin-left: 6px;
-	top: -18px;
-}
-
-/* Results sections list */
-
-.results-sections {
-	border: 1px solid #eeeeee;
-}
-
-.results-sections-header {
-	width: 100%;
-	margin-bottom: 5px;
-}
-
-.results-sections-col {
-	display: inline-block;
-	width: calc(100% / 5 - 5px);
-}
-
-.results-sections-col-header {
-	font-size: 80%;
-}
-
-.results-section {
-	width: 90%;
-	float: left;
-	height: 30px;
-	border: 1px solid green;
-	border-radius: 3px;
-	font-size: 60%;
-	text-align: center;
-}
-
-.results-section:hover {
-	background-color: #eeeeee;
 }
