@@ -16,7 +16,7 @@ Home = function() {
 
 	//FROM ORIGINAL RESULTS.JS
 	var classSingle;
-	var all_classes;
+	this.all_classes;
 	var classSingleTemplateHtml;
 	var sectionTableTemplateHtml;
 	var labTableTemplateHtml;
@@ -29,17 +29,17 @@ Home = function() {
 	//FOR REVIEWS.JS
 	var user_input;
 	var overallReview;
-	var user_reviews;
+	this.user_reviews;
 	var userReviewTemplateHtml;
 
 	var query_results_page;
-	var user_reviews_page;
+	this.user_reviews_page;
 	var home_page;
 	var helebears_button;
 	var bigUrl = 'https://protected-refuge-7067.herokuapp.com';
 	//var bigUrl = '';
 
-	this.makeGetRequest = function(url, onSuccess, onFailure) {
+	var makeGetRequest = function(url, onSuccess, onFailure) {
 	   $.ajax({
 		   type: 'GET',
 		   url: bigUrl + url,
@@ -49,7 +49,7 @@ Home = function() {
 	   });
    };
 
-   this.makePostRequest = function(url, data, onSuccess, onFailure) {
+   var makePostRequest = function(url, data, onSuccess, onFailure) {
 		$.ajax({
 			type: 'POST',
 			url: bigUrl + url,
@@ -128,15 +128,15 @@ Home = function() {
 	this.insertUserRating = function(user_review){
 		var newElem = $(userReviewTemplateHtml);
 		newElem.attr('id',user_review.id);
-		var tempDate = new Date(user_review.createdAt);
-		newElem.find('.time').text(tempDate.toDateString());
+		//var tempDate = new Date(user_review.createdAt);
+		//newElem.find('.time').text(tempDate.toDateString());
 		//newElem.find('.user-name').text(user_review.name);
 		newElem.find('.user-name').text('User Review');
 		newElem.find('.row-1').find('td')[1].innerHTML = user_review.rating_1;
 		newElem.find('.row-2').find('td')[1].innerHTML = user_review.rating_2;
 		newElem.find('.row-3').find('td')[1].innerHTML = user_review.rating_3;
 		newElem.find('.review-user-text').text(user_review.review);
-		user_reviews.append(newElem);
+		this.user_reviews.append(newElem);
 
 	};
 
@@ -206,7 +206,7 @@ Home = function() {
 
 
 			//query_results_page.hide();
-			//user_reviews_page.show();
+			//this.user_reviews_page.show();
 			//home_page.hide();
 
 			if(data.status == 1){
@@ -251,7 +251,7 @@ Home = function() {
 		course_header.on('click', '.professor-button', function (e) {
 			e.preventDefault();
 			var prof_name = $(this).attr('value');
-			user_reviews.html('');
+			this.user_reviews.html('');
 			//insertProfessorOverallRatings(prof_name);
 			insertProfessorUserRatings(prof_name);
 			//INSERT OVERALL RATINGS
@@ -301,7 +301,7 @@ Home = function() {
 		newElem.find('.lab-table').find('tr')[0].remove();
 		newElem.find('.section-table').find('tr')[0].remove();
 		
-		all_classes.append(newElem);
+		this.all_classes.append(newElem);
 	};
 
 
@@ -309,7 +309,7 @@ Home = function() {
 		var j;
 		for(j = 0; j < response.results.length; j++){
 				console.log(j);
-				insertClass(response.results[j]);
+				this.insertClass(response.results[j]);
 			};
 	};
 
@@ -345,7 +345,7 @@ Home = function() {
 
 		//DELETE ALL OF THIS WHEN BACKEND READY
 		/*
-		all_classes.html('');
+		this.all_classes.html('');
 		var res = {};
 		res.results = [];
 		response = {};
@@ -382,14 +382,14 @@ Home = function() {
 			var onSuccess = function(data){
 				//Take the returned list of classes and insert each one.
 				if(data.status == 1){
-					all_classes.html('');
+					this.all_classes.html('');
 					insertQueryResults(data);
 					course_header = $('.course-header-element');
 					attachLoadProfessorReviewsHandler();
 					//$('#query-results-container').show();
 					//$('#home-page').hide();
 					//query_results_page.show();
-					//user_reviews_page.hide();
+					//this.user_reviews_page.hide();
 					//home_page.hide();
 					show_page(1);
 					
@@ -512,7 +512,7 @@ Home = function() {
 			$(".basic-search-form").trigger('reset');
 			$(".advanced-search-form").trigger('reset');
 			//query_results_page.hide();
-			//user_reviews_page.hide();
+			//this.user_reviews_page.hide();
 			//home_page.show();
 			show_page(0);
 		});
@@ -563,7 +563,7 @@ Home = function() {
 		button = $('#cancel-review');
 		button.on('click', function(e) {
 			e.preventDefault();
-			user_reviews_page.slideUp();
+			this.user_reviews_page.slideUp();
 			home_page.slideUp();
 			query_results_page.slideDown();
 			//show_page(1);
@@ -588,23 +588,23 @@ Home = function() {
 
 		//FROM ORIGINAL RESULTS.JS
 		classSingle = $('.single-class');
-		all_classes = $('.all-class-results');
+		this.all_classes = $('.all-class-results');
 		classSingleTemplateHtml = $(".all-class-results .single-class")[0].outerHTML;
 		section_trTemplateHtml = $('.section-tr')[0].outerHTML;
 		lab_trTemplateHtml = $('.lab-tr')[0].outerHTML;
 		sectionTableTemplateHtml = $(".section-div")[0].outerHTML;
 		labTableTemplateHtml = $(".lab-div")[0].outerHTML;
-		all_classes.html('');
+		this.all_classes.html('');
 
 		//FROM ORIGINAL REVIEWS.JS
 		user_input = $('.review-input');
 		overallReview = $('.review-overall');
-		user_reviews = $('.all-user-reviews');
+		this.user_reviews = $('.all-user-reviews');
 		userReviewTemplateHtml = $(".all-user-reviews .single-review")[0].outerHTML;
-		user_reviews.html('');
+		this.user_reviews.html('');
 
 		query_results_page = $('#query-results-page');
-		user_reviews_page = $('#user-reviews-page');
+		this.user_reviews_page = $('#user-reviews-page');
 		home_page = $('#home-page');
 
 		helebears_button = $('#helebears-button');
@@ -615,26 +615,26 @@ Home = function() {
 		// the html, it does not add properly.
       //  attachLogInHandler();
      //   attachSignUpHandler();
-		attachAdvancedSearchHandler();
-		attachCourseListHandler();
-		attachSubmitSearchHandler();
-		attachLoadProfessorReviewsHandler();
-		attachUserInputHandler();
-		insertDepartmentList();
-		attachHelebearsButtonHandler();
+		this.attachAdvancedSearchHandler();
+		this.attachCourseListHandler();
+		this.attachSubmitSearchHandler();
+		this.attachLoadProfessorReviewsHandler();
+		this.attachUserInputHandler();
+		this.insertDepartmentList();
+		this.attachHelebearsButtonHandler();
 
 /*
 		query_results_page.hide();
-		user_reviews_page.hide();
+		this.user_reviews_page.hide();
 		home_page.show();
 */
-		show_page(0);
-		attachCancelHandler();
+	//	show_page(10);
+		this.attachCancelHandler();
 
 		//remove everything below this when ready
 		/*
 		query_results_page.show();
-		user_reviews_page.show();
+		this.user_reviews_page.show();
 		home_page.show();
 		*/
 	};
