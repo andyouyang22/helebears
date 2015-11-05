@@ -32,7 +32,9 @@ var scheduleModel = {
             scheduleModel.searchQuery(userDataValues,res);
         }
 
-        if (type == 'post'){}
+        if (type == 'post'){
+
+        }
 
     },
     searchQuery: function(userDataValues,res) {
@@ -42,6 +44,20 @@ var scheduleModel = {
             }).catch(function(err) {
                 res.json({status:-1, errors:["Unable to correctly retrieve all departments",err]})
             })
+    },
+    createQuery: function (data, res) {
+        var entry = {
+            unique_id: data.user.email,
+            name_and_number: data.name_and_number
+        };
+        Schedules.create(entry).then(function(results){
+            res.json({
+                status:1
+            })
+        }).catch(function(err){
+            res.json({status: -1, errors:['Course already added for user',err]});
+            console.log(err)
+        });
     },
     postprocess: function(queryResults, res) {
 
@@ -54,6 +70,7 @@ var scheduleModel = {
     }
 
 };
+//scheduleModel.createQuery({"user": {email: "anooshik86@gmail.com"}, "name_and_number": "61B 001", })
 
 module.exports.Schedules = Schedules;
 module.exports.scheduleModel = scheduleModel;
