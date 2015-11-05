@@ -5,9 +5,8 @@ var schedules_model = require("../models/schedule_model")
 var scheduleModel = schedules_model.scheduleModel
 /* GET users listing. */
 router.get('/', function(req, res, next) {
-    console.log(scheduleModel)
     if("user" in req) {
-        scheduleModel.controller(req.user.dataValues, 'get', res)
+        scheduleModel.controller(req.user.dataValues.email, 'get', res)
     }
     else{
         res.json({status:-1, errors: ["No user object sent"]})
@@ -20,10 +19,12 @@ router.post('/add',function(req, res, next) {
         res.json({status:-1, errors: ["No user object sent"]})
     }
     if(!("name_and_number" in req.body)) {
-        res.json({status:-1, errors: ["name_and_number not sent with psot request's body"]})
+        res.json({status:-1, errors: ["name_and_number not sent with post request's body"]})
     }
     else{
-        scheduleModel.createQuery({"user": req.user.dataValues, "name_and_number":req.body.name_and_number}, res)
+
+        req.body.unique_id = req.user.dataValues.email
+        scheduleModel.createQuery(req.body, res)
     }
 });
 
@@ -33,10 +34,11 @@ router.post('/remove',function(req, res, next) {
         res.json({status:-1, errors: ["No user object sent"]})
     }
     if(!("name_and_number" in req.body)) {
-        res.json({status:-1, errors: ["name_and_number not sent with psot request's body"]})
+        res.json({status:-1, errors: ["name_and_number not sent with post request's body"]})
     }
     else{
-        scheduleModel.removeQuery({"user": req.user.dataValues, "name_and_number":req.body.name_and_number})
+        req.body.unique_id = req.user.dataValues.email
+        scheduleModel.removeQuery(req.body, res)
     }
 });
 
