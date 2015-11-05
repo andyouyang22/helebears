@@ -27,16 +27,33 @@ var scheduleModel = {
     },
     dataValidator: function(queryJSON) {
     },
-    preprocess: function() {
+    preprocess: function(userDataValues,type,res) {
+        if (type === 'get'){
+            scheduleModel.searchQuery(userDataValues,res);
+        }
+
+        if (type == 'post'){}
+
+    },
+    searchQuery: function(userDataValues,res) {
+        Schedules.findAll().then(
+            function(departments){
+                res.json({status:1})
+            }).catch(function(err) {
+                res.json({status:-1, errors:["Unable to correctly retrieve all departments",err]})
+            })
+    },
+    postprocess: function(queryResults, res) {
 
     },
 
-    postprocess: function() {
-
-    },
-
-    controller: function() {
-
+    controller: function(userDataValues,type,res) {
+        // The controller is responsible to navigate between preprocess, process and postprocess and provide
+        // the answer to the client the required format.
+        scheduleModel.preprocess(userDataValues,type,res)
     }
 
 };
+
+module.exports.Schedules = Schedules;
+module.exports.scheduleModel = scheduleModel;

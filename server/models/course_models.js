@@ -77,7 +77,6 @@ var Sections = sequelize.define("Sections", {
     }
 });
 
-
 Courses.sync();
 Sections.sync();
 
@@ -121,15 +120,12 @@ var courseModel = {
                         results.push(courses[i].dataValues)
                     }
 
-
                     Sections.findAll().then(
                         function(sections){
                             for(var sec = 0; sec < sections.length; sec++){
                                 var section = sections[sec].dataValues;
                                 for(var i = 0; i< results.length; i++){
                                     if (section.name_and_number === results[i].name_and_number){
-                                        console.log(section);
-                                        console.log(results[i]);
                                         results[i]['sections'].push(section);
                                     }
                                 }
@@ -150,8 +146,6 @@ var courseModel = {
     }
 
 };
-
-
 
 
 module.exports.Courses = Courses;
