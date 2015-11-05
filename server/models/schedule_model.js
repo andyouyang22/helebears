@@ -41,7 +41,7 @@ var scheduleModel = {
 
     },
     searchQuery: function(unique_id,res) {
-        Schedules.findAll().then(
+        Schedules.findAll({where: {"unique_id": unique_id}}).then(
             function(results){
                 stripped_results  = []
                 for(i = 0; i < results.length;i++){
