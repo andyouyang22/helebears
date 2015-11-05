@@ -23,13 +23,21 @@ router.post('/add',function(req, res, next) {
         res.json({status:-1, errors: ["name_and_number not sent with psot request's body"]})
     }
     else{
-        scheduleModel.createQuery({"user": req.user.dataValues, "name_and_number":req.body.name_and_number})
+        scheduleModel.createQuery({"user": req.user.dataValues, "name_and_number":req.body.name_and_number}, res)
     }
 });
 
 /* POST request for removing a class to schedule */
 router.post('/remove',function(req, res, next) {
-    res.send('respond with a resource');
+    if(!("user" in req)) {
+        res.json({status:-1, errors: ["No user object sent"]})
+    }
+    if(!("name_and_number" in req.body)) {
+        res.json({status:-1, errors: ["name_and_number not sent with psot request's body"]})
+    }
+    else{
+        scheduleModel.removeQuery({"user": req.user.dataValues, "name_and_number":req.body.name_and_number})
+    }
 });
 
 
