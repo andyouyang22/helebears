@@ -292,6 +292,30 @@ Calendar.Course = React.createClass({
  * The Query section of the page. This section contains Search and Results.
  */
 
+var apiUrl = 'https://protected-refuge-7067.herokuapp.com';
+
+var makeGetRequest = function(url, onSuccess, onFailure) {
+	$.ajax({
+		type: 'GET',
+		url: apiUrl + url,
+		dataType: "json",
+		success: onSuccess,
+		error: onFailure
+	});
+};
+
+var makePostRequest = function(url, data, onSuccess, onFailure) {
+	$.ajax({
+		type: 'POST',
+		url: apiUrl + url,
+		data: JSON.stringify(data),
+		contentType: "application/json",
+		dataType: "json",
+		success: onSuccess,
+		error: onFailure
+	});
+};
+
 var Query = React.createClass({
 	render: function() {
 		return (
@@ -311,12 +335,27 @@ var Query = React.createClass({
 
 var Search = React.createClass({
 	getInitialState: function() {
+		var that = this;
+		var onSuccess = function(data) {
+			data = {"status":1,"results":[{"department_name":"Math Science","createdAt":"2015-10-24T00:01:25.612Z","updatedAt":"2015-10-24T00:01:25.612Z"},{"department_name":"Political Science","createdAt":"2015-10-24T00:01:25.622Z","updatedAt":"2015-10-24T00:01:25.622Z"},{"department_name":"Biology","createdAt":"2015-10-24T00:01:25.621Z","updatedAt":"2015-10-24T00:01:25.621Z"},{"department_name":"History","createdAt":"2015-10-24T00:01:25.621Z","updatedAt":"2015-10-24T00:01:25.621Z"},{"department_name":"Physics","createdAt":"2015-10-24T00:01:25.617Z","updatedAt":"2015-10-24T00:01:25.617Z"},{"department_name":"UGBA","createdAt":"2015-10-24T00:01:25.622Z","updatedAt":"2015-10-24T00:01:25.622Z"},{"department_name":"Economics","createdAt":"2015-10-24T00:01:25.622Z","updatedAt":"2015-10-24T00:01:25.622Z"},{"department_name":"Geography","createdAt":"2015-10-24T00:01:25.623Z","updatedAt":"2015-10-24T00:01:25.623Z"},{"department_name":"Electrical Engineering","createdAt":"2015-10-24T00:01:25.623Z","updatedAt":"2015-10-24T00:01:25.623Z"}]}
+			var depts = [];
+			for (var i = 0; i < data.results.length; i++) {
+				depts.push(data.results[i].department_name);
+			}
+			that.setState({
+				depts : depts,
+			});
+		};
+		var onFailure = function() {
+			console.error("Could not get department list");
+		}
+		makeGetRequest('/api/departments', onSuccess, onFailure);
 		return {
-			courses: [],
+			depts   : [],
+			courses : [],
 		};
 	},
 	handleDeptChange: function() {
-		debugger
 		return
 	},
 	render: function() {
@@ -324,7 +363,7 @@ var Search = React.createClass({
 			<div className='search pure-form'>
 				<fieldset className='pure-group'>
 					<legend className='search-title'>Search Courses</legend>
-					<Search.Dept depts={["Computer Science", "Math"]} onChange={this.handleDeptChange} />
+					<Search.Dept depts={this.state.depts} onChange={this.handleDeptChange} />
 					<Search.Course courses={[]} courses={this.state.courses} />
 					<a className='pure-button search-submit' href='query.html'>Search</a>
 				</fieldset>
