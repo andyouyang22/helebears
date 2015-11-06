@@ -54,6 +54,57 @@ Menu.SignUp = React.createClass({
 	}
 });
 
+Menu.LogIn.Form = React.createClass({
+	render: function() {
+		return (
+			<form className='pure-form pure-form-aligned log-in-form drop-down-form' onsubmit="return false">
+				<fieldset>
+					<div className='pure-control-group'>
+						<label for='username'>Username</label>
+						<input type='text' name='username' placeholder="Username" required />
+					</div>
+					<div className='pure-control-group'>
+						<label for='password'>Password</label>
+						<input type='password' name='password' placeholder="Password" required />
+					</div>
+				</fieldset>
+				<div className='pure-controls'>
+					<label className='pure-checkbox' for='remember-me'>
+						<input name='remember-me' type='checkbox' /> Remember me
+					</label>
+					<button className='pure-button submit-log-in' type='submit'>Log In</button>
+				</div>
+			</form>
+		);
+	}
+});
+
+Menu.SignUp.Form = React.createClass({
+	render: function() {
+		return (
+			<form class='pure-form pure-form-aligned sign-up-form drop-down-form' onsubmit="return false">
+				<fieldset>
+					<div class='pure-control-group'>
+						<label for='username'>Username</label>
+						<input type='text' name='username' placeholder="Username" required />
+					</div>
+					<div class='pure-control-group'>
+						<label for='password'>Enter password</label>
+						<input type='password' name='password' placeholder="Password" required />
+					</div>
+					<div class='pure-control-group'>
+						<label for='password'>Confirm password</label>
+						<input type='password' name='password' placeholder="Password" required />
+					</div>
+				</fieldset>
+				<div class='pure-controls'>
+					<button class='pure-button submit-sign-up' type='submit'>Sign Up</button>
+				</div>
+			</form>
+		);
+	}
+});
+
 /**
  * The Calendar section of the page. This section graphically displays the user's
  * selected courses in calendar format, and is updated to reflect changes in the
