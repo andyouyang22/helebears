@@ -184,8 +184,9 @@ Calendar.Course = React.createClass({
 		var css = {};
 		var c = this.props.course;
 		var t = parseTime(c.time);
-		css.height = duration(t.start, t.end) * 32 / 60;
-		css.top = duration("0800", t.start) * 34 / 60 - 1;
+		// These are hard-coded appropriately to the static Calendar
+		css.height = duration(t.start, t.end) * 32 / 60 - 1;
+		css.top = duration("0800", t.start) * 34 / 60;
 		return css;
 	},
 	render: function() {
@@ -450,6 +451,30 @@ var testCalendar = [
 		room : "306 Soda",
 		time : "TR 0930 1100",
 		ccn  : "26646",
+	},
+	{
+		name : "UGBA 104",
+		room : "F295 Haas",
+		time : "M 0930 1100",
+		ccn  : "08085",
+	},
+	{
+		name : "UGBA 106",
+		room : "F295 Haas",
+		time : "T 0800 0930",
+		ccn  : "08133",
+	},
+	{
+		name : "UGBA 115",
+		room : "330 Cheit",
+		time : "TR 1230 1400",
+		ccn  : "08175",
+	},
+	{
+		name : "UGBA 191I",
+		room : "Memorial Std",
+		time : "W 1400 1700",
+		ccn  : "08304",
 	}
 ];
 
