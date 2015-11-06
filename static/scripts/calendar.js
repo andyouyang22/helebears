@@ -225,13 +225,22 @@ var Query = React.createClass({
  */
 
 var Search = React.createClass({
+	getInitialState: function() {
+		return {
+			courses: [],
+		};
+	},
+	handleDeptChange: function() {
+		debugger
+		return
+	},
 	render: function() {
 		return (
 			<div className='search pure-form'>
 				<fieldset className='pure-group'>
 					<legend className='search-title'>Search Courses</legend>
-					<Search.Dept depts={[]} />
-					<Search.Course />
+					<Search.Dept depts={["Computer Science", "Math"]} onChange={this.handleDeptChange} />
+					<Search.Course courses={[]} courses={this.state.courses} />
 					<a className='pure-button search-submit' href='query.html'>Search</a>
 				</fieldset>
 			</div>
@@ -245,10 +254,19 @@ var Search = React.createClass({
  */
 Search.Dept = React.createClass({
 	render: function() {
+		var depts = [];
+		this.props.depts.forEach(function(dept) {
+			depts.push(
+				<option value={dept} key={dept}>{dept}</option>
+			);
+		});
+		var onChange = this.props.onChange;
 		return (
-			<select className='search-dept'>
-				<option className='default-option' selected disabled>Department</option>
-				{this.props.depts}
+			<select className='search-dept' value='disabled' onChange={onChange}>
+				<option className='default-option' value='disabled' disabled>
+					Department
+				</option>
+				{depts}
 			</select>
 		);
 	}
@@ -256,9 +274,17 @@ Search.Dept = React.createClass({
 
 Search.Course = React.createClass({
 	render: function() {
+		var courses = [];
+		this.props.courses.forEach(function(course) {
+			courses.push(
+				<option value={course} key={course}>{course}</option>
+			);
+		});
 		return (
 			<select className='search-course'>
-				<option className='default-option' selected disabled>Course</option>
+				<option className='default-option' value='disabled' disabled>
+					Course
+				</option>
 			</select>
 		);
 	}
