@@ -337,7 +337,6 @@ var Search = React.createClass({
 	getInitialState: function() {
 		var that = this;
 		var onSuccess = function(data) {
-			data = {"status":1,"results":[{"department_name":"Math Science","createdAt":"2015-10-24T00:01:25.612Z","updatedAt":"2015-10-24T00:01:25.612Z"},{"department_name":"Political Science","createdAt":"2015-10-24T00:01:25.622Z","updatedAt":"2015-10-24T00:01:25.622Z"},{"department_name":"Biology","createdAt":"2015-10-24T00:01:25.621Z","updatedAt":"2015-10-24T00:01:25.621Z"},{"department_name":"History","createdAt":"2015-10-24T00:01:25.621Z","updatedAt":"2015-10-24T00:01:25.621Z"},{"department_name":"Physics","createdAt":"2015-10-24T00:01:25.617Z","updatedAt":"2015-10-24T00:01:25.617Z"},{"department_name":"UGBA","createdAt":"2015-10-24T00:01:25.622Z","updatedAt":"2015-10-24T00:01:25.622Z"},{"department_name":"Economics","createdAt":"2015-10-24T00:01:25.622Z","updatedAt":"2015-10-24T00:01:25.622Z"},{"department_name":"Geography","createdAt":"2015-10-24T00:01:25.623Z","updatedAt":"2015-10-24T00:01:25.623Z"},{"department_name":"Electrical Engineering","createdAt":"2015-10-24T00:01:25.623Z","updatedAt":"2015-10-24T00:01:25.623Z"}]}
 			var depts = [];
 			for (var i = 0; i < data.results.length; i++) {
 				depts.push(data.results[i].department_name);
@@ -356,7 +355,23 @@ var Search = React.createClass({
 		};
 	},
 	handleDeptChange: function() {
-		return
+		var that = this;
+		var dept = "Physics";
+		var onSuccess = function(data) {
+			// pineapple
+			data = {"status":1,"results":[{"name":"18D","number":11,"name_and_number":"18D 11","professor_name":"Lenovo","department_name":"Physics","type":"LEC","title":"Computer Electricity","ccn":314,"units":4,"time":"MF 9000AM 1300PM","location":"WHEELER","final_slot":2,"limit":10,"enrolled":7,"waitlist":0,"note":"","createdAt":"2015-10-24T01:50:42.638Z","updatedAt":"2015-10-24T01:50:42.638Z","sections":[]}]}
+			var courses = [];
+			for (var i = 0; i < data.results.length; i++) {
+				courses.push(data.results[i].name);
+			}
+			that.setState({
+				courses : courses,
+			});
+		};
+		var onFailure = function() {
+			console.error("Could not get course list");
+		}
+		makeGetRequest('/api/courses?department_name=' + dept, onSuccess, onFailure);
 	},
 	render: function() {
 		return (
@@ -384,9 +399,9 @@ Search.Dept = React.createClass({
 				<option value={dept} key={dept}>{dept}</option>
 			);
 		});
-		var onChange = this.props.onChange;
+		var change = this.props.onChange;
 		return (
-			<select className='search-dept' value='disabled' onChange={onChange}>
+			<select className='search-dept' defaultValue='disabled' onChange={change}>
 				<option className='default-option' value='disabled' disabled>
 					Department
 				</option>
@@ -406,9 +421,10 @@ Search.Course = React.createClass({
 		});
 		return (
 			<select className='search-course'>
-				<option className='default-option' value='disabled' disabled>
+				<option className='default-option' defaultValue='disabled' disabled>
 					Course
 				</option>
+				{courses}
 			</select>
 		);
 	}
