@@ -39,29 +39,24 @@ Menu.Buttons = React.createClass({
  */
 
 var hours = [
-	"0800",
-	"0900",
-	"1000",
-	"1100",
-	"1200",
-	"1300",
-	"1400",
-	"1500",
-	"1600",
-	"1700",
-	"1800",
-	"1900",
-	"2000",
-	"2100"
+	"0800", "0900", "1000", "1100", "1200", "1300", "1400",
+	"1500", "1600", "1700", "1800", "1900", "2000", "2100"
 ];
 
 var Calendar = React.createClass({
 	getInitialState: function() {
-		return {courses: this.props.courses}
+		return {
+			courses : this.props.courses,
+		};
 	},
-	insertCourse: function() {
-		// Insert into this.state.courses if no conflict
-		return
+	insertCourse: function(course) {
+		// TODO: check for conflict
+		// TODO: move time parsing to outside-most layer
+		this.setState(function(state, props) {
+			return {
+				courses : state.courses.concat([course]),
+			};
+		});
 	},
 	render: function() {
 		return (
@@ -92,30 +87,57 @@ Calendar.Axis = React.createClass({
 });
 
 Calendar.Grid = React.createClass({
-	getInitialState: function() {
-		return {courses: testCalendar}
+	componentDidMount: function() {
+		for (var i = 0; i < this.props.courses.length; i++) {
+			this.insertCourse(this.props.courses[i]);
+		}
 	},
+	getInitialState: function() {
+		return {
+			courses : {
+				"M": [], "T": [], "W": [], "R": [], "F": [],
+			}
+		};
+	},
+	// @param course = {name, room, time, ccn}
 	insertCourse: function(course) {
-		// Select which column to insert into and have column perform insertion
-		return
+		var t =	parseTime(course.time);
+		this.setState(function(state, props) {
+			var updated = state.courses;
+			// Create a course for each day (e.g. "TR" means two classes)
+			for (var i = 0; i < t.days.length; i++) {
+				var day = t.days[i]
+				var newCourse = {
+					name : course.name,
+					room : course.room,
+					time : day + " " + t.start + " " + t.end,
+					ccn  : course.ccn,
+				};
+				updated[day].push(newCourse)
+			}
+			return {
+				courses : updated,
+			};
+		});
 	},
 	render: function() {
+		var columns = [];
+		var courses = this.state.courses;
+		for (var day in courses) {
+			columns.push(
+				<Calendar.Grid.Column key={day} day={day} courses={courses[day]} />
+			);
+		}
 		return (
 			<div className='calendar-grid'>
-				<Calendar.Grid.Column day={"Mon"}   />
-				<Calendar.Grid.Column day={"Tues"}  />
-				<Calendar.Grid.Column day={"Wed"}   />
-				<Calendar.Grid.Column day={"Thurs"} />
-				<Calendar.Grid.Column day={"Fri"}   />
+				{columns}
 			</div>
 		);
 	}
 });
 
 Calendar.Grid.Column = React.createClass({
-	insertCourse: function(course) {
-		return
-	},
+	// Render the static column of the Calendar and insert courses objects.
 	render: function() {
 		var cells = [];
 		for (var i = 0; i < (hours.length - 1); i++) {
@@ -123,22 +145,31 @@ Calendar.Grid.Column = React.createClass({
 				<div className='calendar-grid-column-cell' key={i}></div>
 			);
 		}
+		var days = {
+			"M": "Mon", "T": "Tues", "W": "Wed", "R": "Thurs", "F": "Fri",
+		};
 		return (
 			<div className='calendar-grid-column'>
 				<div className='calendar-grid-column-header'>
-					{this.props.day}
+					{days[this.props.day]}
 				</div>
+				<Calendar.Grid.Column.Courses courses={this.props.courses} />
 				{cells}
-				<Calendar.Grid.Column.Courses />
 			</div>
 		);
 	}
 });
 
 Calendar.Grid.Column.Courses = React.createClass({
+	// Graphically insert course into the Calendar. A conflict check should already
+	// have occurred.
 	render: function() {
-		// course = { name, room, time }
 		var courses = [];
+		this.props.courses.forEach(function(course) {
+			courses.push(
+				<Calendar.Course course={course} key={course.ccn} />
+			);
+		});
 		return (
 			<div className='calendar-grid-column-courses'>
 				{courses}
@@ -149,12 +180,21 @@ Calendar.Grid.Column.Courses = React.createClass({
 
 // http://facebook.github.io/react/docs/multiple-components.html#dynamic-children
 Calendar.Course = React.createClass({
+	style: function() {
+		var css = {};
+		var c = this.props.course;
+		var t = parseTime(c.time);
+		css.height = duration(t.start, t.end) * 32 / 60;
+		css.top = duration("0800", t.start) * 34 / 60 - 1;
+		return css;
+	},
 	render: function() {
 		var c = this.props.course;
+		var css = this.style();
 		return (
-			<div className='calendar-course'>
+			<div className='calendar-course' style={css}>
 				<div className='calendar-course-name'>{c.name}</div>
-				<div className='calendar-course-type'>{c.type}</div>
+				<div className='calendar-course-type' hidden>{c.type}</div>
 				<div className='calendar-course-room'>{c.room}</div>
 			</div>
 		);
@@ -389,8 +429,9 @@ var displayTime = function(time) {
 	return hour + ":" + min + suffix
 };
 
-var timeBetween = function(time) {
-
+var duration = function(start, end) {
+	var dur = parseInt(end) - parseInt(start);
+	return Math.floor(dur / 100) * 60 + ((dur % 100 != 0) ? 30 : 0);
 };
 
 /**
@@ -399,14 +440,16 @@ var timeBetween = function(time) {
 
 var testCalendar = [
 	{
-		name : "CS 169",
-		room : "306 Soda",
-		time : "T 0930 1100"
+		name : "CS 168",
+		room : "155 Dwinelle",
+		time : "TR 1700 1830",
+		ccn  : "26601",
 	},
 	{
 		name : "CS 169",
 		room : "306 Soda",
-		time : "R 0930 1100"
+		time : "TR 0930 1100",
+		ccn  : "26646",
 	}
 ];
 
@@ -480,7 +523,7 @@ ReactDOM.render(
 );
 
 ReactDOM.render(
-	<Calendar courses={[]} />,
+	<Calendar courses={testCalendar} />,
 	document.getElementById('container-left')
 );
 
