@@ -13,10 +13,6 @@ var Schedules = sequelize.define("Schedules", {
   name_and_number: {
       type: Sequelize.STRING,
       primaryKey: true,
-      references: {
-          model: Courses,
-          key: 'name_and_number',
-      },
   },
   course_time: Sequelize.STRING,
   section_time: Sequelize.STRING,
