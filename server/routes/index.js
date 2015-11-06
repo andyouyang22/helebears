@@ -3,7 +3,6 @@ var express = require('express');
 
 /* GET home page. */
 
-
 module.exports = function(app, passport) {
 
 
@@ -66,9 +65,6 @@ module.exports = function(app, passport) {
         // if they aren't redirect them to the home page
         res.redirect('/');
     }
-
-
-
 
     //router.get('/', function (req, res) {
     //    res.render('index', {title: 'Express'});

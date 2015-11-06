@@ -1,15 +1,20 @@
 
-.main-body {
-	padding-right: 50px;
+#main-body {
+	padding-top: 90px;
+	padding-left: 20px;
+	padding-right: 100px;
+	font-family: 'Roboto' sans-serif;
 }
 
-.template {
-	display: none;
+#container-right {
+	padding-left: 30px;
+	width: calc(50% - 30px);
 }
 
-/* Schedule graphic */
+/* Calendar */
 
 .calendar {
+	margin-top: 10px;
 	position: relative;
 	float: left;
 	margin-left: 50px;
@@ -18,108 +23,133 @@
 	width: calc(100% - 100px);
 }
 
-.calendar-axis-vertical {
-	display: inline-block;
-	position: absolute;
+.calendar-axis {
+	float: left;
 	text-align: right;
-	top: 14px;
-	height: 468px;
+	padding-top: 18px;
 	font-size: 60%;
-	line-height: 35px;
+	line-height: 34px;
+	width: 30px;
+	padding-right: 8px;
 }
 
-.calendar-col {
-	position: relative;
+.calendar-grid-column {
 	display: inline-block;
+	width: calc(20% - 10px);
 	background-color: #eeeeee;
-	height: calc(100% - 32px);
-	width: calc((100% - 40px) / 5);
-	left: 34px;
-	margin-right: -3px;
+	border-right: 2px solid white;
 }
 
-.calendar-col-header {
-	text-align: center;
+.calendar-grid-column-header {
 	width: 100%;
-	height: 32px;
-	line-height: 32px;
+	line-height: 35px;
 	text-align: center;
 	font-family: 'Roboto Slab' serif;
 	color: #eeeeee;
 	background-color: #00b85c;
+	cursor: default;
 }
 
-.calendar-slot {
+.calendar-grid-column-cell {
+	width: 100%;
+	height: 33px;
 	border-bottom: 1px solid white;
-	height: 34px;
+}
+
+.calendar-grid-column-courses {
+	position: absolute;
+	width: inherit;
+	top: 36px;
 }
 
 .calendar-course {
 	position: absolute;
 	padding-left: 5px;
-	width: calc(100% - 15px);
-	left: 4px;
+	width: 84%;
+	left: 4%;
 	background-color: white;
 	border-radius: 3px;
 	border: 1px solid #3399ff;
-	background-image: linear-gradient(#3399ff 16px, white 16px);
-	background-image: -o-linear-gradient(#3399ff 16px, white 16px);
-	background-image: -moz-linear-gradient(#3399ff 16px, white 16px);
-	background-image: -webkit-linear-gradient(#3399ff 16px, white 16px);
-	background-image: -ms-linear-gradient(#3399ff 16px, white 16px);
+	background-image: linear-gradient(#3399ff 14px, white 14px);
+	background-image: -o-linear-gradient(#3399ff 14px, white 14px);
+	background-image: -moz-linear-gradient(#3399ff 14px, white 14px);
+	background-image: -webkit-linear-gradient(#3399ff 14px, white 14px);
+	background-image: -ms-linear-gradient(#3399ff 14px, white 14px);
 }
 
 .calendar-course:hover {
 	cursor: pointer;
-	opacity: 0.6;
+	background-image: linear-gradient(#3399ff 14px, #eeeeee 14px);
+	background-image: -o-linear-gradient(#3399ff 14px, #eeeeee 14px);
+	background-image: -moz-linear-gradient(#3399ff 14px, #eeeeee 14px);
+	background-image: -webkit-linear-gradient(#3399ff 14px, #eeeeee 14px);
+	background-image: -ms-linear-gradient(#3399ff 14px, #eeeeee 14px);
 }
 
-.calendar-course p {
-	margin-top: 1px;
-	margin-bottom: 2px;
-	font-size: 60%;
-}
-
-.calendar-course .course-name {
+.calendar-course-name {
 	margin-top: 1px;
 	margin-bottom: 3px;
 	color: #eeeeee;
-	font-size: 70%;
+	font-size: 65%;
+}
+
+.calendar-course-room {
+	margin-top: 1px;
+	margin-bottom: 2px;
+	font-size: 55%;
+}
+
+/* Search */
+
+.search {
+	padding-bottom: 10px;
+}
+
+.search-title {
+	font-size: 100%;
+}
+
+.search fieldset select {
+	margin-right: 5px;
+	font-size: 80%;
+}
+
+.search-dept {
+	width: 160px;
+}
+
+.search-course {
+	width: 80px;
+}
+
+.search-submit {
+	float: right;
+	color: #eeeeee;
+	background-color: #00b85c;
+	font-family: 'Roboto Slab' serif;
+	font-size: 90%;
 }
 
 /* Results */
 
-.pure-u-1-2.right {
-	height: 490px;
-	padding-left: 60px;
-	margin-right: 60px;
-	width: 38%;
-}
-
 .results {
+	position: relative;
+	left: -10px;
 	overflow-y: scroll;
 	height: 390px;
 	width: 100%;
-	padding-right: 20px;
-}
-
-.basic-search-form {
 	font-size: 80%;
-	margin-bottom: 20px;
+	padding-left: 10px;
+	border-left: 1px solid #3399ff;
 }
 
-.results-entry {
+.results-course-lecture {
 	margin-top: 5px;
 	margin-bottom: 5px;
 	padding: 12px;
 	border: 1px solid #eeeeee;
 	border-radius: 8px;
-}
-
-/* Results course entry */
-
-.results-course {
-	padding-top: 4px;
+	padding-top: 6px;
 	background-image: linear-gradient(#3399ff 30px, white 30px);
 	background-image: -o-linear-gradient(#3399ff 30px, white 30px);
 	background-image: -moz-linear-gradient(#3399ff 30px, white 30px);
@@ -127,64 +157,49 @@
 	background-image: -ms-linear-gradient(#3399ff 30px, white 30px);
 }
 
-.results-course div {
-	font-size: 80%;
-}
-
-.results-course .course-name {
+.results-course-lec-name {
 	color: #eeeeee;
 	margin-bottom: 8px;
-	font-size: 100%;
+	font-size: 110%;
 	font-family: 'Roboto Slab' serif;
 }
 
-.results-course .course-description {
-	margin-bottom: 5px;
-}
-
-.results-course .course-name:hover {
+.results-course-lec-name:hover {
 	cursor: pointer;
-	color: #cccccc;
+	color: #dddddd;
 }
 
-.results-course .buttons {
-	position: relative;
-	float: right;
-	font-size: 60%;
-	margin-left: 6px;
-	top: -18px;
-}
-
-/* Results sections list */
-
-.results-sections {
-	border: 1px solid #eeeeee;
-}
-
-.results-sections-header {
-	width: 100%;
+.results-course-lec-desc {
 	margin-bottom: 5px;
 }
 
-.results-sections-col {
+.results-course-sections {
+	border: 1px solid #3399ff;
+	border-radius: 8px;
+	padding: 5px;
+}
+
+.results-course-sections-col {
 	display: inline-block;
-	width: calc(100% / 5 - 5px);
-}
-
-.results-sections-col-header {
-	font-size: 80%;
-}
-
-.results-section {
-	width: 90%;
-	float: left;
-	height: 30px;
-	border: 1px solid green;
-	border-radius: 3px;
-	font-size: 60%;
+	width: calc(20% - 2px);
 	text-align: center;
+	vertical-align: top;
 }
 
-.results-section:hover {
+.results-course-sections-col-header {
+	margin-bottom: 5px;
+}
+
+.results-course-sections-sec {
+	margin-bottom: 2px;
+	padding-top: 5px;
+	padding-bottom: 5px;
+	font-size: 80%;
+	border: 1px solid #dddddd;
+	border-radius: 3px;
+}
+
+.results-course-sections-sec:hover {
 	background-color: #eeeeee;
+	cursor: pointer;
 }
