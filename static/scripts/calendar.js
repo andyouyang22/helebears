@@ -354,12 +354,10 @@ var Search = React.createClass({
 			courses : [],
 		};
 	},
-	handleDeptChange: function() {
+	handleDeptChange: function(e) {
 		var that = this;
-		var dept = "Physics";
+		var dept = e.target.value;
 		var onSuccess = function(data) {
-			// pineapple
-			data = {"status":1,"results":[{"name":"18D","number":11,"name_and_number":"18D 11","professor_name":"Lenovo","department_name":"Physics","type":"LEC","title":"Computer Electricity","ccn":314,"units":4,"time":"MF 9000AM 1300PM","location":"WHEELER","final_slot":2,"limit":10,"enrolled":7,"waitlist":0,"note":"","createdAt":"2015-10-24T01:50:42.638Z","updatedAt":"2015-10-24T01:50:42.638Z","sections":[]}]}
 			var courses = [];
 			for (var i = 0; i < data.results.length; i++) {
 				courses.push(data.results[i].name);
