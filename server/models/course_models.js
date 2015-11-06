@@ -147,6 +147,5 @@ var courseModel = {
 
 };
 
-
 module.exports.Courses = Courses;
 module.exports.courseModel = courseModel

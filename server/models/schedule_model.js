@@ -11,13 +11,16 @@ var Courses = course_models.Courses;
 var Schedules = sequelize.define("Schedules", {
   unique_id: {type: Sequelize.STRING, primaryKey: true},
   name_and_number: {
-    type: Sequelize.STRING,
-    primaryKey: true,
-    references: {
-      model: Courses,
-      key: 'name_and_number',
-   }
-  }
+      type: Sequelize.STRING,
+      primaryKey: true,
+      references: {
+          model: Courses,
+          key: 'name_and_number',
+      },
+  },
+  course_time: Sequelize.STRING,
+  section_time: Sequelize.STRING,
+  lab_time: Sequelize.STRING
 })
 Schedules.sync()
 
@@ -32,16 +35,42 @@ var scheduleModel = {
             scheduleModel.searchQuery(userDataValues,res);
         }
 
-        if (type == 'post'){}
+        if (type == 'post'){
+
+        }
 
     },
-    searchQuery: function(userDataValues,res) {
-        Schedules.findAll().then(
-            function(departments){
-                res.json({status:1})
+    searchQuery: function(unique_id,res) {
+        Schedules.findAll({where: {"unique_id": unique_id}}).then(
+            function(results){
+                stripped_results  = []
+                for(i = 0; i < results.length;i++){
+                    stripped_results.push(results[i].dataValues)
+                }
+                res.json({status:1, "results": stripped_results})
             }).catch(function(err) {
                 res.json({status:-1, errors:["Unable to correctly retrieve all departments",err]})
             })
+    },
+    createQuery: function (data, res) {
+        Schedules.create(data).then(function(results){
+            res.json({
+                status:1
+            })
+        }).catch(function(err){
+            res.json({status: -1, errors:['Course already added for user',err]});
+        });
+    },
+    removeQuery: function (data, res) {
+        Schedules.findAll({where: data}).then(function(results){
+            results[0].destroy().then(function(){
+                res.json({status: 1})
+            }).catch(function(err){
+                res.json({status: -1, errors:['Error destroying course, course exists',err]});
+            })
+        }).catch(function(err){
+            res.json({status: -1, errors:['Error removing course, course may not exist',err]});
+        });
     },
     postprocess: function(queryResults, res) {
 
@@ -54,6 +83,5 @@ var scheduleModel = {
     }
 
 };
-
 module.exports.Schedules = Schedules;
 module.exports.scheduleModel = scheduleModel;
