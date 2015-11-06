@@ -419,9 +419,9 @@ var Home = function() {
 			review.rating_3 = user_input.find('.rating-input-3').val();
 
 			// smile.title = create.find('.title-input').val();
-			//smile.space = smileSpace; //smileSpace
-			//smile.story = create.find('.story-input').val();
-			//smile.happiness_level = parseInt(create.find('.happiness-level-input').val());
+			// smile.space = smileSpace; //smileSpace
+			// smile.story = create.find('.story-input').val();
+			// smile.happiness_level = parseInt(create.find('.happiness-level-input').val());
 			var onSuccess = function(data) {
 				insertUserRating(data.review[0]);
 				user_input.find('.review-box').trigger('reset');
@@ -437,10 +437,10 @@ var Home = function() {
 					alert(error_string);
 			} else {
 				makePostRequest('/api/reviews/create',review,onSuccess,onFailure);
-				//insertUserRating(review);
-				//note: The above line is removed when actually posting a review.
-				//This is also why it does not have an id - becasue it is generated from the server.
-				//user_input.find('.review-box').trigger('reset');
+				// insertUserRating(review);
+				// note: The above line is removed when actually posting a review.
+				// This is also why it does not have an id - becasue it is generated from the server.
+				// user_input.find('.review-box').trigger('reset');
 			}
 		});
 	};
