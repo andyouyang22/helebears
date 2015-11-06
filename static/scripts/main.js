@@ -11,15 +11,15 @@ show_page = function(page_number){
 		else
 			page_list[count].hide();
 	};
-	
+
 };
 
 
-var Main = function(){
+var Main = function() {
 
 	var logIn;
 	var signUp;
-	
+
 	var defaultColor = "#00b85c";
 	var selectedColor = "#00a653";
 	var submit_log_in;
@@ -27,7 +27,7 @@ var Main = function(){
 	//var successful_log_in;
 	//var successful_sign_up;
 	//var unsuccessful_log_in;
-	
+
 	var unsuccessful_log_in;
 	var error_divTemplateHtml;
 
@@ -52,12 +52,12 @@ var Main = function(){
 			error: onFailure
 		});
 	};
-	
+
 	var show_login_result = function(page_number){
 		var sli = $('#successful-log-in');
 		var ssu = $('#successful-sign-up');
 		var uli = $('#unsuccessful-log-in');
-		
+
 		var page_list = [sli, ssu, uli];
 		var count;
 		for(count = 0; count < page_list.length; count++){
@@ -66,10 +66,10 @@ var Main = function(){
 			else
 				page_list[count].hide();
 		};
-		
-		
+
+
 	};
-	
+
 var attachLogInHandler = function() {
 	logIn.on('click', function() {
 		signUp.css('background-color', defaultColor);
@@ -107,7 +107,7 @@ var attachSendLogInInfo = function(){
 					show_login_result(0);
 					$('#log-in-sign-up-button-container').hide(); //Hide the login and signup buttons after successful login
 					$('.log-in-form').slideToggle(); //Slide the form up
-					
+
 				}else if(data.status == -1){
 					unsuccessful_log_in.find('div').remove('.error-div');
 					var i;
@@ -118,24 +118,24 @@ var attachSendLogInInfo = function(){
 				};
 			};
 			var onFailure = function(){
-				console.error('Error when trying to sign in');	
+				console.error('Error when trying to sign in');
 			};
 			var testResponse = {};
 			testResponse.status = 1;
 			onSuccess(testResponse);
-			
+
 			//makePostRequest(requirements here)
 		};
 	});
-	
+
 };
-	
+
 	var insertError = function(error_string){
 		var newElem = $(error_divTemplateHtml);
 		newElem.html(error_string);
 		unsuccessful_log_in.append(newElem);
 	};
-	
+
 	var attachSendSignUpInfo = function(){
 		submit_sign_up.on('click', function(e){
 			var form_holder = $(this).parent().parent();
@@ -167,7 +167,7 @@ var attachSendLogInInfo = function(){
 				var onFailure = function(){ //send list of errors to error log
 					console.error('Error when trying to sign up');
 				};
-				
+
 				var testResponse = {};
 				testResponse.status = -1;
 				testResponse.errors = ['error_1', 'error_2'];
@@ -175,10 +175,10 @@ var attachSendLogInInfo = function(){
 				//makePostRequest(requirements here)
 			};
 		});
-		
-		
+
+
 	};
-	
+
 var start = function() {
 	// Prevent HeleBears logo click event from re-directing
 	$('.pure-menu-link').on('click', function(e) {
@@ -192,9 +192,9 @@ var start = function() {
 	unsuccessful_log_in = $('#unsuccessful-log-in');
 	error_divTemplateHtml = $('.error-div')[0].outerHTML;
 	unsuccessful_log_in.html('');
-	
-	
-	
+
+
+
 	attachSendLogInInfo();
 	attachSendSignUpInfo();
 	attachLogInHandler();

@@ -5,11 +5,11 @@ var Home = function() {
 
 	var courseList;
 	var templateCourse;
-    /* Login/Signup handlers */
-    var logIn;
-    var signUp;
-    var defaultColor = "#00b85c";
-    var selectedColor = "#00a653";
+	 /* Login/Signup handlers */
+	 var logIn;
+	 var signUp;
+	 var defaultColor = "#00b85c";
+	 var selectedColor = "#00a653";
 
 	var basicSearchHolder;
 	var advSearchHolder;
@@ -36,23 +36,22 @@ var Home = function() {
 	var user_reviews_page;
 	var home_page;
 	var helebears_button;
-	var bigUrl = 'https://protected-refuge-7067.herokuapp.com';
-	//var bigUrl = '';
+	var apiUrl = 'https://protected-refuge-7067.herokuapp.com';
 
 	var makeGetRequest = function(url, onSuccess, onFailure) {
-	   $.ajax({
-		   type: 'GET',
-		   url: bigUrl + url,
-		   dataType: "json",
-		   success: onSuccess,
-		   error: onFailure
-	   });
-   };
+		$.ajax({
+			type: 'GET',
+			url: apiUrl + url,
+			dataType: "json",
+			success: onSuccess,
+			error: onFailure
+		});
+	};
 
-   var makePostRequest = function(url, data, onSuccess, onFailure) {
+	var makePostRequest = function(url, data, onSuccess, onFailure) {
 		$.ajax({
 			type: 'POST',
-			url: bigUrl + url,
+			url: apiUrl + url,
 			data: JSON.stringify(data),
 			contentType: "application/json",
 			dataType: "json",
@@ -98,9 +97,7 @@ var Home = function() {
 		if(review.review.length > 2048)
 			error_list.push('review must be 2048 characters or less!');
 		return error_list;
-
 	};
-
 
 	var attachAdvancedSearchHandler = function() {
 		var show = $('.show-advanced-search');
@@ -185,7 +182,6 @@ var Home = function() {
 		//REMOVE ABOVE WHEN READY FOR AJAX
 		insertRatingsOverall(ratings_dict);
 	};
-	//REMOVE?
 
 	var insertProfessorUserRatings = function(professor_name){
 		var onSuccess = function(data){
@@ -204,20 +200,13 @@ var Home = function() {
 			//REMOVE ABOVE WHEN READY FOR AJAX
 			insertRatingsOverall(ratings_dict);
 
-
-			//query_results_page.hide();
-			//user_reviews_page.show();
-			//home_page.hide();
-
-			if(data.status == 1){
-
+			if(data.status == 1) {
 				var leng = data.results.length;
 				var m;
 				for(m=0; m < leng; m++){
 					insertUserRating(data.results[m]);
 				};
-			if(data.status == -1){
-				//alert("error returned from the server");
+			if(data.status == -1) {
 				console.error('error returned from the server');
 			};
 		};
@@ -225,22 +214,6 @@ var Home = function() {
 		var onFailure = function(){
 			console.error('could not retrieve user ratings');
 		};
-
-		//DELETE BELOW WHEN READY FOR AJAX
-		/*
-		user_review = {};
-		user_review.id = 123;
-		user_review.time = 'Jan 15th, 2015';
-		user_review.name = 'ok good';
-		user_review.rating_1 = 10;
-		user_review.rating_2 = 10;
-		user_review.rating_3 = 10;
-		user_review.review = 'a user review inputted through javascript (send the function 2ce)!';
-		insertUserRating(user_review);
-		insertUserRating(user_review);
-		*/
-		//DELETE ABOVE WHEN READY FOR AJAX
-		//makeGetRequest(/api/overallreviews?professor = professor_name, onSuccess, onFailure);
 		makeGetRequest('/api/reviews?professor_name=' + professor_name, onSuccess, onFailure);
 
 	};
@@ -252,11 +225,10 @@ var Home = function() {
 			e.preventDefault();
 			var prof_name = $(this).attr('value');
 			user_reviews.html('');
-			//insertProfessorOverallRatings(prof_name);
+			// insertProfessorOverallRatings(prof_name);
 			insertProfessorUserRatings(prof_name);
-			//INSERT OVERALL RATINGS
-			//INSERT USER RATINGS
-
+			// INSERT OVERALL RATINGS
+			// INSERT USER RATINGS
 		});
 	};
 
@@ -275,8 +247,8 @@ var Home = function() {
 			var newSectionLab = section_list[i];
 			if(newSectionLab.type == 'Discussion'){
 				var section_tr = $(section_trTemplateHtml);
-				//if this doesnt work, replace all section_tr.find('td') with:
-				//newElem.find('.section-table').find('td')
+				// if this doesnt work, replace all section_tr.find('td') with
+				// newElem.find('.section-table').find('td')
 				section_tr.find('td')[0].innerHTML = newSectionLab.type;
 				section_tr.find('td')[1].innerHTML = newSectionLab.ccn;
 				section_tr.find('td')[2].innerHTML = newSectionLab.time;
@@ -294,23 +266,19 @@ var Home = function() {
 				newElem.find('.lab-table').find('tbody').append(lab_tr);
 			};
 		};
-		//if (newElem.find('.lab-table').find('td')[0].innerHTML == 'REMOVE')
-		//	newElem.find('.lab-div').remove();
-		//if (newElem.find('.section-table').find('td')[0].innerHTML == 'REMOVE')
-		//	newElem.find('.section-div').remove();
 		newElem.find('.lab-table').find('tr')[0].remove();
 		newElem.find('.section-table').find('tr')[0].remove();
-		
+
 		all_classes.append(newElem);
 	};
 
 
 	var insertQueryResults = function(response){
 		var j;
-		for(j = 0; j < response.results.length; j++){
-				console.log(j);
-				insertClass(response.results[j]);
-			};
+		for(j = 0; j < response.results.length; j++) {
+			console.log(j);
+			insertClass(response.results[j]);
+		};
 	};
 
 
@@ -339,80 +307,26 @@ var Home = function() {
 			request = request.replace(/:/g,'=');
 			request = request.replace(/,/g,'&');
 			request = request.replace(/ /g,'%20');
-			//alert(JSON.stringify(request) + ' Send get request here');
 			request = request;
-			//alert('inside attach handler');
-
-		//DELETE ALL OF THIS WHEN BACKEND READY
-		/*
-		all_classes.html('');
-		var res = {};
-		res.results = [];
-		response = {};
-		response.course = 'course';
-		response.professor = 'prof_1';
-		response.CCN = '123123'
-		response.time = 'time'
-		var sections = [];
-		var s1= {};
-		var c1 = {};
-
-		s1.type = 'section'
-		s1.CCN = 'CCN'
-		s1.time = 'asdf'
-		s1.enrolled= 35;
-		s1.limit = 24;
-		sections.push(s1);
-
-		c1.type = 'lab'
-		c1.CCN = 'CCN'
-		c1.time = 'asdf'
-		c1.enrolled= 35;
-		c1.limit = 24;
-		sections.push(c1);
-		response.sections = sections;
-		res.results.push(response);
-		res.results.push(response);
-		insertQueryResults(res);
-		course_header = $('.course-header-element');
-		attachLoadProfessorReviewsHandler();
-		*/
-		//DELETE ALL OF THIS ABOVE WHEN BACKEND READY
 
 			var onSuccess = function(data){
-				//Take the returned list of classes and insert each one.
+				// Take the returned list of classes and insert each one.
 				if(data.status == 1){
 					all_classes.html('');
 					insertQueryResults(data);
 					course_header = $('.course-header-element');
 					attachLoadProfessorReviewsHandler();
-					//$('#query-results-container').show();
-					//$('#home-page').hide();
-					//query_results_page.show();
-					//user_reviews_page.hide();
-					//home_page.hide();
 					show_page(1);
-					
-
 				};
 				if(data.status == -1){
 					//alert('there was an error returned from server');
 					console.error('there was an error returned from server');
 				};
-
 			};
 			var onFailure = function(data){
 				console.error('could not get course list');
 				console.log(JSON.stringify(data));
 			};
-
-
-		//DELETE BELOW WHEN READY FOR AJAX
-		/*
-		insertCourse('169');
-		insertCourse('249A');
-		*/
-		//DELETE ABOVE WHEN READY FOR AJAX
 
 			//onSuccess check status code. pass the json and insert dat ish. hide #home-page show #query-results-page
 			makeGetRequest('/api/courses?' + request, onSuccess, onFailure);
@@ -433,36 +347,27 @@ var Home = function() {
 	};
 
 	var insertCourseList = function(department_query){
+		// Remove old list
 		courseList.find('option').remove('.course-added');
-		//top line removes old list
 		var onSuccess = function(data){
-			//Take the returned list of classes and insert each one.
+			// Take the returned list of classes and insert each one.
 			var len = data.results.length;
 			for(i=0; i < len; i++){
 				insertCourse(data.results[i].name);
 			}
-
 		};
 		var onFailure = function(){
 			console.error('could not get department list');
 		};
 
 		makeGetRequest('/api/courses?department_name=' + department_query, onSuccess, onFailure);
-		//the bottom ones go away once we have ajax calls
-		/*
-		//DELETE BELOW WHEN READY FOR AJAX
-		insertCourse('169');
-		insertCourse('249A');
-		//DELETE ABOVE WHEN READY FOR AJAX
-		*/
 	};
 
 	var attachCourseListHandler = function(){
-		$(departmentList).on('change',function(){
+		$(departmentList).on('change',function() {
 			var department = $(this).val();
 			department = department.replace(/ /g,'%20');
 			var query = department;
-			//alert(query);
 			insertCourseList(department);
 		});
 	};
@@ -474,46 +379,30 @@ var Home = function() {
 		newElem.removeAttr('selected');
 		newElem.removeAttr('disabled');
 		newElem.removeClass('default-option');
-		newElem.addClass('department-added'); //This value is not actually used, however course-added is.
-		//This might provide to be a useful handle later on, however.
+		// This value is not actually used, however course-added is.
+		newElem.addClass('department-added');
+		// This might provide to be a useful handle later on, however.
 		departmentList.append(newElem);
-
 	};
+
 	var insertDepartmentList = function() {
-		var onSuccess = function(data){
-			var k;
-			//Take the returned list of departments and insert each one.
-			var len = data.results.length;
-			for(k=0; k < len; k++){
+		var onSuccess = function(data) {
+			for (var k = 0; k < data.results.length; k++) {
 				insertDepartment(data.results[k].department_name);
 			}
-
 		};
-		var onFailure = function(data){
+		var onFailure = function(data) {
 			console.error('could not get department list');
 			console.log(JSON.stringify(data));
 		};
 		makeGetRequest('/api/departments', onSuccess, onFailure);
-		// The bottom ones go away once we have ajax calls
-
-
-		//DELETE BELOW WHEN READY FOR AJAX
-		/*
-		insertDepartment('Computer Science');
-		insertDepartment('Astronomy');
-		insertDepartment('History');
-		*/
-		//DELETE ABOVE WHEN READY FOR AJAX
 	};
 
-	var attachHelebearsButtonHandler = function(){
+	var attachHelebearsButtonHandler = function() {
 		helebears_button.on('click',function(e){
 			e.preventDefault();
 			$(".basic-search-form").trigger('reset');
 			$(".advanced-search-form").trigger('reset');
-			//query_results_page.hide();
-			//user_reviews_page.hide();
-			//home_page.show();
 			show_page(0);
 		});
 
@@ -534,28 +423,25 @@ var Home = function() {
 			//smile.story = create.find('.story-input').val();
 			//smile.happiness_level = parseInt(create.find('.happiness-level-input').val());
 			var onSuccess = function(data) {
-				//check for errors
-				//alert('successful post');
 				insertUserRating(data.review[0]);
 				user_input.find('.review-box').trigger('reset');
 			};
 			var onFailure = function() {
-			   console.error('unable to submit post');
+				console.error('unable to submit post');
 			};
 			var errors = check_post_request(review);
-			if(errors.length){
+			if (errors.length){
 				var error_string = "";
-					for(i = 0; i < errors.length; i++)
+					for (i = 0; i < errors.length; i++)
 						error_string = error_string + errors[i] + '\n';
 					alert(error_string);
-			}else{
+			} else {
 				makePostRequest('/api/reviews/create',review,onSuccess,onFailure);
 				//insertUserRating(review);
 				//note: The above line is removed when actually posting a review.
 				//This is also why it does not have an id - becasue it is generated from the server.
 				//user_input.find('.review-box').trigger('reset');
 			}
-
 		});
 	};
 
@@ -566,16 +452,13 @@ var Home = function() {
 			user_reviews_page.slideUp();
 			home_page.slideUp();
 			query_results_page.slideDown();
-			//show_page(1);
 		});
 	};
 
-
 	var start = function() {
-
-		//FROM ORIGINAL INDEX.JS
-        logIn = $('.log-in');
-        signUp = $('.sign-up');
+		// FROM ORIGINAL INDEX.JS
+		logIn = $('.log-in');
+		signUp = $('.sign-up');
 		departmentList = $('.department-input');
 		templateDepartment = $('.department-input .department-option')[0].outerHTML;
 		courseList = $('.course-input');
@@ -583,10 +466,10 @@ var Home = function() {
 		basicSearchHolder = $('.basic-search-form');
 		advSearchHolder = $('.advanced-search-form');
 
-		//ADDED BUT WOULD BE ON RESULTS.JS
+		// ADDED BUT WOULD BE ON RESULTS.JS
 		course_header = $('.course-header-element');
 
-		//FROM ORIGINAL RESULTS.JS
+		// FROM ORIGINAL RESULTS.JS
 		classSingle = $('.single-class');
 		all_classes = $('.all-class-results');
 		classSingleTemplateHtml = $(".all-class-results .single-class")[0].outerHTML;
@@ -596,7 +479,7 @@ var Home = function() {
 		labTableTemplateHtml = $(".lab-div")[0].outerHTML;
 		all_classes.html('');
 
-		//FROM ORIGINAL REVIEWS.JS
+		// FROM ORIGINAL REVIEWS.JS
 		user_input = $('.review-input');
 		overallReview = $('.review-overall');
 		user_reviews = $('.all-user-reviews');
@@ -613,8 +496,8 @@ var Home = function() {
 		// create a new object to later attach. If you do not do outerHTML, it will
 		// not point your new var to a new object, and when you try to add it into
 		// the html, it does not add properly.
-      //  attachLogInHandler();
-     //   attachSignUpHandler();
+		// attachLogInHandler();
+		// attachSignUpHandler();
 		attachAdvancedSearchHandler();
 		attachCourseListHandler();
 		attachSubmitSearchHandler();
@@ -623,20 +506,8 @@ var Home = function() {
 		insertDepartmentList();
 		attachHelebearsButtonHandler();
 
-/*
-		query_results_page.hide();
-		user_reviews_page.hide();
-		home_page.show();
-*/
 		show_page(0);
 		attachCancelHandler();
-
-		//remove everything below this when ready
-		/*
-		query_results_page.show();
-		user_reviews_page.show();
-		home_page.show();
-		*/
 	};
 
 	return {
