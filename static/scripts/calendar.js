@@ -3,6 +3,7 @@
  * The Menu section of the page. This section displays the logo and may contain
  * additional menu buttons, such as the log-out button.
  */
+
 var Menu = React.createClass({
 	render: function() {
 		return (
@@ -58,14 +59,15 @@ var Calendar = React.createClass({
 	getInitialState: function() {
 		return {courses: this.props.courses}
 	},
+	insertCourse: function() {
+		// Insert into this.state.courses if no conflict
+		return
+	},
 	render: function() {
 		return (
 			<div className='calendar'>
 				<Calendar.Axis />
-				<table className='calendar-grid'>
-					<Calendar.Header />
-					<Calendar.Body />
-				</table>
+				<Calendar.Grid courses={this.state.courses} />
 			</div>
 		);
 	}
@@ -89,70 +91,58 @@ Calendar.Axis = React.createClass({
 	}
 });
 
-Calendar.Header = React.createClass({
+Calendar.Grid = React.createClass({
+	getInitialState: function() {
+		return {courses: testCalendar}
+	},
+	insertCourse: function(course) {
+		// Select which column to insert into and have column perform insertion
+		return
+	},
 	render: function() {
 		return (
-			<thead className='calendar-header'>
-				<tr>
-					<th>Mon</th>
-					<th>Tues</th>
-					<th>Wed</th>
-					<th>Thurs</th>
-					<th>Fri</th>
-				</tr>
-			</thead>
+			<div className='calendar-grid'>
+				<Calendar.Grid.Column day={"Mon"}   />
+				<Calendar.Grid.Column day={"Tues"}  />
+				<Calendar.Grid.Column day={"Wed"}   />
+				<Calendar.Grid.Column day={"Thurs"} />
+				<Calendar.Grid.Column day={"Fri"}   />
+			</div>
 		);
 	}
 });
 
-Calendar.Body = React.createClass({
-	componentDidMount: function() {
-		var courses = this.state.courses;
-		for (var i = 0; i < courses.length; i++) {
-			this.insertCourse(courses[i]);
-		}
-	},
-	/* Compare the input course against the current schedule and return true
-	 * if there is a conflict */
-	hasConflict: function(course) {
-		return false;
-	},
-	getInitialState: function() {
-		/* Should normally start empty; current non-empty for testing */
-		return {courses: testCalendar};
-	},
+Calendar.Grid.Column = React.createClass({
 	insertCourse: function(course) {
-		var t = parseTime(course.time);
-		var rowIndex = Math.floor((parseInt(t.start) - 800) / 100);
-		var colIndex = 0;
-		switch (t.days) {
-			case "M": colIndex = 0; break;
-			case "T": colIndex = 1; break;
-			case "W": colIndex = 2; break;
-			case "R": colIndex = 3; break;
-			case "F": colIndex = 4; break;
-		}
-		var row = $(ReactDOM.findDOMNode(this)).children().eq(rowIndex)
-		var cell = row.children().eq(colIndex);
-		/* Work still needs to be done here. Should I use jQuery or React? */
+		return
 	},
 	render: function() {
-		var rows = [];
-		for (var i = 0; i < hours.length - 1; i++) {
-			rows.push(
-				<tr className='calendar-row' key={i}>
-					<td></td>
-					<td></td>
-					<td></td>
-					<td></td>
-					<td></td>
-				</tr>
+		var cells = [];
+		for (var i = 0; i < (hours.length - 1); i++) {
+			cells.push(
+				<div className='calendar-grid-column-cell' key={i}></div>
 			);
 		}
 		return (
-			<tbody className='calendar-body'>
-				{rows}
-			</tbody>
+			<div className='calendar-grid-column'>
+				<div className='calendar-grid-column-header'>
+					{this.props.day}
+				</div>
+				{cells}
+				<Calendar.Grid.Column.Courses />
+			</div>
+		);
+	}
+});
+
+Calendar.Grid.Column.Courses = React.createClass({
+	render: function() {
+		// course = { name, room, time }
+		var courses = [];
+		return (
+			<div className='calendar-grid-column-courses'>
+				{courses}
+			</div>
 		);
 	}
 });
@@ -175,6 +165,7 @@ Calendar.Course = React.createClass({
 /**
  * The Query section of the page. This section contains Search and Results.
  */
+
 var Query = React.createClass({
 	render: function() {
 		return (
@@ -191,6 +182,7 @@ var Query = React.createClass({
  * The Search section of the page. The user inputs search criteria into this
  * section, which sends the query to the backend server.
  */
+
 var Search = React.createClass({
 	render: function() {
 		return (
@@ -206,6 +198,10 @@ var Search = React.createClass({
 	}
 });
 
+/**
+ *  "Warning: Use the `defaultValue` or `value` props on <select> instead of setting
+ * `selected` on <option>." - console
+ */
 Search.Dept = React.createClass({
 	render: function() {
 		return (
@@ -232,6 +228,7 @@ Search.Course = React.createClass({
  * The Results section of the page. Results contains a scrollable list of courses
  * that match the user's query.
  */
+
 var Results = React.createClass({
 	clearResults: function() {
 		this.state.results = [];
