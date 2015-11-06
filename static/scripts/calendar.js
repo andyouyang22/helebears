@@ -292,6 +292,30 @@ Calendar.Course = React.createClass({
  * The Query section of the page. This section contains Search and Results.
  */
 
+var apiUrl = 'https://protected-refuge-7067.herokuapp.com';
+
+var makeGetRequest = function(url, onSuccess, onFailure) {
+	$.ajax({
+		type: 'GET',
+		url: apiUrl + url,
+		dataType: "json",
+		success: onSuccess,
+		error: onFailure
+	});
+};
+
+var makePostRequest = function(url, data, onSuccess, onFailure) {
+	$.ajax({
+		type: 'POST',
+		url: apiUrl + url,
+		data: JSON.stringify(data),
+		contentType: "application/json",
+		dataType: "json",
+		success: onSuccess,
+		error: onFailure
+	});
+};
+
 var Query = React.createClass({
 	render: function() {
 		return (
@@ -311,20 +335,48 @@ var Query = React.createClass({
 
 var Search = React.createClass({
 	getInitialState: function() {
+		var that = this;
+		var onSuccess = function(data) {
+			var depts = [];
+			for (var i = 0; i < data.results.length; i++) {
+				depts.push(data.results[i].department_name);
+			}
+			that.setState({
+				depts : depts,
+			});
+		};
+		var onFailure = function() {
+			console.error("Could not get department list");
+		}
+		makeGetRequest('/api/departments', onSuccess, onFailure);
 		return {
-			courses: [],
+			depts   : [],
+			courses : [],
 		};
 	},
-	handleDeptChange: function() {
-		debugger
-		return
+	handleDeptChange: function(e) {
+		var that = this;
+		var dept = e.target.value;
+		var onSuccess = function(data) {
+			var courses = [];
+			for (var i = 0; i < data.results.length; i++) {
+				courses.push(data.results[i].name);
+			}
+			that.setState({
+				courses : courses,
+			});
+		};
+		var onFailure = function() {
+			console.error("Could not get course list");
+		}
+		makeGetRequest('/api/courses?department_name=' + dept, onSuccess, onFailure);
 	},
 	render: function() {
 		return (
 			<div className='search pure-form'>
 				<fieldset className='pure-group'>
 					<legend className='search-title'>Search Courses</legend>
-					<Search.Dept depts={["Computer Science", "Math"]} onChange={this.handleDeptChange} />
+					<Search.Dept depts={this.state.depts} onChange={this.handleDeptChange} />
 					<Search.Course courses={[]} courses={this.state.courses} />
 					<a className='pure-button search-submit' href='query.html'>Search</a>
 				</fieldset>
@@ -345,9 +397,9 @@ Search.Dept = React.createClass({
 				<option value={dept} key={dept}>{dept}</option>
 			);
 		});
-		var onChange = this.props.onChange;
+		var change = this.props.onChange;
 		return (
-			<select className='search-dept' value='disabled' onChange={onChange}>
+			<select className='search-dept' defaultValue='disabled' onChange={change}>
 				<option className='default-option' value='disabled' disabled>
 					Department
 				</option>
@@ -367,9 +419,10 @@ Search.Course = React.createClass({
 		});
 		return (
 			<select className='search-course'>
-				<option className='default-option' value='disabled' disabled>
+				<option className='default-option' defaultValue='disabled' disabled>
 					Course
 				</option>
+				{courses}
 			</select>
 		);
 	}
