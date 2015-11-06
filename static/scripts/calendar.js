@@ -26,11 +26,33 @@ Menu.Logo = React.createClass({
 Menu.Buttons = React.createClass({
 	render: function() {
 		return (
-			<ul className='pure-menu-list'></ul>
+			<ul className='pure-menu-list'>
+				<Menu.LogIn />
+				<Menu.SignUp />
+			</ul>
 		);
 	}
 });
 
+Menu.LogIn = React.createClass({
+	render: function() {
+		return (
+			<li className='pure-menu-item button'>
+				<a className='pure-menu-link log-in'>Log In</a>
+			</li>
+		);
+	}
+});
+
+Menu.SignUp = React.createClass({
+	render: function() {
+		return (
+			<li className='pure-menu-item button'>
+				<a className='pure-menu-link sign-up'>Sign Up</a>
+			</li>
+		);
+	}
+});
 
 /**
  * The Calendar section of the page. This section graphically displays the user's
@@ -55,6 +77,18 @@ var Calendar = React.createClass({
 		this.setState(function(state, props) {
 			return {
 				courses : state.courses.concat([course]),
+			};
+		});
+	},
+	removeCourse: function(ccn) {
+		this.setState(function(state, props) {
+			for (var i = 0; i < state.courses.length; i++) {
+				if (state.courses[i].ccn == ccn) {
+					state.courses.splice(i, 1);
+				}
+			}
+			return {
+				courses : state.courses,
 			};
 		});
 	},
