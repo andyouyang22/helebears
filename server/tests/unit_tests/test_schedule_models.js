@@ -42,7 +42,19 @@ describe('============== Schedule ==============', function() {
     it('Test searchQuery()', function(done){
         res = {}
         res.json = function(v){}
-        scheduleModel.preprocess("",res)
+        scheduleModel.searchQuery("",res)
+        done()
+    })
+    it('Test createQuery()', function(done){
+        res = {}
+        res.json = function(v){}
+        scheduleModel.createQuery({},res)
+        done()
+    })
+    it('Test removeQuery()', function(done){
+        res = {}
+        res.json = function(v){}
+        scheduleModel.removeQuery({"unique_id": ""},res)
         done()
     })
 })

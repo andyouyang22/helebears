@@ -59,12 +59,10 @@ var scheduleModel = {
             })
         }).catch(function(err){
             res.json({status: -1, errors:['Course already added for user',err]});
-            console.log(err)
         });
     },
     removeQuery: function (data, res) {
         Schedules.findAll({where: data}).then(function(results){
-            console.log(results)
             results[0].destroy().then(function(){
                 res.json({status: 1})
             }).catch(function(err){
