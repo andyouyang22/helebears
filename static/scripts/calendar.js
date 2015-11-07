@@ -624,9 +624,10 @@ Results.Course.Lecture = React.createClass({
 			var r = data.results;
 			var ratings = [0, 0, 0];
 			for (var i = 0; i < r.length; i++) {
-				ratings[0] += r.rating_1;
-				ratings[1] += r.rating_2;
-				ratings[2] += r.rating_3;
+				debugger
+				ratings[0] += r[i].rating_1;
+				ratings[1] += r[i].rating_2;
+				ratings[2] += r[i].rating_3;
 			}
 			ratings[0] /= r.length;
 			ratings[1] /= r.length;
