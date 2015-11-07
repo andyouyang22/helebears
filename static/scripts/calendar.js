@@ -316,12 +316,38 @@ var makePostRequest = function(url, data, onSuccess, onFailure) {
 	});
 };
 
+var queryify = function(query) {
+	query = JSON.stringify(query);
+	return query
+		.replace(/"/g,"")
+		.replace(/{/g,'')
+		.replace(/}/g,'')
+		.replace(/:/g,'=')
+		.replace(/,/g,'&')
+		.replace(/ /g,'%20');
+}
+
 var Query = React.createClass({
+	clear: function() {
+		this.setState({
+			results : [],
+		});
+	},
+	display: function(results) {
+		this.setState({
+			results : results,
+		});
+	},
+	getInitialState: function() {
+		return {
+			results : testResults,
+		};
+	},
 	render: function() {
 		return (
 			<div className='query'>
 				<Search />
-				<Results courses={[]} />
+				<Results results={this.state.results} />
 			</div>
 		);
 	}
@@ -334,6 +360,18 @@ var Query = React.createClass({
  */
 
 var Search = React.createClass({
+	convertCCN: function(ccn) {
+		ccn = ccn + ""
+		for (var i = ccn.length; i < 5; i++) {
+			ccn = "0" + ccn;
+		}
+		return ccn;
+	},
+	convertTime: function(time) {
+		var t = parseTime(time);
+		// TODO: list all days for sections
+		return t.days[0] + " " + t.start.slice(0, 4) + " " + t.end.slice(0, 4);
+	},
 	getInitialState: function() {
 		var that = this;
 		var onSuccess = function(data) {
@@ -346,7 +384,7 @@ var Search = React.createClass({
 			});
 		};
 		var onFailure = function() {
-			console.error("Could not get department list");
+			console.error("Failed to load list of departments");
 		}
 		makeGetRequest('/api/departments', onSuccess, onFailure);
 		return {
@@ -356,7 +394,9 @@ var Search = React.createClass({
 	},
 	handleDeptChange: function(e) {
 		var that = this;
-		var dept = e.target.value;
+		var dept = queryify({
+			department_name : e.target.value,
+		});
 		var onSuccess = function(data) {
 			var courses = [];
 			for (var i = 0; i < data.results.length; i++) {
@@ -367,9 +407,44 @@ var Search = React.createClass({
 			});
 		};
 		var onFailure = function() {
-			console.error("Could not get course list");
+			console.error("Failed to load courses for " + e.target.value);
 		}
-		makeGetRequest('/api/courses?department_name=' + dept, onSuccess, onFailure);
+		makeGetRequest('/api/courses?' + dept, onSuccess, onFailure);
+	},
+	handleSubmission: function(e) {
+		e.preventDefault();
+		var that = this
+		var form = $(ReactDOM.findDOMNode(this));
+		// TODO: advanced search
+		var request = queryify({
+			department_name : form.find('.search-dept').val(),
+			name            : form.find('.search-course').val(),
+		});
+		var onSuccess = function(data) {
+			var results = [];
+			data.results.forEach(function(lec) {
+				var course = {
+					name : lec.department_name + " " + lec.name,
+					desc : lec.title,
+					inst : lec.professor_name,
+					time : that.convertTime(lec.time),
+					ccn  : that.convertCCN(lec.ccn),
+					sections : [],
+				};
+				lec.sections.forEach(function(sec) {
+					course.sections.push({
+						time : that.convertTime(sec.time),
+						ccn  : that.convertCCN(sec.ccn),
+					});
+				});
+				results.push(course);
+			});
+			QueryAPI.display(results);
+		};
+		var onFailure = function() {
+			console.error("Failed to load search results");
+		};
+		makeGetRequest('/api/courses?' + request, onSuccess, onFailure);
 	},
 	render: function() {
 		return (
@@ -378,7 +453,7 @@ var Search = React.createClass({
 					<legend className='search-title'>Search Courses</legend>
 					<Search.Dept depts={this.state.depts} onChange={this.handleDeptChange} />
 					<Search.Course courses={[]} courses={this.state.courses} />
-					<a className='pure-button search-submit' href='query.html'>Search</a>
+					<a className='pure-button search-submit' href='query.html' onClick={this.handleSubmission}>Search</a>
 				</fieldset>
 			</div>
 		);
@@ -428,6 +503,13 @@ Search.Course = React.createClass({
 	}
 });
 
+Search.Submit = React.createClass({
+	render: function() {
+		return (
+			<input className='pure-button search-submit' type='submit' />
+		);
+	}
+});
 
 /**
  * The Results section of the page. Results contains a scrollable list of courses
@@ -435,19 +517,9 @@ Search.Course = React.createClass({
  */
 
 var Results = React.createClass({
-	clearResults: function() {
-		this.state.results = [];
-	},
-	displayResults: function(results) {
-		this.state.results = results;
-	},
-	getInitialState: function() {
-		/* Should normally start empty; current non-empty for testing */
-		return {results: testResults};
-	},
 	render: function() {
 		var results = [];
-		this.state.results.forEach(function(c) {
+		this.props.results.forEach(function(c) {
 			results.push(
 				<Results.Course key={c.ccn} course={c} />
 			);
@@ -706,17 +778,17 @@ var testResults = [
 	}
 ];
 
-ReactDOM.render(
+var MenuAPI = ReactDOM.render(
 	<Menu />,
 	document.getElementById('container-top')
 );
 
-ReactDOM.render(
+var CalendarAPI = ReactDOM.render(
 	<Calendar courses={testCalendar} />,
 	document.getElementById('container-left')
 );
 
-ReactDOM.render(
+var QueryAPI = ReactDOM.render(
 	<Query />,
 	document.getElementById('container-right')
 );
