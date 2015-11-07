@@ -232,3 +232,47 @@
 	background-color: #eeeeee;
 	cursor: pointer;
 }
+
+/* Reviews */
+
+.user-reviews-page-holder {
+	width: 100%;
+	background-color: #eeeeee;
+	border-radius: 10px;
+	padding: 20px;
+}
+
+.review-overall {
+	text-align: center;
+}
+
+.review-values {
+	margin-left: auto;
+	margin-right: auto;
+}
+
+.professor-name {
+	font-size: 200%;
+	text-align: right;
+}
+
+.overall-rating {
+	text-align: left;
+}
+
+tr td:first-child {
+	text-align: right;
+}
+
+tr td:last-child {
+	text-align: left;
+}
+
+.review-container {
+	display: none;
+}
+
+.hide-review:hover {
+	text-decoration: underline;
+	cursor: pointer;
+}
