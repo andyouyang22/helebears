@@ -13,31 +13,11 @@ var Departments = sequelize.define('Departments', {
 Departments.sync()
 
 var departmentModel = {
-    getName: function() {
-
-    },
-    dataValidator: function(queryJSON) {
-        var errors = [];
-        var response = {};
-
-        if (Object.keys(queryJSON).length != 0){
-            errors.push('Unexpected arguments were received');
-        }
-
-        if (errors.length > 0){
-            response.status = constants.STATUS_ERROR;
-            response.errors = errors;
-        } else {
-            response.status = constants.STATUS_SUCCESS;
-        }
-
-    },
     preprocess: function(query_args,type,res) {
         if (type === 'get'){
             departmentModel.searchQuery(query_args,res);
         }
 
-        if (type == 'post'){}
 
     },
     searchQuery: function(filter,res) {
@@ -51,9 +31,6 @@ var departmentModel = {
             }).catch(function(err) {
                 res.json({status:-1, errors:["Unable to correctly retrieve all departments",err]})
             })
-    },
-    postprocess: function(queryResults, res) {
-
     },
 
     controller: function(query_args,type,res) {

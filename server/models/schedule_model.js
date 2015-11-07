@@ -21,19 +21,11 @@ var Schedules = sequelize.define("Schedules", {
 Schedules.sync()
 
 var scheduleModel = {
-    getName: function() {
-
-    },
-    dataValidator: function(queryJSON) {
-    },
     preprocess: function(userDataValues,type,res) {
         if (type === 'get'){
             scheduleModel.searchQuery(userDataValues,res);
         }
 
-        if (type == 'post'){
-
-        }
 
     },
     searchQuery: function(unique_id,res) {
@@ -67,9 +59,6 @@ var scheduleModel = {
         }).catch(function(err){
             res.json({status: -1, errors:['Error removing course, course may not exist',err]});
         });
-    },
-    postprocess: function(queryResults, res) {
-
     },
 
     controller: function(userDataValues,type,res) {

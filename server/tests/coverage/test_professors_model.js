@@ -43,23 +43,16 @@ describe('============== Professors ==============', function() {
   		done()
 
   	})
-	it('Test searchQuery() failure', function(done){
-		res = {}
-		res.json = function(v){}
-		professorsModel.searchQuery("", res)
-		done()
-
-	})
   	it('Test preprocess()', function(done){
   		res = {}
   		res.json = function(v){}
-  		professorsModel.preprocess({},"get",res)
+  		professorsModel.preprocess({}, res)
   		done()
   	})
   	it('Test controller()', function(done){
   		res = {}
   		res.json = function(v){}
-  		professorsModel.controller({}, "get",res)
+  		professorsModel.controller({}, res)
   		done()
   	})
   	it('Test Adding Professor and Deleting it', function(done){

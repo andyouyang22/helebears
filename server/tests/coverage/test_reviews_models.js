@@ -43,36 +43,16 @@ describe('============== Reviews ==============', function() {
   		done()
 
   	})
-	it('Test searchQuery()', function(done){
-		res = {}
-		res.json = function(v){}
-		reviewsModel.searchQuery({'nameasdfa':"12312"}, res)
-		done()
-
-	})
   	it('Test preprocess()', function(done){
   		res = {}
   		res.json = function(v){}
-  		reviewsModel.preprocess({}, "get", res)
+  		reviewsModel.preprocess({}, res)
   		done()
   	})
   	it('Test controller()', function(done){
   		res = {}
   		res.json = function(v){}
-  		reviewsModel.controller({}, "get", res)
+  		reviewsModel.controller({}, res)
   		done()
   	})
-	it('Test controller()', function(done){
-		arguements = {
-			rating_1: "1",
-			rating_2: "2",
-			rating_3: "3",
-			review: "Hello",
-			professor_name: "Helloooooo"
-		}
-		res = {}
-		res.json = function(v){}
-		reviewsModel.controller({}, "post", res)
-		done()
-	})
 });

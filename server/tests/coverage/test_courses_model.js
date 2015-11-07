@@ -38,13 +38,12 @@ describe('============== Courses ==============', function() {
   			done()
   		})
   	})
-	it('Test postprocess fail()', function(done){
-		res = {}
-		res.json = function(v){}
-		courseModel.postprocess(res, {asd: "!!!"})
-		done()
-	})
-
+  	it('Test preprocess()', function(done){
+  		res = {}
+  		res.json = function(v){}
+  		courseModel.preprocess(res, {})
+  		done()
+  	})
   	it('Test controller()', function(done){
   		res = {}
   		res.json = function(v){}

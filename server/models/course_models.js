@@ -81,36 +81,6 @@ Courses.sync();
 Sections.sync();
 
 var courseModel = {
-    getName: function() {
-
-    },
-    dataValidator: function(queryJSON) {
-        var errors = [];
-        var response = {};
-
-        if (Object.keys(queryJSON).length == 0){
-            errors.push('No query arguments were provided.');
-        }
-
-        if ((!queryJSON.department) || queryJSON.length < 1 || queryJSON.length > 128) {
-            errors.push('Invalid department size.');
-        }
-
-        if (queryJSON.course && queryJSON.length < 0 && queryJSON.length > 128) {
-            errors.push('Invalid course size.');
-        }
-
-        if (errors.length > 0){
-            response.status = constants.STATUS_ERROR;
-            response.errors = errors;
-        } else {
-            response.status = constants.STATUS_SUCCESS;
-        }
-    },
-    preprocess: function(inputJSON) {
-
-    },
-
     postprocess: function(res, filter) {
       Courses.findAll({where:filter}).then(
                 function(courses){

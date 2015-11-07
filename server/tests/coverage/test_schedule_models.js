@@ -45,12 +45,6 @@ describe('============== Schedule ==============', function() {
         scheduleModel.searchQuery("",res)
         done()
     })
-    it('Test controller() Failure', function(done){
-        res = {}
-        res.json = function(v){}
-        scheduleModel.controller({},"get",res)
-        done()
-    })
     it('Test createQuery()', function(done){
         res = {}
         res.json = function(v){}

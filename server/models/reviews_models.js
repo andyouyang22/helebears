@@ -31,42 +31,6 @@ Reviews.sync()
  * @type {{getName: Function, dataValidator: Function, preprocess: Function, searchQuery: Function, createQuery: Function, postprocess: Function, controller: Function}}
  */
 var reviewsModel = {
-    getName: function () {
-
-    },
-    dataValidator: function (queryJSON, response) {
-        var errors = [];
-
-
-        if (Object.keys(queryJSON).length == 0) {
-            errors.push('No arguments were provided');
-        }
-        var professor = queryJSON.professor;
-        if ((!professor) || professor.length < 1 || professor.length > 128) {
-            errors.push('Invalid professor name length.');
-        }
-        var rating_1 = queryJSON.rating_1;
-        if ((!rating_1) || rating_1.length < 1 || rating_1.length > 128) {
-            errors.push('Invalid professor name length.');
-        }
-
-        var rating_2 = queryJSON.rating_2;
-        if ((!rating_2) || rating_2.length < 1 || rating_2.length > 128) {
-            errors.push('Invalid rating_2 length.');
-        }
-
-        var rating_3 = queryJSON.rating_3;
-        if ((!rating_3) || rating_3.length < 1 || rating_3.length > 128) {
-            errors.push('Invalid rating_3 length.');
-        }
-
-        if (errors.length > 0) {
-            response.status = -1;
-            response.errors = errors;
-        } else {
-            response.status = 1;
-        }
-    },
     preprocess: function (query_args,type,res) {
         if (type === 'get') {
             reviewsModel.searchQuery(query_args, res);
@@ -107,10 +71,6 @@ var reviewsModel = {
             }).catch(function(err){
                     res.json({status: -1, errors:['Unable to create new review',err]});
             });
-    },
-
-    postprocess: function (queryResults,res) {
-
     },
 
     controller: function (query_args,type,res) {
