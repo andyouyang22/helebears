@@ -19,6 +19,9 @@ Functional Tests:
 
 	./node_modules/.bin/mocha tests/functional_tests/
 
+Front End Unit and Functional Tests:
+	./static/testing/index_test.html
+
 
 ## Contributors
 
