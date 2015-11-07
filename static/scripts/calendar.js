@@ -1,5 +1,5 @@
 
-var apiUrl = '';
+var apiUrl = 'http://protected-refuge-7067.herokuapp.com';
 
 var makeGetRequest = function(url, onSuccess, onFailure) {
 	$.ajax({
@@ -99,12 +99,17 @@ var Calendar = React.createClass({
 	getInitialState: function() {
 		var that = this;
 		var onSuccess = function(data) {
+			if (data.status == -1) {
+				console.log("Failed ot load user's schedule");
+				console.log("Errors: " + data.errors);
+				return
+			}
 			var courses = [];
 			data.results.forEach(function(result) {
 				var course = {
 					name : result.name_and_number,
 					time : result.course_time,
-					room : "420 Barrows", // TODO: store room in backend
+					room : "420 Barrows", // TODO: store room location in backend
 					ccn  : result.ccn,
 				};
 				if (course.ccn == undefined) {
@@ -361,7 +366,7 @@ var Query = React.createClass({
 	},
 	getInitialState: function() {
 		return {
-			results : testResults,
+			results : [],
 		};
 	},
 	render: function() {
@@ -539,6 +544,11 @@ Search.Submit = React.createClass({
  */
 
 var Results = React.createClass({
+	getInitialState: function() {
+		return {
+			reviews : [],
+		};
+	},
 	render: function() {
 		var results = [];
 		this.props.results.forEach(function(c) {
@@ -555,6 +565,28 @@ var Results = React.createClass({
 });
 
 Results.Course = React.createClass({
+	getInitialState: function() {
+		return {
+			review : {
+				name    : "",
+				ratings : [],
+			},
+		};
+	},
+	showReview: function(name, ratings) {
+		var review = {
+			name    : name,
+			ratings : ratings,
+		}
+		this.setState({
+			review : review,
+		});
+		var container = $(ReactDOM.findDOMNode(this)).find('.review-container');
+		container.slideDown();
+	},
+	hideReview: function() {
+		$(ReactDOM.findDOMNode(this)).find('.review-container').slideUp();
+	},
 	toggleSections: function() {
 		$(ReactDOM.findDOMNode(this)).find('.results-course-sections').slideToggle();
 	},
@@ -562,8 +594,11 @@ Results.Course = React.createClass({
 		var c = this.props.course;
 		return (
 			<div className='results-course'>
-				<Results.Course.Lecture name={c.name} desc={c.desc} inst={c.inst} time={c.time} room={c.room} ccn={c.ccn} toggleSections={this.toggleSections} />
+				<Results.Course.Lecture name={c.name} desc={c.desc} inst={c.inst} time={c.time} room={c.room} ccn={c.ccn} toggleSections={this.toggleSections} showReview={this.showReview} />
 				<Results.Course.Sections sections={this.props.course.sections} />
+				<div className='review-container'>
+					<Review review={this.state.review} hideReview={this.hideReview} />
+				</div>
 			</div>
 		);
 	}
@@ -580,7 +615,29 @@ Results.Course.Lecture = React.createClass({
 		CalendarAPI.insertCourse(course);
 	},
 	reviews: function() {
-		alert("This should display reviews; implemented but not integrated");
+		var that = this;
+		var onSuccess = function(data) {
+			if (data.status == -1) {
+				console.log("Failed to load professor reviews");
+				console.log("Errors: " + data.errors);
+			}
+			var r = data.results;
+			var ratings = [0, 0, 0];
+			for (var i = 0; i < r.length; i++) {
+				ratings[0] += r.rating_1;
+				ratings[1] += r.rating_2;
+				ratings[2] += r.rating_3;
+			}
+			ratings[0] /= r.length;
+			ratings[1] /= r.length;
+			ratings[2] /= r.length;
+			that.props.showReview(name, ratings);
+		};
+		var onFailure = function() {
+			console.log("Failed to load professor reviews");
+		};
+		var prof = this.props.inst;
+		makeGetRequest('/api/reviews?professor_name=' + prof, onSuccess, onFailure);
 	},
 	render: function() {
 		var t = parseTime(this.props.time);
@@ -667,6 +724,46 @@ Results.Course.Sections.Section = React.createClass({
 			</div>
 		);
 	}
+});
+
+/**
+ * The Reviews section of the page. This area is only displayed when selected.
+ */
+
+var Review = React.createClass({
+ 	render: function() {
+ 		var r = this.props.review.ratings;
+ 		var overall = (r[0] + r[1] + r[2]) / 3
+ 		return (
+			<div className="user-reviews-page-holder" id="user-reviews-page">
+				<div className="hide-review" onClick={this.props.hideReview}>Hide</div>
+				<div className='review review-overall'>
+					<table className='pure-table review-values'>
+						<thead>
+							<tr className='row-1'>
+								<th className='pure-group professor-name'>{this.props.name}</th>
+								<th className='overall-rating'>{overall}</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr className='row-2'>
+								<td>Clarity of Content</td>
+								<td>{r[0]}</td>
+							</tr>
+							<tr className='row-3'>
+								<td>Excitement Level</td>
+								<td>{r[1]}</td>
+							</tr>
+							<tr className='row-4'>
+								<td>Easiness</td>
+								<td>{r[2]}</td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+			</div>
+ 		);
+ 	}
 });
 
 
