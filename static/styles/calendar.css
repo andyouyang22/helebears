@@ -185,11 +185,17 @@
 
 .results-course-lec-name:hover {
 	cursor: pointer;
-	color: #dddddd;
+	color: white;
 }
 
 .results-course-lec-desc {
 	margin-bottom: 5px;
+}
+
+.results-course-lec-inst:hover {
+	color: #3399ff;
+	text-decoration: underline;
+	cursor: pointer;
 }
 
 .results-course-sections {

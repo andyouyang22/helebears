@@ -570,6 +570,9 @@ Results.Course.Lecture = React.createClass({
 		};
 		CalendarAPI.insertCourse(course);
 	},
+	reviews: function() {
+		alert("This should display reviews; implemented but not integrated");
+	},
 	render: function() {
 		var t = parseTime(this.props.time);
 		var time = t.days + " " + displayTime(t.start) + " - " + displayTime(t.end);
@@ -577,7 +580,7 @@ Results.Course.Lecture = React.createClass({
 			<div className='results-course-lecture'>
 				<div className='results-course-lec-name' onClick={this.props.toggleSections}>{this.props.name}</div>
 				<div className='results-course-lec-desc'>{this.props.desc}</div>
-				<div className='results-course-lec-inst'>{this.props.inst}</div>
+				<div className='results-course-lec-inst' onClick={this.reviews}>{this.props.inst}</div>
 				<div className='results-course-lec-time'>{time}</div>
 				<Results.Course.Lecture.Add add={this.add} />
 			</div>
