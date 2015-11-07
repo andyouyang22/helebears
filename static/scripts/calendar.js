@@ -27,80 +27,7 @@ Menu.Buttons = React.createClass({
 	render: function() {
 		return (
 			<ul className='pure-menu-list'>
-				<Menu.LogIn />
-				<Menu.SignUp />
 			</ul>
-		);
-	}
-});
-
-Menu.LogIn = React.createClass({
-	render: function() {
-		return (
-			<li className='pure-menu-item button'>
-				<a className='pure-menu-link log-in'>Log In</a>
-			</li>
-		);
-	}
-});
-
-Menu.SignUp = React.createClass({
-	render: function() {
-		return (
-			<li className='pure-menu-item button'>
-				<a className='pure-menu-link sign-up'>Sign Up</a>
-			</li>
-		);
-	}
-});
-
-Menu.LogIn.Form = React.createClass({
-	render: function() {
-		return (
-			<form className='pure-form pure-form-aligned log-in-form drop-down-form' onsubmit="return false">
-				<fieldset>
-					<div className='pure-control-group'>
-						<label for='username'>Username</label>
-						<input type='text' name='username' placeholder="Username" required />
-					</div>
-					<div className='pure-control-group'>
-						<label for='password'>Password</label>
-						<input type='password' name='password' placeholder="Password" required />
-					</div>
-				</fieldset>
-				<div className='pure-controls'>
-					<label className='pure-checkbox' for='remember-me'>
-						<input name='remember-me' type='checkbox' /> Remember me
-					</label>
-					<button className='pure-button submit-log-in' type='submit'>Log In</button>
-				</div>
-			</form>
-		);
-	}
-});
-
-Menu.SignUp.Form = React.createClass({
-	render: function() {
-		return (
-			<form class='pure-form pure-form-aligned sign-up-form drop-down-form' onsubmit="return false">
-				<fieldset>
-					<div class='pure-control-group'>
-						<label for='username'>Username</label>
-						<input type='text' name='username' placeholder="Username" required />
-					</div>
-					<div class='pure-control-group'>
-						<label for='password'>Enter password</label>
-						<input type='password' name='password' placeholder="Password" required />
-					</div>
-					<div class='pure-control-group'>
-						<label for='password'>Confirm password</label>
-						<input type='password' name='password' placeholder="Password" required />
-					</div>
-				</fieldset>
-				<div class='pure-controls'>
-					<button class='pure-button submit-sign-up' type='submit'>Sign Up</button>
-				</div>
-			</form>
 		);
 	}
 });
@@ -117,6 +44,16 @@ var hours = [
 ];
 
 var Calendar = React.createClass({
+	ccn: function(a, b) {
+		// Hash to a CCN
+		var hashCode = function(s) {
+			return s.split("").reduce(function(a, b) {
+				a = ((a << 5) - a) + b.charCodeAt(0);
+				return a & a;
+			}, 0);
+		};
+		return ((hashCode(a) * 1373 + hashCode(b) * 11) + "").slice(0, 5);
+	},
 	conflictsWith: function(newCourse) {
 		return false;
 		for (var i = 0; i < this.state.courses.length; i++) {
@@ -136,8 +73,31 @@ var Calendar = React.createClass({
 		return false;
 	},
 	getInitialState: function() {
+		var that = this;
+		var onSuccess = function(data) {
+			var courses = [];
+			data.results.forEach(function(result) {
+				var course = {
+					name : result.name_and_number,
+					time : result.course_time,
+					room : "",
+					ccn  : result.ccn,
+				};
+				if (course.ccn == undefined) {
+					course.ccn = that.ccn(course.name, course.time);
+				}
+				courses.push(course);
+			});
+			that.setState({
+				courses : courses,
+			});
+		};
+		var onFailure = function() {
+			console.log("Failed to load user's schedule");
+		};
+		makeGetRequest('/api/schedules', onSuccess, onFailure);
 		return {
-			courses : this.props.courses,
+			courses : [],
 		};
 	},
 	insertCourse: function(course) {
@@ -148,6 +108,19 @@ var Calendar = React.createClass({
 				courses : state.courses.concat([course]),
 			};
 		});
+		var onSuccess = function() {
+			console.log("Successfully added course to user's schedule in backend");
+		};
+		var onFailure = function() {
+			console.log("Failed to add course to user's schedule in backend");
+		};
+		var data = {
+			name_and_number : course.name,
+			course_time     : course.time,
+			section_time    : course.time,
+			lab_time        : course.time,
+		};
+		makePostRequest('/api/schedules/add', data, onSuccess, onFailure);
 	},
 	removeCourse: function(ccn) {
 		this.setState(function(state, props) {
@@ -304,7 +277,7 @@ Calendar.Course = React.createClass({
  * The Query section of the page. This section contains Search and Results.
  */
 
-var apiUrl = 'https://protected-refuge-7067.herokuapp.com';
+var apiUrl = 'http://localhost:3000';
 
 var makeGetRequest = function(url, onSuccess, onFailure) {
 	$.ajax({
@@ -352,7 +325,7 @@ var Query = React.createClass({
 	},
 	getInitialState: function() {
 		return {
-			results : testResults,
+			results : [],
 		};
 	},
 	render: function() {
