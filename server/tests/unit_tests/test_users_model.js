@@ -96,7 +96,7 @@ describe('Asynchronous Users Testing', function() {
 
     describe('UserMethods validPassword works ', function() {
         it('It should reflect equlity', function(done) {
-            assert.equal(UsersMethods.validPassword('passwor',UsersMethods.generateHash('password')),true);
+            assert.equal(UsersMethods.validPassword('password',UsersMethods.generateHash('password')),true);
             done();
         });
     });
