@@ -15,7 +15,7 @@ describe('============== Courses FUNCTIONAL TESTS ==============', function() {
       var Departments = departments_model.Departments
       Departments.create({department_name: "dept25"}).then(function(de){
         Professors.create({professor_name: "prof35"}).then(function(prof){
-          Courses.create({name:"61D", number: 003, name_and_number: "61B 003", professor_name: "prof35", department_name: "dept25", type: "Data Structures",
+          Courses.create({name:"61D", number: 3, name_and_number: "61B 003", professor_name: "prof35", department_name: "dept25", type: "Data Structures",
                           ccn: 10000, units: 1.5, time: "MW", location: "LAKASHING", final_slot:2, limit:10, enrolled:5, waitlist:1, note: ""}).then(
                           function(course){
                             course.destroy({ force: true }).then(function(){
@@ -47,10 +47,10 @@ describe('============== Courses FUNCTIONAL TESTS ==============', function() {
       var Departments = departments_model.Departments
       Departments.create({department_name: "dept2222"}).then(function(de){
         Professors.create({professor_name: "prof3333"}).then(function(prof){
-          Courses.create({name:"61D", number: 003, name_and_number: "61B 003", professor_name: "prof3333", department_name: "dept2222", type: "Data Structures",
+          Courses.create({name:"61D", number: 3, name_and_number: "61B 003", professor_name: "prof3333", department_name: "dept2222", type: "Data Structures",
                           ccn: 10000, units: 1.5, time: "MW", location: "LAKASHING", final_slot:2, limit:10, enrolled:5, waitlist:1, note: ""}).then(
                           function(course){
-                            Courses.create({name:"61D", number: 003, name_and_number: "61B 003", professor_name: "prof3333", department_name: "dept2222", type: "Data Structures",
+                            Courses.create({name:"61D", number: 3, name_and_number: "61B 003", professor_name: "prof3333", department_name: "dept2222", type: "Data Structures",
                                             ccn: 10000, units: 1.5, time: "MW", location: "LAKASHING", final_slot:2, limit:10, enrolled:5, waitlist:1, note: ""}).then(
                                             function(failure){
                                                 throw "Should error"
@@ -92,10 +92,10 @@ describe('============== Courses FUNCTIONAL TESTS ==============', function() {
       var Departments = departments_model.Departments
       Departments.create({department_name: "dept22222"}).then(function(de){
         Professors.create({professor_name: "prof33333"}).then(function(prof){
-          Courses.create({name:"61D", number: 003, name_and_number: "61B 003", professor_name: "prof33333", department_name: "dept22222", type: "Data Structures",
+          Courses.create({name:"61D", number: 3, name_and_number: "61B 003", professor_name: "prof33333", department_name: "dept22222", type: "Data Structures",
                           ccn: 10000, units: 1.5, time: "MW", location: "LAKASHING", final_slot:2, limit:10, enrolled:5, waitlist:1, note: ""}).then(
                           function(course){
-                            Courses.create({name:"61D", number: 003, name_and_number: "61M 003", professor_name: "prof33333", department_name: "dept22222", type: "Data Structures",
+                            Courses.create({name:"61D", number: 3, name_and_number: "61M 003", professor_name: "prof33333", department_name: "dept22222", type: "Data Structures",
                                             ccn: 10000, units: 1.5, time: "MW", location: "LAKASHING", final_slot:2, limit:10, enrolled:5, waitlist:1, note: ""}).then(
                                             function(course2){
                                               course2.destroy({ force: true }).then(function(){
