@@ -1,5 +1,5 @@
 
-var apiUrl = 'http://localhost:3000';
+var apiUrl = '';
 
 var makeGetRequest = function(url, onSuccess, onFailure) {
 	$.ajax({
