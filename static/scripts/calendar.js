@@ -250,6 +250,14 @@ Calendar.Grid.Column.Courses = React.createClass({
 
 // http://facebook.github.io/react/docs/multiple-components.html#dynamic-children
 Calendar.Course = React.createClass({
+	shorten: function(str) {
+		var tokens = str.split(" ");
+		var result = "";
+		for (var i = 0; i < tokens.length - 1; i++) {
+			result += tokens[i][0]
+		}
+		return result + " " + tokens[tokens.length - 1];
+	},
 	style: function() {
 		var css = {};
 		var c = this.props.course;
@@ -264,7 +272,7 @@ Calendar.Course = React.createClass({
 		var css = this.style();
 		return (
 			<div className='calendar-course' style={css}>
-				<div className='calendar-course-name'>{c.name}</div>
+				<div className='calendar-course-name'>{this.shorten(c.name)}</div>
 				<div className='calendar-course-type' hidden>{c.type}</div>
 				<div className='calendar-course-room'>{c.room}</div>
 			</div>
