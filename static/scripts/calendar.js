@@ -172,11 +172,6 @@ Calendar.Axis = React.createClass({
 });
 
 Calendar.Grid = React.createClass({
-	componentDidMount: function() {
-		for (var i = 0; i < this.props.courses.length; i++) {
-			this.insertCourse(this.props.courses[i]);
-		}
-	},
 	getInitialState: function() {
 		return {
 			courses : {
@@ -185,11 +180,12 @@ Calendar.Grid = React.createClass({
 		};
 	},
 	// @param course = {name, room, time, ccn}
-	insertCourse: function(course) {
-		var t =	parseTime(course.time);
-		this.setState(function(state, props) {
-			var updated = state.courses;
-			// Create a course for each day (e.g. "TR" means two classes)
+	updatedCourses: function() {
+		var courses = {
+			"M": [], "T": [], "W": [], "R": [], "F": [],
+		};
+		this.props.courses.forEach(function(course) {
+			var t = parseTime(course.time);
 			for (var i = 0; i < t.days.length; i++) {
 				var day = t.days[i]
 				var newCourse = {
@@ -198,16 +194,14 @@ Calendar.Grid = React.createClass({
 					time : day + " " + t.start + " " + t.end,
 					ccn  : course.ccn,
 				};
-				updated[day].push(newCourse)
+				courses[day].push(newCourse);
 			}
-			return {
-				courses : updated,
-			};
 		});
+		return courses;
 	},
 	render: function() {
 		var columns = [];
-		var courses = this.state.courses;
+		var courses = this.updatedCourses();
 		for (var day in courses) {
 			columns.push(
 				<Calendar.Grid.Column key={day} day={day} courses={courses[day]} />
@@ -427,6 +421,7 @@ var Search = React.createClass({
 					name : lec.department_name + " " + lec.name,
 					desc : lec.title,
 					inst : lec.professor_name,
+					room : lec.location,
 					time : that.convertTime(lec.time),
 					ccn  : that.convertCCN(lec.ccn),
 					sections : [],
@@ -540,7 +535,7 @@ Results.Course = React.createClass({
 		var c = this.props.course;
 		return (
 			<div className='results-course'>
-				<Results.Course.Lecture name={c.name} desc={c.desc} inst={c.inst} time={c.time} toggleSections={this.toggleSections} />
+				<Results.Course.Lecture name={c.name} desc={c.desc} inst={c.inst} time={c.time} room={c.room} ccn={c.ccn} toggleSections={this.toggleSections} />
 				<Results.Course.Sections sections={this.props.course.sections} />
 			</div>
 		);
@@ -548,6 +543,15 @@ Results.Course = React.createClass({
 });
 
 Results.Course.Lecture = React.createClass({
+	add: function() {
+		var course = {
+			name : this.props.name,
+			room : this.props.room,
+			time : this.props.time,
+			ccn  : this.props.ccn,
+		};
+		CalendarAPI.insertCourse(course);
+	},
 	render: function() {
 		var t = parseTime(this.props.time);
 		var time = t.days + " " + displayTime(t.start) + " - " + displayTime(t.end);
@@ -557,7 +561,16 @@ Results.Course.Lecture = React.createClass({
 				<div className='results-course-lec-desc'>{this.props.desc}</div>
 				<div className='results-course-lec-inst'>{this.props.inst}</div>
 				<div className='results-course-lec-time'>{time}</div>
+				<Results.Course.Lecture.Add add={this.add} />
 			</div>
+		);
+	}
+});
+
+Results.Course.Lecture.Add = React.createClass({
+	render: function() {
+		return (
+			<div className='results-course-lecture-add' onClick={this.props.add}>Add Course</div>
 		);
 	}
 });
@@ -719,6 +732,7 @@ var testResults = [
 		name : "Computer Science 168",
 		desc : "Internet Architecture and Protocol",
 		inst : "Scott Shenker",
+		room : "155 Dwinelle",
 		time : "TR 1700 1830",
 		ccn  : "26601",
 		sections : [
@@ -740,6 +754,7 @@ var testResults = [
 		name : "Computer Science 169",
 		desc : "Software Engineering",
 		inst : "George Necula",
+		room : "306 Soda",
 		time : "TR 0930 1100",
 		ccn  : "26646",
 		sections : [],
@@ -748,6 +763,7 @@ var testResults = [
 		name : "Computer Science 170",
 		desc : "Efficient Algorithms and Intractable Problems",
 		inst : "Prasat Raghavendra",
+		room : "155 Dwinelle",
 		time : "MW 1400 1530",
 		ccn  : "26661",
 		sections : [],
@@ -756,6 +772,7 @@ var testResults = [
 		name : "Computer Science 186",
 		desc : "Introduction to Database Systems",
 		inst : "Eric Brewer",
+		room : "245 Li Ka Shing",
 		time : "MW 1700 1830",
 		ccn  : "26757",
 		sections : [],
@@ -764,6 +781,7 @@ var testResults = [
 		name : "Computer Science 188",
 		desc : "Introduction to Artifical Intelligence",
 		inst : "Stewart Russell",
+		room : "155 Dwinelle",
 		time : "TR 1230 1400",
 		ccn  : "26799",
 		sections : [],
@@ -772,6 +790,7 @@ var testResults = [
 		name : "Computer Science 189",
 		desc : "Introduction to Machine Learning",
 		inst : "Alexei Efros",
+		room : "245 Li Ka Shing",
 		time : "TR 1230 1400",
 		ccn  : "26847",
 		sections : [],

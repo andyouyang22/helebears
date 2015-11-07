@@ -157,6 +157,25 @@
 	background-image: -ms-linear-gradient(#3399ff 30px, white 30px);
 }
 
+.results-course-lecture-add {
+	font-size: 80%;
+	float: right;
+	position: relative;
+	right: 5px;
+	bottom: 15px;
+	background-color: white;
+	border: 1px solid #eeeeee;
+	border-radius: 2px;
+	padding: 4px;
+	padding-left: 8px;
+	padding-right: 8px;
+}
+
+.results-course-lecture-add:hover {
+	background-color: #eeeeee;
+	cursor: pointer;
+}
+
 .results-course-lec-name {
 	color: #eeeeee;
 	margin-bottom: 8px;
