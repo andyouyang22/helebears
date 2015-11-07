@@ -25,15 +25,18 @@
   <script src="mocha/mocha.js"></script>
   <script src="chai/chai.js"></script>
 	<script src="scripts/jquery.min.js"></script>
-	<!-- Load common page functionality -->
+	
+	<script src="scripts/blanket.min.js">
+		data-cover-adapter="scripts/mocha-blanket.js"</script>
+	<script type="test/javascript" src="scripts/mocha-blanket.js"></script>
 	<script src="scripts/main_test.js"></script>
-	<!-- Load home page Javscript functionality -->
-	<!-- <script src="scripts/results.js"></script> -->
-	<!-- <script src="scripts/reviews.js"></script> -->
 	<script src="scripts/functions.js"></script>
-	<script src="scripts/index_test.js"></script>
+		
   <script>mocha.setup('bdd')</script>
-  <script src="scripts/test.js"></script>
+	  <script src="scripts/index_test.js" data-cover></script>
+	 <script src="scripts/test.js"></script>
+ 
+  
 	
 	
 	<!-- Run start-up functions after page has loaded -->
@@ -48,7 +51,9 @@
 		});
 	</script>
 	
-		<div class="pure-menu pure-menu-horizontal">
+	<script src="scripts/mocha-blanket.js"></script>
+	
+		<div class="pure-menu pure-menu-horizontal" style = "display:none">
 		<header>
 			<!-- CSS bug when logo is clicked -->
 			<a href="#" id="helebears-button" class="pure-menu-heading pure-menu-link">HeleBears</a>
