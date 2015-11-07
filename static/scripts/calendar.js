@@ -1,4 +1,28 @@
 
+var apiUrl = 'http://localhost:3000';
+
+var makeGetRequest = function(url, onSuccess, onFailure) {
+	$.ajax({
+		type: 'GET',
+		url: apiUrl + url,
+		dataType: "json",
+		success: onSuccess,
+		error: onFailure
+	});
+};
+
+var makePostRequest = function(url, data, onSuccess, onFailure) {
+	$.ajax({
+		type: 'POST',
+		url: apiUrl + url,
+		data: JSON.stringify(data),
+		contentType: "application/json",
+		dataType: "json",
+		success: onSuccess,
+		error: onFailure
+	});
+};
+
 /**
  * The Menu section of the page. This section displays the logo and may contain
  * additional menu buttons, such as the log-out button.
@@ -312,30 +336,6 @@ Calendar.Course.Remove = React.createClass({
 /**
  * The Query section of the page. This section contains Search and Results.
  */
-
-var apiUrl = 'http://localhost:3000';
-
-var makeGetRequest = function(url, onSuccess, onFailure) {
-	$.ajax({
-		type: 'GET',
-		url: apiUrl + url,
-		dataType: "json",
-		success: onSuccess,
-		error: onFailure
-	});
-};
-
-var makePostRequest = function(url, data, onSuccess, onFailure) {
-	$.ajax({
-		type: 'POST',
-		url: apiUrl + url,
-		data: JSON.stringify(data),
-		contentType: "application/json",
-		dataType: "json",
-		success: onSuccess,
-		error: onFailure
-	});
-};
 
 var queryify = function(query) {
 	query = JSON.stringify(query);
