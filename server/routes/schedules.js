@@ -22,7 +22,6 @@ router.post('/add',function(req, res, next) {
         res.json({status:-1, errors: ["name_and_number not sent with post request's body"]})
     }
     else{
-
         req.body.unique_id = req.user.dataValues.email
         scheduleModel.createQuery(req.body, res)
     }

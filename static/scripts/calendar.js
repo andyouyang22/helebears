@@ -117,6 +117,24 @@ var hours = [
 ];
 
 var Calendar = React.createClass({
+	conflictsWith: function(newCourse) {
+		return false;
+		for (var i = 0; i < this.state.courses.length; i++) {
+			var course = this.state.courses[i];
+			var a  = parseTime(newCourse.time);
+			var b  = parseTime(course.time);
+			var aStart = parseInt(a.start);
+			var aEnd   = parseInt(a.end);
+			var bStart = parseInt(b.start);
+			var bEnd   = parseInt(b.end);
+			if (aStart >= bStart && aStart <= bEnd) {
+				return true;
+			} else if (aEnd >= bStart && aEnd <= bEnd) {
+				return true;
+			}
+		}
+		return false;
+	},
 	getInitialState: function() {
 		return {
 			courses : this.props.courses,
@@ -797,13 +815,15 @@ var testResults = [
 	}
 ];
 
+var testUser = "username420";
+
 var MenuAPI = ReactDOM.render(
 	<Menu />,
 	document.getElementById('container-top')
 );
 
 var CalendarAPI = ReactDOM.render(
-	<Calendar courses={testCalendar} />,
+	<Calendar courses={testCalendar} user={testUser} />,
 	document.getElementById('container-left')
 );
 
