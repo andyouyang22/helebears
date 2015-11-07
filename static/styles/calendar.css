@@ -77,15 +77,6 @@
 	background-image: -ms-linear-gradient(#3399ff 14px, white 14px);
 }
 
-.calendar-course:hover {
-	cursor: pointer;
-	background-image: linear-gradient(#3399ff 14px, #eeeeee 14px);
-	background-image: -o-linear-gradient(#3399ff 14px, #eeeeee 14px);
-	background-image: -moz-linear-gradient(#3399ff 14px, #eeeeee 14px);
-	background-image: -webkit-linear-gradient(#3399ff 14px, #eeeeee 14px);
-	background-image: -ms-linear-gradient(#3399ff 14px, #eeeeee 14px);
-}
-
 .calendar-course-name {
 	margin-top: 1px;
 	margin-bottom: 3px;
@@ -97,6 +88,19 @@
 	margin-top: 1px;
 	margin-bottom: 2px;
 	font-size: 55%;
+}
+
+.calendar-course-remove {
+	position: absolute;
+	top: 2px;
+	right: 5px;
+	font-size: 50%;
+	color: white;
+}
+
+.calendar-course-remove:hover {
+	color: #cccccc;
+	cursor: pointer;
 }
 
 /* Search */

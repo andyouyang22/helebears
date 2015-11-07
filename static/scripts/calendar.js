@@ -80,7 +80,7 @@ var Calendar = React.createClass({
 				var course = {
 					name : result.name_and_number,
 					time : result.course_time,
-					room : "",
+					room : "420 Barrows", // TODO: store room in backend
 					ccn  : result.ccn,
 				};
 				if (course.ccn == undefined) {
@@ -250,6 +250,25 @@ Calendar.Grid.Column.Courses = React.createClass({
 
 // http://facebook.github.io/react/docs/multiple-components.html#dynamic-children
 Calendar.Course = React.createClass({
+	removeCourse: function(e) {
+		var c = this.props.course;
+		CalendarAPI.removeCourse(c.ccn);
+		var onSuccess = function(data) {
+			if (data == -1) {
+				console.log("Failed to removed course from user's schedule in backend");
+				console.log("Errors: " + data.errors);
+			} else {
+				console.log("Successfully removed course from user's schedule");
+			}
+		};
+		var onFailure = function() {
+			console.log("Failed to removed course from user's schedule in backend");
+		};
+		var data = {
+			name_and_number : c.name,
+		};
+		makePostRequest('/api/schedules/remove', data, onSuccess, onFailure);
+	},
 	shorten: function(str) {
 		var tokens = str.split(" ");
 		var result = "";
@@ -275,7 +294,16 @@ Calendar.Course = React.createClass({
 				<div className='calendar-course-name'>{this.shorten(c.name)}</div>
 				<div className='calendar-course-type' hidden>{c.type}</div>
 				<div className='calendar-course-room'>{c.room}</div>
+				<Calendar.Course.Remove remove={this.removeCourse} />
 			</div>
+		);
+	}
+});
+
+Calendar.Course.Remove = React.createClass({
+	render: function() {
+		return (
+			<div className='calendar-course-remove' onClick={this.props.remove}>X</div>
 		);
 	}
 });
@@ -333,7 +361,7 @@ var Query = React.createClass({
 	},
 	getInitialState: function() {
 		return {
-			results : [],
+			results : testResults,
 		};
 	},
 	render: function() {
