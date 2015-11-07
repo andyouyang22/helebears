@@ -628,7 +628,7 @@ Home = function() {
 		this.user_reviews_page.hide();
 		home_page.show();
 */
-	//	show_page(10);
+		show_page(10);
 		this.attachCancelHandler();
 
 		//remove everything below this when ready
