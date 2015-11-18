@@ -47,13 +47,7 @@ module.exports = function(app, passport) {
             user : req.user // get the user out of session and pass to template
         });
     });
-
-
-    app.get('/logout', function(req, res) {
-        req.logout();
-        res.redirect('/');
-    });
-};
+    
 
     app.get('/homepage', isLoggedIn, function(req, res, next) {
         next();
