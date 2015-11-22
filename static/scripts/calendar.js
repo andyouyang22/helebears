@@ -1,5 +1,6 @@
 
-var apiUrl = 'http://localhost:3000';
+//var apiUrl = 'http://localhost:3000';
+var apiUrl = 'https://protected-refuge-7067.herokuapp.com';
 
 var makeGetRequest = function(url, onSuccess, onFailure) {
 	$.ajax({
