@@ -1,0 +1,4 @@
+in order to be able to run compile_jsx.sh, you need to add permission
+do this by doing:
+chmod +x compile_jsx.sh
+to make it executable
