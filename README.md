@@ -16,8 +16,7 @@ Go to the above file to view the results. For code coverage, see below (The cove
 
 ## Running Back End Tests
 
-After the server is running, we can run the tests with the following
-commands from the same `server/` folder. For unit tests,
+After the server is running, we can run the tests with the following commands from the same `server/` folder. For unit tests,
 
 	./node_modules/.bin/mocha tests/unit_tests/
 
@@ -45,10 +44,11 @@ To view back end coverage, go to the `server/` folder
 
 ## Compiling ReactJS JSX Code
 
-The `scripts/bundle.js` file is the compiled JSX code. It is compiled using the Babel compiler. This is such that local html/jsx/js can be used while using the
-server that is located at protected-refugee. To compile the JSX, `cd` into the `static/` folder and run
+The `scripts/bundle.js` file is the result of compiling the React JSX code in `scripts/main.js`. This code is linked using `browserify` and compiled using Babel. `browserify` allows us to use Node-like `require` syntax to link `npm` and local JavaScript modules in the front end. Babel compiles the JSX code down to JavaScript. Running the `bundle.sh` script will compile `scripts/main.js` and link its dependencies:
 
-	./bundle.sh
+	cd static/
+	chmod +x bundle.sh  # Make bundle.sh an executable
+	./bundle.sh         # Link and compile ReactJS files
 
 ## Contributors
 
@@ -56,4 +56,3 @@ server that is located at protected-refugee. To compile the JSX, `cd` into the `
 * Alex Khodaverdian
 * Andy Ouyang
 * Nir Shtern
-* Shai Yusov
