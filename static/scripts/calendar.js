@@ -4,6 +4,8 @@
  * user's schedule.
  */
 
+var ajax = require('./ajax.js');
+
 var hours = [
 	"0800", "0900", "1000", "1100", "1200", "1300", "1400",
 	"1500", "1600", "1700", "1800", "1900", "2000", "2100"
@@ -66,7 +68,7 @@ var Calendar = React.createClass({
 		var onFailure = function() {
 			console.log("Failed to load user's schedule");
 		};
-		makeGetRequest('/api/schedules', onSuccess, onFailure);
+		ajax.get('/api/schedules', onSuccess, onFailure);
 		return {
 			courses : [],
 		};
@@ -91,7 +93,7 @@ var Calendar = React.createClass({
 			section_time    : course.time,
 			lab_time        : course.time,
 		};
-		makePostRequest('/api/schedules/add', data, onSuccess, onFailure);
+		ajax.post('/api/schedules/add', data, onSuccess, onFailure);
 	},
 	removeCourse: function(ccn) {
 		this.setState(function(state, props) {
@@ -238,7 +240,7 @@ Calendar.Course = React.createClass({
 		var data = {
 			name_and_number : c.name,
 		};
-		makePostRequest('/api/schedules/remove', data, onSuccess, onFailure);
+		ajax.post('/api/schedules/remove', data, onSuccess, onFailure);
 	},
 	shorten: function(str) {
 		var tokens = str.split(" ");

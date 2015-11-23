@@ -5,30 +5,7 @@ var ReactDOM = require('react-dom');
 var Menu = require('./menu.js');
 var Calendar = require('./calendar.js');
 
-var apiUrl = 'http://protected-refuge-7067.herokuapp.com';
-
-var makeGetRequest = function(url, onSuccess, onFailure) {
-	$.ajax({
-		type: 'GET',
-		url: apiUrl + url,
-		dataType: "json",
-		success: onSuccess,
-		error: onFailure
-	});
-};
-
-var makePostRequest = function(url, data, onSuccess, onFailure) {
-	$.ajax({
-		type: 'POST',
-		url: apiUrl + url,
-		data: JSON.stringify(data),
-		contentType: "application/json",
-		dataType: "json",
-		success: onSuccess,
-		error: onFailure
-	});
-};
-
+var ajax = require('./ajax.js');
 
 /**
  * The Query section of the page. This section contains Search and Results.
@@ -104,7 +81,7 @@ var Search = React.createClass({
 		var onFailure = function() {
 			console.error("Failed to load list of departments");
 		}
-		makeGetRequest('/api/departments', onSuccess, onFailure);
+		ajax.get('/api/departments', onSuccess, onFailure);
 		return {
 			depts   : [],
 			courses : [],
@@ -127,7 +104,7 @@ var Search = React.createClass({
 		var onFailure = function() {
 			console.error("Failed to load courses for " + e.target.value);
 		}
-		makeGetRequest('/api/courses?' + dept, onSuccess, onFailure);
+		ajax.get('/api/courses?' + dept, onSuccess, onFailure);
 	},
 	handleSubmission: function(e) {
 		e.preventDefault();
@@ -163,7 +140,7 @@ var Search = React.createClass({
 		var onFailure = function() {
 			console.error("Failed to load search results");
 		};
-		makeGetRequest('/api/courses?' + request, onSuccess, onFailure);
+		ajax.get('/api/courses?' + request, onSuccess, onFailure);
 	},
 	render: function() {
 		return (
@@ -330,7 +307,7 @@ Results.Course.Lecture = React.createClass({
 			console.log("Failed to load professor reviews");
 		};
 		var prof = this.props.inst;
-		makeGetRequest('/api/reviews?professor_name=' + prof, onSuccess, onFailure);
+		ajax.get('/api/reviews?professor_name=' + prof, onSuccess, onFailure);
 	},
 	render: function() {
 		var t = parseTime(this.props.time);
