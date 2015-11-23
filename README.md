@@ -46,10 +46,9 @@ To view back end coverage, go to the `server/` folder
 ## Compiling ReactJS JSX Code
 
 The `scripts/bundle.js` file is the compiled JSX code. It is compiled using the Babel compiler. This is such that local html/jsx/js can be used while using the
-server that is located at protected-refugee. To compile the JSX, do the following:
+server that is located at protected-refugee. To compile the JSX, `cd` into the `static/` folder and run
 
-	browserify -t [ babelify --presets [ react ] ] calendar.js -o bundle.js
-
+	./bundle.sh
 
 ## Contributors
 
