@@ -2,6 +2,9 @@
  * The Reviews section of the page. This area is only displayed when selected.
  */
 
+var React    = require('react');
+var ReactDOM = require('react-dom');
+
 var ajax = require('./ajax.js');
 var time = require('./time.js');
 

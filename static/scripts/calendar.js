@@ -4,6 +4,9 @@
  * user's schedule.
  */
 
+var React    = require('react');
+var ReactDOM = require('react-dom');
+
 var ajax = require('./ajax.js');
 var time = require('./time.js');
 

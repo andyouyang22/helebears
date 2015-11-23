@@ -18956,6 +18956,9 @@ module.exports = {
  * user's schedule.
  */
 
+var React = require('react');
+var ReactDOM = require('react-dom');
+
 var ajax = require('./ajax.js');
 var time = require('./time.js');
 
@@ -19259,7 +19262,7 @@ Calendar.Course.Remove = React.createClass({
 
 module.exports = Calendar;
 
-},{"./ajax.js":158,"./time.js":165}],160:[function(require,module,exports){
+},{"./ajax.js":158,"./time.js":165,"react":157,"react-dom":28}],160:[function(require,module,exports){
 
 var React = require('react');
 var ReactDOM = require('react-dom');
@@ -19323,6 +19326,9 @@ var QueryAPI = ReactDOM.render(React.createElement(Query, null), document.getEle
  * additional menu buttons, such as the log-out button.
  */
 
+var React = require('react');
+var ReactDOM = require('react-dom');
+
 var Menu = React.createClass({
 	displayName: 'Menu',
 
@@ -19358,11 +19364,14 @@ Menu.Buttons = React.createClass({
 
 module.exports = Menu;
 
-},{}],162:[function(require,module,exports){
+},{"react":157,"react-dom":28}],162:[function(require,module,exports){
 /**
  * The Results section of the page. Results contains a scrollable list of courses
  * that match the user's query.
  */
+
+var React = require('react');
+var ReactDOM = require('react-dom');
 
 var Reviews = require('./reviews.js');
 
@@ -19620,10 +19629,13 @@ Results.Course.Sections.Section = React.createClass({
 
 module.exports = Results;
 
-},{"./ajax.js":158,"./reviews.js":163,"./time.js":165}],163:[function(require,module,exports){
+},{"./ajax.js":158,"./reviews.js":163,"./time.js":165,"react":157,"react-dom":28}],163:[function(require,module,exports){
 /**
  * The Reviews section of the page. This area is only displayed when selected.
  */
+
+var React = require('react');
+var ReactDOM = require('react-dom');
 
 var ajax = require('./ajax.js');
 var time = require('./time.js');
@@ -19720,11 +19732,14 @@ var Reviews = React.createClass({
 
 module.exports = Reviews;
 
-},{"./ajax.js":158,"./time.js":165}],164:[function(require,module,exports){
+},{"./ajax.js":158,"./time.js":165,"react":157,"react-dom":28}],164:[function(require,module,exports){
 /**
  * The Search section of the page. The user inputs search criteria into this
  * section, which sends the query to the backend server.
  */
+
+var React = require('react');
+var ReactDOM = require('react-dom');
 
 var ajax = require('./ajax.js');
 var time = require('./time.js');
@@ -19908,7 +19923,7 @@ Search.Submit = React.createClass({
 
 module.exports = Search;
 
-},{"./ajax.js":158,"./time.js":165}],165:[function(require,module,exports){
+},{"./ajax.js":158,"./time.js":165,"react":157,"react-dom":28}],165:[function(require,module,exports){
 
 module.exports = {
 	/**

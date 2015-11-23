@@ -3,6 +3,9 @@
  * additional menu buttons, such as the log-out button.
  */
 
+var React    = require('react');
+var ReactDOM = require('react-dom');
+
 var Menu = React.createClass({
 	render: function() {
 		return (

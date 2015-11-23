@@ -3,6 +3,9 @@
  * section, which sends the query to the backend server.
  */
 
+var React    = require('react');
+var ReactDOM = require('react-dom');
+
 var ajax = require('./ajax.js');
 var time = require('./time.js');
 

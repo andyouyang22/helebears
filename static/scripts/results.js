@@ -3,6 +3,9 @@
  * that match the user's query.
  */
 
+var React    = require('react');
+var ReactDOM = require('react-dom');
+
 var Reviews = require('./reviews.js');
 
 var ajax = require('./ajax.js');
