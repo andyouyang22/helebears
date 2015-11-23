@@ -481,6 +481,8 @@ var Search = React.createClass({
 					room: lec.location,
 					time: that.convertTime(lec.time),
 					ccn: that.convertCCN(lec.ccn),
+					course_description: "Temporary Course Description LONG LONG LONG LONG LONG LONG LONG LONG LONG LONG LONG LONG LONG LONG LONG LONG LONG ",
+					//course_description : lec.course_description,
 					sections: []
 				};
 				lec.sections.forEach(function (sec) {
@@ -639,12 +641,16 @@ Results.Course = React.createClass({
 	toggleSections: function () {
 		$(ReactDOM.findDOMNode(this)).find('.results-course-sections').slideToggle();
 	},
+	toggleDescription: function () {
+		$(ReactDOM.findDOMNode(this)).find('.results-course-description').slideToggle();
+	},
+
 	render: function () {
 		var c = this.props.course;
 		return React.createElement(
 			'div',
 			{ className: 'results-course' },
-			React.createElement(Results.Course.Lecture, { name: c.name, desc: c.desc, inst: c.inst, time: c.time, room: c.room, ccn: c.ccn, toggleSections: this.toggleSections, showReview: this.showReview }),
+			React.createElement(Results.Course.Lecture, { course_description: c.course_description, name: c.name, desc: c.desc, inst: c.inst, time: c.time, room: c.room, ccn: c.ccn, toggleDescription: this.toggleDescription, toggleSections: this.toggleSections, showReview: this.showReview }),
 			React.createElement(Results.Course.Sections, { sections: this.props.course.sections }),
 			React.createElement(
 				'div',
@@ -693,6 +699,9 @@ Results.Course.Lecture = React.createClass({
 		var prof = this.props.inst;
 		makeGetRequest('/api/reviews?professor_name=' + prof, onSuccess, onFailure);
 	},
+	description: function () {
+		alert('Test this');
+	},
 	render: function () {
 		var t = parseTime(this.props.time);
 		var time = t.days + " " + displayTime(t.start) + " - " + displayTime(t.end);
@@ -706,8 +715,8 @@ Results.Course.Lecture = React.createClass({
 			),
 			React.createElement(
 				'div',
-				{ className: 'results-course-lec-course-desc' },
-				'HIHIHI'
+				{ className: 'results-course-lec-course-desc', onClick: this.props.toggleDescription },
+				'Course Info'
 			),
 			React.createElement(
 				'div',
@@ -723,6 +732,20 @@ Results.Course.Lecture = React.createClass({
 				'div',
 				{ className: 'results-course-lec-time' },
 				time
+			),
+			React.createElement(
+				'div',
+				{ className: 'results-course-description', style: { display: 'none' } },
+				React.createElement(
+					'div',
+					{ className: 'results-course-lecture-add', id: 'close-button', onClick: this.props.toggleDescription },
+					'Close'
+				),
+				React.createElement(
+					'p',
+					{ className: 'long-description' },
+					this.props.course_description
+				)
 			),
 			React.createElement(Results.Course.Lecture.Add, { add: this.add })
 		);
