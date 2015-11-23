@@ -3,6 +3,8 @@
  * that match the user's query.
  */
 
+var Reviews = require('./reviews.js');
+
 var ajax = require('./ajax.js');
 var time = require('./time.js');
 
@@ -60,7 +62,7 @@ Results.Course = React.createClass({
 				<Results.Course.Lecture name={c.name} desc={c.desc} inst={c.inst} time={c.time} room={c.room} ccn={c.ccn} toggleSections={this.toggleSections} showReview={this.showReview} />
 				<Results.Course.Sections sections={this.props.course.sections} />
 				<div className='review-container'>
-					<Review review={this.state.review} hideReview={this.hideReview} />
+					<Reviews review={this.state.review} hideReview={this.hideReview} />
 				</div>
 			</div>
 		);
