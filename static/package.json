@@ -10,6 +10,11 @@
   "license": "ISC",
   "dependencies": {
     "body-parser": "^1.14.1",
-    "express": "^4.13.3"
+    "express": "^4.13.3",
+    "react": "^0.14.3",
+    "react-dom": "^0.14.3"
+  },
+  "devDependencies": {
+    "babelify": "^7.2.0"
   }
 }
