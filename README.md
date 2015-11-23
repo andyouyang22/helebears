@@ -44,11 +44,13 @@ To view back end coverage, go to the `server/` folder
 
 ## Compiling ReactJS JSX Code
 
-The `scripts/bundle.js` file is the result of compiling the React JSX code in `scripts/main.js`. This code is linked using `browserify` and compiled using Babel. `browserify` allows us to use Node-like `require` syntax to link `npm` and local JavaScript modules in the front end. Babel compiles the JSX code down to JavaScript. Running the `bundle.sh` script will compile `scripts/main.js` and link its dependencies:
+The `scripts/bundle.js` file is the result of compiling the React JSX code in `scripts/main.js`. This code is linked using `browserify` and compiled using Babel. `browserify` allows us to use Node-like `require` syntax to link JavaScript modules in the front end. Babel compiles the JSX code down to JavaScript. Running the `bundle.sh` script will compile `scripts/main.js` and link its dependencies:
 
-	cd static/
+	cd static/          # bundle.sh uses paths relative to this directory
 	chmod +x bundle.sh  # Make bundle.sh an executable
 	./bundle.sh         # Link and compile ReactJS files
+
+The output will be stored in `scripts/bundle.js`.
 
 ## Contributors
 
