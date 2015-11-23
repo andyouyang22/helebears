@@ -646,6 +646,7 @@ Results.Course.Lecture = React.createClass({
 		return (
 			<div className='results-course-lecture'>
 				<div className='results-course-lec-name' onClick={this.props.toggleSections}>{this.props.name}</div>
+				<div className='results-course-lec-course-desc'>HIHIHI</div>
 				<div className='results-course-lec-desc'>{this.props.desc}</div>
 				<div className='results-course-lec-inst' onClick={this.reviews}>{this.props.inst}</div>
 				<div className='results-course-lec-time'>{time}</div>
