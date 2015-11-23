@@ -513,7 +513,7 @@ var MenuAPI = ReactDOM.render(
 );
 
 var CalendarAPI = ReactDOM.render(
-	<Calendar courses={testCalendar} user={testUser} />,
+	<Calendar courses={[]} user={testUser} />,
 	document.getElementById('container-left')
 );
 

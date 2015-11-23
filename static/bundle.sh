@@ -1,1 +1,1 @@
-browserify -t [ babelify --presets [ react ] ] scripts/calendar.js -o scripts/bundle.js
+browserify -t [ babelify --presets [ react ] ] scripts/main.js -o scripts/bundle.js
