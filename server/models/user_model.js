@@ -11,8 +11,9 @@ var Users = sequelize.define("Users", {
     username: Sequelize.STRING,
     password: Sequelize.STRING,
     email: { type: Sequelize.STRING, primaryKey: true},
-    id: { type: Sequelize.UUID, primaryKey: true, defaultValue: Sequelize.UUIDV4, allowNull: false }
-
+    id: { type: Sequelize.UUID, primaryKey: true, defaultValue: Sequelize.UUIDV4, allowNull: false },
+    major: {type: Sequelize.STRING, defaultValue:'Undeclared'},
+    college: {type: Sequelize.STRING, defaultValue:'L&S'}
 });
 Users.sync();
 
