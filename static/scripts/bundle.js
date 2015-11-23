@@ -105,7 +105,7 @@ var Calendar = React.createClass({
 		var that = this;
 		var onSuccess = function (data) {
 			if (data.status == -1) {
-				console.log("Failed ot load user's schedule");
+				console.log("Failed to load user's schedule");
 				console.log("Errors: " + data.errors);
 				return;
 			}
