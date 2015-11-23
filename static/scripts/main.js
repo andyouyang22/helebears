@@ -6,6 +6,7 @@ var Menu = require('./menu.js');
 var Calendar = require('./calendar.js');
 
 var ajax = require('./ajax.js');
+var time = require('./time.js');
 
 /**
  * The Query section of the page. This section contains Search and Results.
@@ -63,7 +64,7 @@ var Search = React.createClass({
 		return ccn;
 	},
 	convertTime: function(time) {
-		var t = parseTime(time);
+		var t = time.parse(time);
 		// TODO: list all days for sections
 		return t.days[0] + " " + t.start.slice(0, 4) + " " + t.end.slice(0, 4);
 	},
@@ -310,8 +311,8 @@ Results.Course.Lecture = React.createClass({
 		ajax.get('/api/reviews?professor_name=' + prof, onSuccess, onFailure);
 	},
 	render: function() {
-		var t = parseTime(this.props.time);
-		var time = t.days + " " + displayTime(t.start) + " - " + displayTime(t.end);
+		var t = time.parse(this.props.time);
+		var time = t.days + " " + time.display(t.start) + " - " + time.display(t.end);
 		return (
 			<div className='results-course-lecture'>
 				<div className='results-course-lec-name' onClick={this.props.toggleSections}>{this.props.name}</div>
@@ -342,9 +343,9 @@ Results.Course.Sections = React.createClass({
 			thurs : [],
 			fri   : []
 		}
-		for (var i = 0; i < this.props.sections.length; i++) {
+		for (var i = 0; i < this.dprops.sections.length; i++) {
 			var sec = this.props.sections[i];
-			var time = parseTime(sec.time);
+			var time = time.parse(sec.time);
 			switch (time.days) {
 				case "M":
 					sections.mon.push(<Results.Course.Sections.Section key={sec.ccn} time={sec.time}/>); break;
@@ -387,8 +388,8 @@ Results.Course.Sections = React.createClass({
 
 Results.Course.Sections.Section = React.createClass({
 	render: function() {
-		var t = parseTime(this.props.time);
-		var time = displayTime(t.start) + " - " + displayTime(t.end);
+		var t = time.parse(this.props.time);
+		var time = time.display(t.start) + " - " + time.display(t.end);
 		return (
 			<div className='results-course-sections-sec'>
 				{time}
@@ -437,50 +438,6 @@ var Review = React.createClass({
  	}
 });
 
-
-/**
- * Time-parsing-related helper functions.
- */
-
-/**
- * Return a dictionary containing parsed time information. An example input string
- * is "TR 1400 1530".
- */
-var parseTime = function(time) {
-	var tokens = time.split(" ");
-	return {
-		days  : tokens[0],
-		start : tokens[1],
-		end   : tokens[2]
-	};
-};
-
-/**
- * Return the AM/PM formatted string of a military-time input. For example, if the
- * input string was "1400", the function would return "2:00 pm"
- */
-var displayTime = function(time) {
-	var hour = time.substring(0, 2);
-	var min  = time.substring(2, 4);
-	var suffix = "am";
-
-	var hour = parseInt(hour);
-
-	if (hour >= 12) {
-		suffix = "pm";
-		hour -= 12;
-	}
-	if (hour == 0) {
-		hour = "12";
-	}
-
-	return hour + ":" + min + suffix
-};
-
-var duration = function(start, end) {
-	var dur = parseInt(end) - parseInt(start);
-	return Math.floor(dur / 100) * 60 + ((dur % 100 != 0) ? 30 : 0);
-};
 
 var testUser = "username420";
 

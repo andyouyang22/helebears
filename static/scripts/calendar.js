@@ -5,6 +5,7 @@
  */
 
 var ajax = require('./ajax.js');
+var time = require('./time.js');
 
 var hours = [
 	"0800", "0900", "1000", "1100", "1200", "1300", "1400",
@@ -26,8 +27,8 @@ var Calendar = React.createClass({
 		return false;
 		for (var i = 0; i < this.state.courses.length; i++) {
 			var course = this.state.courses[i];
-			var a  = parseTime(newCourse.time);
-			var b  = parseTime(course.time);
+			var a  = time.parse(newCourse.time);
+			var b  = time.parse(course.time);
 			var aStart = parseInt(a.start);
 			var aEnd   = parseInt(a.end);
 			var bStart = parseInt(b.start);
@@ -121,7 +122,7 @@ Calendar.Axis = React.createClass({
 	render: function() {
 		var labels = [];
 		for (var i = 0; i < hours.length; i++) {
-			var tokens = displayTime(hours[i]).split(":");
+			var tokens = time.display(hours[i]).split(":");
 			var label = tokens[0] + tokens[1].substring(2, 4);
 			labels.push(
 				<div className='calendar-axis-label' key={i}>{label}</div>
@@ -149,7 +150,7 @@ Calendar.Grid = React.createClass({
 			"M": [], "T": [], "W": [], "R": [], "F": [],
 		};
 		this.props.courses.forEach(function(course) {
-			var t = parseTime(course.time);
+			var t = time.parse(course.time);
 			for (var i = 0; i < t.days.length; i++) {
 				var day = t.days[i]
 				var newCourse = {
@@ -253,10 +254,10 @@ Calendar.Course = React.createClass({
 	style: function() {
 		var css = {};
 		var c = this.props.course;
-		var t = parseTime(c.time);
+		var t = time.parse(c.time);
 		// These are hard-coded appropriately to the static Calendar
-		css.height = duration(t.start, t.end) * 32 / 60 - 1;
-		css.top = duration("0800", t.start) * 34 / 60;
+		css.height = time.duration(t.start, t.end) * 32 / 60 - 1;
+		css.top = time.duration("0800", t.start) * 34 / 60;
 		return css;
 	},
 	render: function() {
