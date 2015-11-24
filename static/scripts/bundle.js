@@ -18970,13 +18970,6 @@ var Calendar = React.createClass({
 		return false;
 	},
 	componentDidMount: function () {
-		var that = this;
-		var callback = function () {
-			that.setState({
-				courses: that.props.store.schedule()
-			});
-		};
-		this.props.store.addScheduleListener(callback);
 		this.props.store.getSchedule();
 	},
 	getInitialState: function () {
@@ -19053,6 +19046,16 @@ Calendar.Axis = React.createClass({
 Calendar.Grid = React.createClass({
 	displayName: 'Grid',
 
+	componentDidMount: function () {
+		var that = this;
+		var callback = function () {
+			var schedule = that.props.store.schedule();
+			that.setState({
+				courses: that.updatedCourses(schedule)
+			});
+		};
+		this.props.store.addScheduleListener(callback);
+	},
 	getInitialState: function () {
 		return {
 			courses: {
@@ -19348,9 +19351,10 @@ var Results = React.createClass({
 		};
 	},
 	render: function () {
+		var that = this;
 		var results = [];
 		this.state.results.forEach(function (c) {
-			results.push(React.createElement(Results.Course, { key: c.ccn, course: c }));
+			results.push(React.createElement(Results.Course, { store: that.props.store, key: c.ccn, course: c }));
 		});
 		return React.createElement(
 			'div',
@@ -19393,7 +19397,7 @@ Results.Course = React.createClass({
 		return React.createElement(
 			'div',
 			{ className: 'results-course' },
-			React.createElement(Results.Course.Lecture, { name: c.name, desc: c.desc, inst: c.inst, time: c.time, room: c.room, ccn: c.ccn, toggleSections: this.toggleSections, showReview: this.showReview }),
+			React.createElement(Results.Course.Lecture, { store: this.props.store, name: c.name, desc: c.desc, inst: c.inst, time: c.time, room: c.room, ccn: c.ccn, toggleSections: this.toggleSections, showReview: this.showReview }),
 			React.createElement(Results.Course.Sections, { sections: this.props.course.sections }),
 			React.createElement(
 				'div',
@@ -19414,7 +19418,7 @@ Results.Course.Lecture = React.createClass({
 			time: this.props.time,
 			ccn: this.props.ccn
 		};
-		CalendarAPI.insertCourse(course);
+		this.props.store.addCourse(course);
 	},
 	reviews: function () {
 		var that = this;
@@ -19426,7 +19430,6 @@ Results.Course.Lecture = React.createClass({
 			var r = data.results;
 			var ratings = [0, 0, 0];
 			for (var i = 0; i < r.length; i++) {
-				debugger;
 				ratings[0] += r[i].rating_1;
 				ratings[1] += r[i].rating_2;
 				ratings[2] += r[i].rating_3;
@@ -19473,19 +19476,11 @@ Results.Course.Lecture = React.createClass({
 				{ className: 'results-course-lec-time' },
 				t
 			),
-			React.createElement(Results.Course.Lecture.Add, { add: this.add })
-		);
-	}
-});
-
-Results.Course.Lecture.Add = React.createClass({
-	displayName: 'Add',
-
-	render: function () {
-		return React.createElement(
-			'div',
-			{ className: 'results-course-lecture-add', onClick: this.props.add },
-			'Add Course'
+			React.createElement(
+				'div',
+				{ className: 'results-course-lecture-add', onClick: this.add },
+				'Add Course'
+			)
 		);
 	}
 });
@@ -19884,10 +19879,13 @@ Store.prototype.setSchedule = function (schedule) {
 };
 
 Store.prototype.addCourse = function (course) {
+	// AJAX call to backend to store schedule
 	this._schedule.push(course);
 	// Emit an event signaling the Calendar state has changed
 	this.emit('schedule');
 };
+
+Store.prototype.removeCourse = function (ccn) {};
 
 Store.prototype.schedule = function () {
 	return this._schedule;

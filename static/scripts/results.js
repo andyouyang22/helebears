@@ -28,10 +28,11 @@ var Results = React.createClass({
 		};
 	},
 	render: function() {
+		var that = this;
 		var results = [];
 		this.state.results.forEach(function(c) {
 			results.push(
-				<Results.Course key={c.ccn} course={c} />
+				<Results.Course store={that.props.store} key={c.ccn} course={c} />
 			);
 		});
 		return (
@@ -72,7 +73,7 @@ Results.Course = React.createClass({
 		var c = this.props.course;
 		return (
 			<div className='results-course'>
-				<Results.Course.Lecture name={c.name} desc={c.desc} inst={c.inst} time={c.time} room={c.room} ccn={c.ccn} toggleSections={this.toggleSections} showReview={this.showReview} />
+				<Results.Course.Lecture store={this.props.store} name={c.name} desc={c.desc} inst={c.inst} time={c.time} room={c.room} ccn={c.ccn} toggleSections={this.toggleSections} showReview={this.showReview} />
 				<Results.Course.Sections sections={this.props.course.sections} />
 				<div className='review-container'>
 					<Reviews review={this.state.review} hideReview={this.hideReview} />
@@ -90,7 +91,7 @@ Results.Course.Lecture = React.createClass({
 			time : this.props.time,
 			ccn  : this.props.ccn,
 		};
-		CalendarAPI.insertCourse(course);
+		this.props.store.addCourse(course);
 	},
 	reviews: function() {
 		var that = this;
@@ -127,16 +128,10 @@ Results.Course.Lecture = React.createClass({
 				<div className='results-course-lec-desc'>{this.props.desc}</div>
 				<div className='results-course-lec-inst' onClick={this.reviews}>{this.props.inst}</div>
 				<div className='results-course-lec-time'>{t}</div>
-				<Results.Course.Lecture.Add add={this.add} />
+				<div className='results-course-lecture-add' onClick={this.add}>
+					Add Course
+				</div>
 			</div>
-		);
-	}
-});
-
-Results.Course.Lecture.Add = React.createClass({
-	render: function() {
-		return (
-			<div className='results-course-lecture-add' onClick={this.props.add}>Add Course</div>
 		);
 	}
 });

@@ -44,9 +44,14 @@ Store.prototype.setSchedule = function(schedule) {
 };
 
 Store.prototype.addCourse = function(course) {
+	// AJAX call to backend to store schedule
 	this._schedule.push(course);
 	// Emit an event signaling the Calendar state has changed
 	this.emit('schedule');
+};
+
+Store.prototype.removeCourse = function(ccn) {
+
 };
 
 Store.prototype.schedule = function() {
