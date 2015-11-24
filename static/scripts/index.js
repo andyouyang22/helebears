@@ -36,7 +36,8 @@ var Home = function() {
 	var user_reviews_page;
 	var home_page;
 	var helebears_button;
-	var apiUrl = 'https://protected-refuge-7067.herokuapp.com';
+	//var apiUrl = 'https://protected-refuge-7067.herokuapp.com';
+    var apiUrl = '';
 
 	var makeGetRequest = function(url, onSuccess, onFailure) {
 		$.ajax({
