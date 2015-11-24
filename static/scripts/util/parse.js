@@ -59,6 +59,8 @@ module.exports = {
 				room : lec.location,
 				time : time.convert(lec.time),
 				ccn  : generateCCN(lec.ccn),
+				course_description : "Temporary Course Description LONG LONG LONG LONG LONG LONG LONG LONG LONG LONG LONG LONG LONG LONG LONG LONG LONG ",
+				//course_description : lec.course_description,
 				sections : [],
 			};
 			lec.sections.forEach(function(sec) {
