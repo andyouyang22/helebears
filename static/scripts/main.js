@@ -1,5 +1,4 @@
 
-var React    = require('react');
 var ReactDOM = require('react-dom');
 
 var Menu     = require('./menu.js');
@@ -22,6 +21,6 @@ var CalendarAPI = ReactDOM.render(
 );
 
 var QueryAPI = ReactDOM.render(
-	<Query />,
+	<Query calendar={CalendarAPI} />,
 	document.getElementById('container-right')
 );

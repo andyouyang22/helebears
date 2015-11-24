@@ -2,11 +2,10 @@
  * The Query section of the page. This section contains Search and Results.
  */
 
-var React    = require('react');
-var ReactDOM = require('react-dom');
+var React = require('react');
 
-var Search   = require('./search.js');
-var Results  = require('./results.js');
+var Search  = require('./search.js');
+var Results = require('./results.js');
 
 var Query = React.createClass({
 	clear: function() {
@@ -25,6 +24,10 @@ var Query = React.createClass({
 		};
 	},
 	render: function() {
+		var api = {
+			calendar : this.props.calendar,
+			query    : this,
+		}
 		return (
 			<div className='query'>
 				<Search resultsDisplay={this.resultsDisplay} />
