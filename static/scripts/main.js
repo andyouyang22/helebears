@@ -26,11 +26,11 @@ var MenuAPI = ReactDOM.render(
 );
 
 var CalendarAPI = ReactDOM.render(
-	<Calendar courses={[]} user={testUser} />,
+	<Calendar store={store} user={testUser} />,
 	document.getElementById('container-left')
 );
 
 var QueryAPI = ReactDOM.render(
-	<Query calendar={CalendarAPI} />,
+	<Query store={store} />,
 	document.getElementById('container-right')
 );

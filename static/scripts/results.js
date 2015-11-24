@@ -19,7 +19,7 @@ var Results = React.createClass({
 	},
 	render: function() {
 		var results = [];
-		this.props.results.forEach(function(c) {
+		this.props.store.results().forEach(function(c) {
 			results.push(
 				<Results.Course key={c.ccn} course={c} />
 			);

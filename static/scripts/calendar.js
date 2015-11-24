@@ -115,7 +115,7 @@ var Calendar = React.createClass({
 		return (
 			<div className='calendar'>
 				<Calendar.Axis />
-				<Calendar.Grid courses={this.state.courses} />
+				<Calendar.Grid store={this.props.store} />
 			</div>
 		);
 	}
@@ -152,7 +152,7 @@ Calendar.Grid = React.createClass({
 		var courses = {
 			"M": [], "T": [], "W": [], "R": [], "F": [],
 		};
-		this.props.courses.forEach(function(course) {
+		this.props.store.courses().forEach(function(course) {
 			var t = time.parse(course.time);
 			for (var i = 0; i < t.days.length; i++) {
 				var day = t.days[i]

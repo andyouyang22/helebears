@@ -24,14 +24,10 @@ var Query = React.createClass({
 		};
 	},
 	render: function() {
-		var api = {
-			calendar : this.props.calendar,
-			query    : this,
-		}
 		return (
 			<div className='query'>
-				<Search resultsDisplay={this.resultsDisplay} />
-				<Results results={this.state.results} />
+				<Search store={this.props.store} />
+				<Results store={this.props.store} />
 			</div>
 		);
 	}

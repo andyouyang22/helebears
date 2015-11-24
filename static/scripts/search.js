@@ -76,7 +76,6 @@ var Search = React.createClass({
 		e.preventDefault();
 		var that = this
 		var form = $(ReactDOM.findDOMNode(this));
-		// TODO: advanced search
 		var request = queryify({
 			department_name : form.find('.search-dept').val(),
 			name            : form.find('.search-course').val(),
