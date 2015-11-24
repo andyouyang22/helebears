@@ -16,7 +16,7 @@ var Results = React.createClass({
 		var that = this;
 		var callback = function() {
 			that.setState({
-				results : that.props.state.results(),
+				results : that.props.store.results(),
 			});
 		};
 		this.props.store.addResultsListener(callback);
@@ -29,7 +29,7 @@ var Results = React.createClass({
 	},
 	render: function() {
 		var results = [];
-		this.props.store.results().forEach(function(c) {
+		this.state.results.forEach(function(c) {
 			results.push(
 				<Results.Course key={c.ccn} course={c} />
 			);
@@ -102,7 +102,6 @@ Results.Course.Lecture = React.createClass({
 			var r = data.results;
 			var ratings = [0, 0, 0];
 			for (var i = 0; i < r.length; i++) {
-				debugger
 				ratings[0] += r[i].rating_1;
 				ratings[1] += r[i].rating_2;
 				ratings[2] += r[i].rating_3;
@@ -153,8 +152,8 @@ Results.Course.Sections = React.createClass({
 		}
 		for (var i = 0; i < this.props.sections.length; i++) {
 			var sec = this.props.sections[i];
-			var time = time.parse(sec.time);
-			switch (time.days) {
+			var t = time.parse(sec.time);
+			switch (t.days) {
 				case "M":
 					sections.mon.push(<Results.Course.Sections.Section key={sec.ccn} time={sec.time}/>); break;
 				case "T":
@@ -197,10 +196,10 @@ Results.Course.Sections = React.createClass({
 Results.Course.Sections.Section = React.createClass({
 	render: function() {
 		var t = time.parse(this.props.time);
-		var time = time.display(t.start) + " - " + time.display(t.end);
+		t = time.display(t.start) + " - " + time.display(t.end);
 		return (
 			<div className='results-course-sections-sec'>
-				{time}
+				{t}
 			</div>
 		);
 	}

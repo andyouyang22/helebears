@@ -19336,7 +19336,7 @@ var Results = React.createClass({
 		var that = this;
 		var callback = function () {
 			that.setState({
-				results: that.props.state.results()
+				results: that.props.store.results()
 			});
 		};
 		this.props.store.addResultsListener(callback);
@@ -19349,7 +19349,7 @@ var Results = React.createClass({
 	},
 	render: function () {
 		var results = [];
-		this.props.store.results().forEach(function (c) {
+		this.state.results.forEach(function (c) {
 			results.push(React.createElement(Results.Course, { key: c.ccn, course: c }));
 		});
 		return React.createElement(
@@ -19503,8 +19503,8 @@ Results.Course.Sections = React.createClass({
 		};
 		for (var i = 0; i < this.props.sections.length; i++) {
 			var sec = this.props.sections[i];
-			var time = time.parse(sec.time);
-			switch (time.days) {
+			var t = time.parse(sec.time);
+			switch (t.days) {
 				case "M":
 					sections.mon.push(React.createElement(Results.Course.Sections.Section, { key: sec.ccn, time: sec.time }));break;
 				case "T":
@@ -19579,11 +19579,11 @@ Results.Course.Sections.Section = React.createClass({
 
 	render: function () {
 		var t = time.parse(this.props.time);
-		var time = time.display(t.start) + " - " + time.display(t.end);
+		t = time.display(t.start) + " - " + time.display(t.end);
 		return React.createElement(
 			'div',
 			{ className: 'results-course-sections-sec' },
-			time
+			t
 		);
 	}
 });
@@ -19708,18 +19708,6 @@ var time = require('./util/time.js');
 var Search = React.createClass({
 	displayName: 'Search',
 
-	convertCCN: function (ccn) {
-		ccn = ccn + "";
-		for (var i = ccn.length; i < 5; i++) {
-			ccn = "0" + ccn;
-		}
-		return ccn;
-	},
-	convertTime: function (t) {
-		var t = time.parse(t);
-		// TODO: list all days for sections
-		return t.days[0] + " " + t.start.slice(0, 4) + " " + t.end.slice(0, 4);
-	},
 	componentDidMount: function () {
 		// Used to ensure 'this' is consistent during asynchronous callbacks
 		var that = this;
@@ -19753,37 +19741,12 @@ var Search = React.createClass({
 	handleSubmission: function (e) {
 		e.preventDefault();
 		var that = this;
-		var form = $(ReactDOM.findDOMNode(this));
-		var request = queryify({
-			department_name: form.find('.search-dept').val(),
-			name: form.find('.search-course').val()
-		});
-		var onSuccess = function (data) {
-			var results = [];
-			data.results.forEach(function (lec) {
-				var course = {
-					name: lec.department_name + " " + lec.name,
-					desc: lec.title,
-					inst: lec.professor_name,
-					room: lec.location,
-					time: that.convertTime(lec.time),
-					ccn: that.convertCCN(lec.ccn),
-					sections: []
-				};
-				lec.sections.forEach(function (sec) {
-					course.sections.push({
-						time: that.convertTime(sec.time),
-						ccn: that.convertCCN(sec.ccn)
-					});
-				});
-				results.push(course);
-			});
-			that.props.resultsDisplay(results);
+		var formDOM = $(ReactDOM.findDOMNode(this));
+		var form = {
+			department_name: formDOM.find('.search-dept').val(),
+			name: formDOM.find('.search-course').val()
 		};
-		var onFailure = function () {
-			console.error("Failed to load search results");
-		};
-		ajax.get('/api/courses?' + request, onSuccess, onFailure);
+		this.props.store.getResults(form);
 	},
 	render: function () {
 		return React.createElement(
@@ -19968,8 +19931,8 @@ Store.prototype.courses = function () {
 /**
  * Make a GET request for search results based on the input query.
  */
-Store.prototype.getResults = function () {
-	// Make AJAX call
+Store.prototype.getResults = function (form) {
+	ajax.getResults(form, this.setResults.bind(this));
 };
 
 Store.prototype.setResults = function (results) {
@@ -20015,6 +19978,7 @@ module.exports = Store;
 
 },{"./util/ajax.js":166,"events":169}],166:[function(require,module,exports){
 var parse = require('./parse.js');
+var time = require('./time.js');
 
 var apiUrl = 'http://protected-refuge-7067.herokuapp.com';
 
@@ -20058,7 +20022,7 @@ module.exports = {
 				return;
 			}
 			var courses = parse.schedule(data);
-			callback(courses);
+			callback(schedule);
 		};
 		var onFailure = function () {
 			console.log("Failed to load user's schedule");
@@ -20078,7 +20042,7 @@ module.exports = {
 				console.log("Errors: " + data.errors);
 				return;
 			}
-			depts = parse.departments(data);
+			var depts = parse.departments(data);
 			callback(depts);
 		};
 		var onFailure = function () {
@@ -20099,7 +20063,7 @@ module.exports = {
 				console.log("Errors: " + data.errors);
 				return;
 			}
-			courses = parse.courses(data);
+			var courses = parse.courses(data);
 			callback(courses);
 		};
 		var onFailure = function () {
@@ -20112,20 +20076,43 @@ module.exports = {
 	},
 
 	/**
-  * Make a GET request for search results.
+  * Make a GET request for search results for the given form info.
   * @param {function} callback: Takes in an array of results and performs an
   *   action upon it.
   */
-	getResults: function (callback) {
-		return;
+	getResults: function (form, callback) {
+		var request = queryify(form);
+		var onSuccess = function (data) {
+			if (data.status == -1) {
+				console.log("Failed to load search results; status = -1");
+				console.log("Errors: " + data.errors);
+				return;
+			}
+			var results = parse.results(data);
+			callback(results);
+		};
+		var onFailure = function () {
+			console.error("Failed to load search results");
+		};
+		this.get('/api/courses?' + request, onSuccess, onFailure);
 	}
 };
 
-},{"./parse.js":167}],167:[function(require,module,exports){
+},{"./parse.js":167,"./time.js":168}],167:[function(require,module,exports){
 /**
  * Helper functions for parsing HTTP response data. This was mainly a refactoring
  * effort to keep the code in the core files a bit cleaner.
  */
+
+var time = require('./time.js');
+
+var generateCCN = function (ccn) {
+	ccn = ccn + "";
+	for (var i = ccn.length; i < 5; i++) {
+		ccn = "0" + ccn;
+	}
+	return ccn;
+};
 
 module.exports = {
 	schedule: function (data) {
@@ -20163,18 +20150,39 @@ module.exports = {
 		}
 		return courses;
 	},
-	results: function (data) {}
+	results: function (data) {
+		var results = [];
+		data.results.forEach(function (lec) {
+			var course = {
+				name: lec.department_name + " " + lec.name,
+				desc: lec.title,
+				inst: lec.professor_name,
+				room: lec.location,
+				time: time.convert(lec.time),
+				ccn: generateCCN(lec.ccn),
+				sections: []
+			};
+			lec.sections.forEach(function (sec) {
+				course.sections.push({
+					time: time.convert(sec.time),
+					ccn: generateCCN(sec.ccn)
+				});
+			});
+			results.push(course);
+		});
+		return results;
+	}
 };
 
-},{}],168:[function(require,module,exports){
+},{"./time.js":168}],168:[function(require,module,exports){
 
 module.exports = {
 	/**
   * Return a dictionary containing parsed time information. An example input
   * string is "TR 1400 1530".
   */
-	parse: function (time) {
-		var tokens = time.split(" ");
+	parse: function (t) {
+		var tokens = t.split(" ");
 		return {
 			days: tokens[0],
 			start: tokens[1],
@@ -20185,9 +20193,9 @@ module.exports = {
   * Return the AM/PM formatted string of a military-time input. For example, if
   * the input string was "1400", the function would return "2:00 pm"
   */
-	display: function (time) {
-		var hour = time.substring(0, 2);
-		var min = time.substring(2, 4);
+	display: function (t) {
+		var hour = t.substring(0, 2);
+		var min = t.substring(2, 4);
 		var suffix = "am";
 
 		var hour = parseInt(hour);
@@ -20209,6 +20217,14 @@ module.exports = {
 	duration: function (start, end) {
 		var dur = parseInt(end) - parseInt(start);
 		return Math.floor(dur / 100) * 60 + (dur % 100 != 0 ? 30 : 0);
+	},
+	/**
+  *
+  */
+	convert: function (t) {
+		var t = this.parse(t);
+		// TODO: list all days for sections
+		return t.days[0] + " " + t.start.slice(0, 4) + " " + t.end.slice(0, 4);
 	}
 };
 

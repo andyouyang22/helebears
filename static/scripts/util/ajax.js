@@ -1,4 +1,5 @@
 var parse = require('./parse.js');
+var time  = require('./time.js');
 
 var apiUrl = 'http://protected-refuge-7067.herokuapp.com';
 
@@ -45,10 +46,10 @@ module.exports = {
 			if (data.status == -1) {
 				console.log("Failed to load user's schedule; status = -1");
 				console.log("Errors: " + data.errors);
-				return
+				return;
 			}
 			var courses = parse.schedule(data);
-			callback(courses);
+			callback(schedule);
 		};
 		var onFailure = function() {
 			console.log("Failed to load user's schedule");
@@ -66,9 +67,9 @@ module.exports = {
 			if (data.status == -1) {
 				console.log("Failed to load departments into form; status = -1");
 				console.log("Errors: " + data.errors);
-				return
+				return;
 			}
-			depts = parse.departments(data);
+			var depts = parse.departments(data);
 			callback(depts);
 		};
 		var onFailure = function() {
@@ -87,9 +88,9 @@ module.exports = {
 			if (data.status == -1) {
 				console.log("Failed to load courses into form; status = -1");
 				console.log("Errors: " + data.errors);
-				return
+				return;
 			}
-			courses = parse.courses(data);
+			var courses = parse.courses(data);
 			callback(courses);
 		};
 		var onFailure = function() {
@@ -102,11 +103,24 @@ module.exports = {
 	},
 
 	/**
-	 * Make a GET request for search results.
+	 * Make a GET request for search results for the given form info.
 	 * @param {function} callback: Takes in an array of results and performs an
 	 *   action upon it.
 	 */
-	getResults: function(callback) {
-		return
+	getResults: function(form, callback) {
+		var request = queryify(form);
+		var onSuccess = function(data) {
+			if (data.status == -1) {
+				console.log("Failed to load search results; status = -1");
+				console.log("Errors: " + data.errors);
+				return;
+			}
+			var results = parse.results(data);
+			callback(results);
+		};
+		var onFailure = function() {
+			console.error("Failed to load search results");
+		};
+		this.get('/api/courses?' + request, onSuccess, onFailure);
 	}
 };

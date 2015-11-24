@@ -91,8 +91,8 @@ Store.prototype.courses = function() {
 /**
  * Make a GET request for search results based on the input query.
  */
-Store.prototype.getResults = function() {
-	// Make AJAX call
+Store.prototype.getResults = function(form) {
+	ajax.getResults(form, this.setResults.bind(this));
 };
 
 Store.prototype.setResults = function(results) {

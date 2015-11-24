@@ -10,18 +10,6 @@ var ajax = require('./util/ajax.js');
 var time = require('./util/time.js');
 
 var Search = React.createClass({
-	convertCCN: function(ccn) {
-		ccn = ccn + ""
-		for (var i = ccn.length; i < 5; i++) {
-			ccn = "0" + ccn;
-		}
-		return ccn;
-	},
-	convertTime: function(t) {
-		var t = time.parse(t);
-		// TODO: list all days for sections
-		return t.days[0] + " " + t.start.slice(0, 4) + " " + t.end.slice(0, 4);
-	},
 	componentDidMount: function() {
 		// Used to ensure 'this' is consistent during asynchronous callbacks
 		var that = this;
@@ -54,38 +42,13 @@ var Search = React.createClass({
 	},
 	handleSubmission: function(e) {
 		e.preventDefault();
-		var that = this
-		var form = $(ReactDOM.findDOMNode(this));
-		var request = queryify({
-			department_name : form.find('.search-dept').val(),
-			name            : form.find('.search-course').val(),
-		});
-		var onSuccess = function(data) {
-			var results = [];
-			data.results.forEach(function(lec) {
-				var course = {
-					name : lec.department_name + " " + lec.name,
-					desc : lec.title,
-					inst : lec.professor_name,
-					room : lec.location,
-					time : that.convertTime(lec.time),
-					ccn  : that.convertCCN(lec.ccn),
-					sections : [],
-				};
-				lec.sections.forEach(function(sec) {
-					course.sections.push({
-						time : that.convertTime(sec.time),
-						ccn  : that.convertCCN(sec.ccn),
-					});
-				});
-				results.push(course);
-			});
-			that.props.resultsDisplay(results);
+		var that = this;
+		var formDOM = $(ReactDOM.findDOMNode(this));
+		var form = {
+			department_name : formDOM.find('.search-dept').val(),
+			name            : formDOM.find('.search-course').val(),
 		};
-		var onFailure = function() {
-			console.error("Failed to load search results");
-		};
-		ajax.get('/api/courses?' + request, onSuccess, onFailure);
+		this.props.store.getResults(form);
 	},
 	render: function() {
 		return (

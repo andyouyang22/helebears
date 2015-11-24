@@ -4,8 +4,8 @@ module.exports = {
 	 * Return a dictionary containing parsed time information. An example input
 	 * string is "TR 1400 1530".
 	 */
-	parse: function(time) {
-		var tokens = time.split(" ");
+	parse: function(t) {
+		var tokens = t.split(" ");
 		return {
 			days  : tokens[0],
 			start : tokens[1],
@@ -16,9 +16,9 @@ module.exports = {
 	 * Return the AM/PM formatted string of a military-time input. For example, if
 	 * the input string was "1400", the function would return "2:00 pm"
 	 */
-	display: function(time) {
-		var hour = time.substring(0, 2);
-		var min  = time.substring(2, 4);
+	display: function(t) {
+		var hour = t.substring(0, 2);
+		var min  = t.substring(2, 4);
 		var suffix = "am";
 
 		var hour = parseInt(hour);
@@ -40,5 +40,13 @@ module.exports = {
 	duration: function(start, end) {
 		var dur = parseInt(end) - parseInt(start);
 		return Math.floor(dur / 100) * 60 + ((dur % 100 != 0) ? 30 : 0);
+	},
+	/**
+	 *
+	 */
+	convert: function(t) {
+		var t = this.parse(t);
+		// TODO: list all days for sections
+		return t.days[0] + " " + t.start.slice(0, 4) + " " + t.end.slice(0, 4);
 	},
 };

@@ -3,6 +3,16 @@
  * effort to keep the code in the core files a bit cleaner.
  */
 
+var time = require('./time.js');
+
+var generateCCN = function(ccn) {
+	ccn = ccn + ""
+	for (var i = ccn.length; i < 5; i++) {
+		ccn = "0" + ccn;
+	}
+	return ccn;
+};
+
 module.exports = {
 	schedule: function(data) {
 		if (data.status == -1) {
@@ -40,6 +50,25 @@ module.exports = {
 		return courses;
 	},
 	results: function(data) {
-
+		var results = [];
+		data.results.forEach(function(lec) {
+			var course = {
+				name : lec.department_name + " " + lec.name,
+				desc : lec.title,
+				inst : lec.professor_name,
+				room : lec.location,
+				time : time.convert(lec.time),
+				ccn  : generateCCN(lec.ccn),
+				sections : [],
+			};
+			lec.sections.forEach(function(sec) {
+				course.sections.push({
+					time : time.convert(sec.time),
+					ccn  : generateCCN(sec.ccn),
+				});
+			});
+			results.push(course);
+		});
+		return results;
 	},
 };
