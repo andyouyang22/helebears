@@ -33,21 +33,18 @@ var Search = React.createClass({
 		// TODO: list all days for sections
 		return t.days[0] + " " + t.start.slice(0, 4) + " " + t.end.slice(0, 4);
 	},
-	getInitialState: function() {
+	componentDidMount: function() {
 		var that = this;
-		var onSuccess = function(data) {
-			var depts = [];
-			for (var i = 0; i < data.results.length; i++) {
-				depts.push(data.results[i].department_name);
-			}
+		var callback = function(depts) {
 			that.setState({
 				depts : depts,
 			});
 		};
-		var onFailure = function() {
-			console.error("Failed to load list of departments");
-		}
-		ajax.get('/api/departments', onSuccess, onFailure);
+		// Make a GET request for department names; update the Search form state
+		// using the above callback when the HTTP response arrives
+		ajax.getDepartments(callback);
+	},
+	getInitialState: function() {
 		return {
 			depts   : [],
 			courses : [],
@@ -58,19 +55,7 @@ var Search = React.createClass({
 		var dept = queryify({
 			department_name : e.target.value,
 		});
-		var onSuccess = function(data) {
-			var courses = [];
-			for (var i = 0; i < data.results.length; i++) {
-				courses.push(data.results[i].name);
-			}
-			that.setState({
-				courses : courses,
-			});
-		};
-		var onFailure = function() {
-			console.error("Failed to load courses for " + e.target.value);
-		}
-		ajax.get('/api/courses?' + dept, onSuccess, onFailure);
+		this.props.store.setDepartment(dept);
 	},
 	handleSubmission: function(e) {
 		e.preventDefault();

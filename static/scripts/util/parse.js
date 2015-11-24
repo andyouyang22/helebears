@@ -25,6 +25,20 @@ module.exports = {
 		});
 		return courses;
 	},
+	departments: function(data) {
+		var depts = [];
+		for (var i = 0; i < data.results.length; i++) {
+			depts.push(data.results[i].department_name);
+		}
+		return depts;
+	},
+	courses: function(data) {
+		var courses = [];
+		for (var i = 0; i < data.results.length; i++) {
+			courses.push(data.results[i].name);
+		}
+		return courses;
+	},
 	results: function(data) {
 
 	},
