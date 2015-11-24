@@ -19345,7 +19345,7 @@ var Query = React.createClass({
 			results: []
 		});
 	},
-	display: function (results) {
+	resultsDisplay: function (results) {
 		this.setState({
 			results: results
 		});
@@ -19359,7 +19359,7 @@ var Query = React.createClass({
 		return React.createElement(
 			'div',
 			{ className: 'query' },
-			React.createElement(Search, { display: this.display }),
+			React.createElement(Search, { resultsDisplay: this.resultsDisplay }),
 			React.createElement(Results, { results: this.state.results })
 		);
 	}
@@ -19486,7 +19486,7 @@ Results.Course.Lecture = React.createClass({
 	},
 	render: function () {
 		var t = time.parse(this.props.time);
-		var time = t.days + " " + time.display(t.start) + " - " + time.display(t.end);
+		t = t.days + " " + time.display(t.start) + " - " + time.display(t.end);
 		return React.createElement(
 			'div',
 			{ className: 'results-course-lecture' },
@@ -19513,7 +19513,7 @@ Results.Course.Lecture = React.createClass({
 			React.createElement(
 				'div',
 				{ className: 'results-course-lec-time' },
-				time
+				t
 			),
 			React.createElement(Results.Course.Lecture.Add, { add: this.add })
 		);
@@ -19543,7 +19543,7 @@ Results.Course.Sections = React.createClass({
 			thurs: [],
 			fri: []
 		};
-		for (var i = 0; i < this.dprops.sections.length; i++) {
+		for (var i = 0; i < this.props.sections.length; i++) {
 			var sec = this.props.sections[i];
 			var time = time.parse(sec.time);
 			switch (time.days) {
@@ -19762,8 +19762,8 @@ var Search = React.createClass({
 		}
 		return ccn;
 	},
-	convertTime: function (time) {
-		var t = time.parse(time);
+	convertTime: function (t) {
+		var t = time.parse(t);
 		// TODO: list all days for sections
 		return t.days[0] + " " + t.start.slice(0, 4) + " " + t.end.slice(0, 4);
 	},
@@ -19835,7 +19835,7 @@ var Search = React.createClass({
 				});
 				results.push(course);
 			});
-			that.props.display(results);
+			that.props.resultsDisplay(results);
 		};
 		var onFailure = function () {
 			console.error("Failed to load search results");

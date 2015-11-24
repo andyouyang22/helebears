@@ -110,14 +110,14 @@ Results.Course.Lecture = React.createClass({
 	},
 	render: function() {
 		var t = time.parse(this.props.time);
-		var time = t.days + " " + time.display(t.start) + " - " + time.display(t.end);
+		t = t.days + " " + time.display(t.start) + " - " + time.display(t.end);
 		return (
 			<div className='results-course-lecture'>
 				<div className='results-course-lec-name' onClick={this.props.toggleSections}>{this.props.name}</div>
 				<div className='results-course-lec-course-desc'>HIHIHI</div>
 				<div className='results-course-lec-desc'>{this.props.desc}</div>
 				<div className='results-course-lec-inst' onClick={this.reviews}>{this.props.inst}</div>
-				<div className='results-course-lec-time'>{time}</div>
+				<div className='results-course-lec-time'>{t}</div>
 				<Results.Course.Lecture.Add add={this.add} />
 			</div>
 		);
@@ -141,7 +141,7 @@ Results.Course.Sections = React.createClass({
 			thurs : [],
 			fri   : []
 		}
-		for (var i = 0; i < this.dprops.sections.length; i++) {
+		for (var i = 0; i < this.props.sections.length; i++) {
 			var sec = this.props.sections[i];
 			var time = time.parse(sec.time);
 			switch (time.days) {

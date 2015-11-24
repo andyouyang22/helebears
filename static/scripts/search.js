@@ -28,8 +28,8 @@ var Search = React.createClass({
 		}
 		return ccn;
 	},
-	convertTime: function(time) {
-		var t = time.parse(time);
+	convertTime: function(t) {
+		var t = time.parse(t);
 		// TODO: list all days for sections
 		return t.days[0] + " " + t.start.slice(0, 4) + " " + t.end.slice(0, 4);
 	},
@@ -101,7 +101,7 @@ var Search = React.createClass({
 				});
 				results.push(course);
 			});
-			that.props.display(results);
+			that.props.resultsDisplay(results);
 		};
 		var onFailure = function() {
 			console.error("Failed to load search results");
