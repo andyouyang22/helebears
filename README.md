@@ -66,7 +66,8 @@ The following is the high-level class structure of `index.html`:
 
 The `scripts/bundle.js` file is the result of compiling the React JSX code in `scripts/main.js`. This code is linked using `browserify` and compiled using Babel. `browserify` allows us to use Node-like `require` syntax to link JavaScript modules in the front end. Babel compiles the JSX code down to JavaScript. Running the `bundle.sh` script will compile `scripts/main.js` and link its dependencies:
 
-	cd static/          # bundle.sh uses paths relative to this directory
+	npm install -g browserify
+	cd static/
 	chmod +x bundle.sh  # Make bundle.sh an executable
 	./bundle.sh         # Link and compile ReactJS files
 
