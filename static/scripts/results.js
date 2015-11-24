@@ -72,11 +72,14 @@ Results.Course = React.createClass({
 	toggleDescription: function () {
 		$(ReactDOM.findDOMNode(this)).find('.results-course-description').slideToggle();
 	},
+	toggleVisual: function () {
+		alert('test!');	
+	},
 	render: function() {
 		var c = this.props.course;
 		return (
 			<div className='results-course'>
-				<Results.Course.Lecture store={this.props.store} course_description={c.course_description} name={c.name} desc={c.desc} inst={c.inst} time={c.time} room={c.room} ccn={c.ccn} toggleDescription={this.toggleDescription} toggleSections={this.toggleSections} showReview={this.showReview} />
+				<Results.Course.Lecture store={this.props.store} course_description={c.course_description} name={c.name} desc={c.desc} inst={c.inst} time={c.time} room={c.room} ccn={c.ccn} toggleDescription={this.toggleDescription} toggleVisual={this.toggleVisual} toggleSections={this.toggleSections} showReview={this.showReview} />
 				<Results.Course.Sections sections={this.props.course.sections} />
 				<div className='review-container'>
 					<Reviews review={this.state.review} hideReview={this.hideReview} />
@@ -127,6 +130,7 @@ Results.Course.Lecture = React.createClass({
 		return (
 			<div className='results-course-lecture'>
 				<div className='results-course-lec-name' onClick={this.props.toggleSections}>{this.props.name}</div>
+				<div className='results-course-data-visualization' onClick={this.props.toggleVisual}>Recommended With</div>
 				<div className='results-course-lec-course-desc' onClick={this.props.toggleDescription}>Course Info</div>
 				<div className='results-course-lec-desc'>{this.props.desc}</div>
 				<div className='results-course-lec-inst' onClick={this.reviews}>{this.props.inst}</div>
@@ -134,7 +138,6 @@ Results.Course.Lecture = React.createClass({
 				<div className='results-course-description' style={{display: 'none'}}>
 					<div className='results-course-lecture-add' id='close-button' onClick={this.props.toggleDescription}>Close</div>
 					<p className='long-description'>{this.props.course_description}</p>	
-			
 				</div>
 				<div className='results-course-lecture-add' onClick={this.add}>
 					Add Course

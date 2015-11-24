@@ -198,6 +198,16 @@
 	color: white;
 }
 
+.results-course-data-visualization {
+	float: right;	
+}
+
+.results-course-data-visualization:hover {
+	color: #3399ff;
+	text-decoration: underline;
+	cursor: pointer;
+}
+
 .results-course-description {
 	opacity: 1;
 	/*background-color: #eeeeee;*/

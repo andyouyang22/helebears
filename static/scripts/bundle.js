@@ -470,12 +470,15 @@ Results.Course = React.createClass({
 	toggleDescription: function () {
 		$(ReactDOM.findDOMNode(this)).find('.results-course-description').slideToggle();
 	},
+	toggleVisual: function () {
+		alert('test!');
+	},
 	render: function () {
 		var c = this.props.course;
 		return React.createElement(
 			'div',
 			{ className: 'results-course' },
-			React.createElement(Results.Course.Lecture, { store: this.props.store, course_description: c.course_description, name: c.name, desc: c.desc, inst: c.inst, time: c.time, room: c.room, ccn: c.ccn, toggleDescription: this.toggleDescription, toggleSections: this.toggleSections, showReview: this.showReview }),
+			React.createElement(Results.Course.Lecture, { store: this.props.store, course_description: c.course_description, name: c.name, desc: c.desc, inst: c.inst, time: c.time, room: c.room, ccn: c.ccn, toggleDescription: this.toggleDescription, toggleVisual: this.toggleVisual, toggleSections: this.toggleSections, showReview: this.showReview }),
 			React.createElement(Results.Course.Sections, { sections: this.props.course.sections }),
 			React.createElement(
 				'div',
@@ -533,6 +536,11 @@ Results.Course.Lecture = React.createClass({
 				'div',
 				{ className: 'results-course-lec-name', onClick: this.props.toggleSections },
 				this.props.name
+			),
+			React.createElement(
+				'div',
+				{ className: 'results-course-data-visualization', onClick: this.props.toggleVisual },
+				'Recommended With'
 			),
 			React.createElement(
 				'div',
