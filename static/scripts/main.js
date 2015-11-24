@@ -14,10 +14,9 @@ var Query    = require('./query.js');
 var ajax = require('./ajax.js');
 var time = require('./time.js');
 
-var store = {
-	_courses = [];
-	_results = [];
-};
+var Store = require('./store.js');
+
+var store = new Store();
 
 var testUser = "username420";
 
