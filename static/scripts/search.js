@@ -9,17 +9,6 @@ var ReactDOM = require('react-dom');
 var ajax = require('./util/ajax.js');
 var time = require('./util/time.js');
 
-var queryify = function(query) {
-	query = JSON.stringify(query);
-	return query
-		.replace(/"/g,"")
-		.replace(/{/g,'')
-		.replace(/}/g,'')
-		.replace(/:/g,'=')
-		.replace(/,/g,'&')
-		.replace(/ /g,'%20');
-};
-
 var Search = React.createClass({
 	convertCCN: function(ccn) {
 		ccn = ccn + ""
@@ -34,15 +23,24 @@ var Search = React.createClass({
 		return t.days[0] + " " + t.start.slice(0, 4) + " " + t.end.slice(0, 4);
 	},
 	componentDidMount: function() {
+		// Used to ensure 'this' is consistent during asynchronous callbacks
 		var that = this;
-		var callback = function(depts) {
+
+		var courseCallback = function() {
+			that.setState({
+				courses : that.props.store.courses(),
+			});
+		};
+		this.props.store.addCoursesListener(courseCallback);
+
+		var deptCallback = function(depts) {
 			that.setState({
 				depts : depts,
 			});
 		};
 		// Make a GET request for department names; update the Search form state
 		// using the above callback when the HTTP response arrives
-		ajax.getDepartments(callback);
+		ajax.getDepartments(deptCallback);
 	},
 	getInitialState: function() {
 		return {
@@ -51,10 +49,7 @@ var Search = React.createClass({
 		};
 	},
 	handleDeptChange: function(e) {
-		var that = this;
-		var dept = queryify({
-			department_name : e.target.value,
-		});
+		var dept = e.target.value;
 		this.props.store.setDepartment(dept);
 	},
 	handleSubmission: function(e) {

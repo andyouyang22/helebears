@@ -134,7 +134,6 @@ Calendar.Grid = React.createClass({
 		var courses = {
 			"M": [], "T": [], "W": [], "R": [], "F": [],
 		};
-		debugger
 		this.props.store.schedule().forEach(function(course) {
 			var t = time.parse(course.time);
 			for (var i = 0; i < t.days.length; i++) {

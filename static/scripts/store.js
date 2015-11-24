@@ -73,7 +73,7 @@ Store.prototype.setDepartment = function(dept) {
  * Make a GET request for the courses listed for the input departmet.
  */
 Store.prototype.getCourses = function(dept) {
-	ajax.getCourses(dept, this.setCourses);
+	ajax.getCourses(dept, this.setCourses.bind(this));
 };
 
 Store.prototype.setCourses = function(courses) {

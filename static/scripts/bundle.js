@@ -19065,7 +19065,6 @@ Calendar.Grid = React.createClass({
 		var courses = {
 			"M": [], "T": [], "W": [], "R": [], "F": []
 		};
-		debugger;
 		this.props.store.schedule().forEach(function (course) {
 			var t = time.parse(course.time);
 			for (var i = 0; i < t.days.length; i++) {
@@ -19237,7 +19236,6 @@ var ajax = require('./util/ajax.js');
 var time = require('./util/time.js');
 
 var Store = require('./store.js');
-
 var store = new Store();
 
 var testUser = "username420";
@@ -19305,21 +19303,6 @@ var Results = require('./results.js');
 var Query = React.createClass({
 	displayName: 'Query',
 
-	clear: function () {
-		this.setState({
-			results: []
-		});
-	},
-	resultsDisplay: function (results) {
-		this.setState({
-			results: results
-		});
-	},
-	getInitialState: function () {
-		return {
-			results: []
-		};
-	},
 	render: function () {
 		return React.createElement(
 			'div',
@@ -19349,8 +19332,18 @@ var time = require('./util/time.js');
 var Results = React.createClass({
 	displayName: 'Results',
 
+	componentDidMount: function () {
+		var that = this;
+		var callback = function () {
+			that.setState({
+				results: that.props.state.results()
+			});
+		};
+		this.props.store.addResultsListener(callback);
+	},
 	getInitialState: function () {
 		return {
+			results: [],
 			reviews: []
 		};
 	},
@@ -19712,11 +19705,6 @@ var ReactDOM = require('react-dom');
 var ajax = require('./util/ajax.js');
 var time = require('./util/time.js');
 
-var queryify = function (query) {
-	query = JSON.stringify(query);
-	return query.replace(/"/g, "").replace(/{/g, '').replace(/}/g, '').replace(/:/g, '=').replace(/,/g, '&').replace(/ /g, '%20');
-};
-
 var Search = React.createClass({
 	displayName: 'Search',
 
@@ -19733,15 +19721,24 @@ var Search = React.createClass({
 		return t.days[0] + " " + t.start.slice(0, 4) + " " + t.end.slice(0, 4);
 	},
 	componentDidMount: function () {
+		// Used to ensure 'this' is consistent during asynchronous callbacks
 		var that = this;
-		var callback = function (depts) {
+
+		var courseCallback = function () {
+			that.setState({
+				courses: that.props.store.courses()
+			});
+		};
+		this.props.store.addCoursesListener(courseCallback);
+
+		var deptCallback = function (depts) {
 			that.setState({
 				depts: depts
 			});
 		};
 		// Make a GET request for department names; update the Search form state
 		// using the above callback when the HTTP response arrives
-		ajax.getDepartments(callback);
+		ajax.getDepartments(deptCallback);
 	},
 	getInitialState: function () {
 		return {
@@ -19750,10 +19747,7 @@ var Search = React.createClass({
 		};
 	},
 	handleDeptChange: function (e) {
-		var that = this;
-		var dept = queryify({
-			department_name: e.target.value
-		});
+		var dept = e.target.value;
 		this.props.store.setDepartment(dept);
 	},
 	handleSubmission: function (e) {
@@ -19956,7 +19950,7 @@ Store.prototype.setDepartment = function (dept) {
  * Make a GET request for the courses listed for the input departmet.
  */
 Store.prototype.getCourses = function (dept) {
-	ajax.getCourses(dept, this.setCourses);
+	ajax.getCourses(dept, this.setCourses.bind(this));
 };
 
 Store.prototype.setCourses = function (courses) {
@@ -20023,6 +20017,11 @@ module.exports = Store;
 var parse = require('./parse.js');
 
 var apiUrl = 'http://protected-refuge-7067.herokuapp.com';
+
+var queryify = function (query) {
+	query = JSON.stringify(query);
+	return query.replace(/"/g, "").replace(/{/g, '').replace(/}/g, '').replace(/:/g, '=').replace(/,/g, '&').replace(/ /g, '%20');
+};
 
 module.exports = {
 	get: function (url, onSuccess, onFailure) {
@@ -20106,7 +20105,10 @@ module.exports = {
 		var onFailure = function () {
 			console.log("Failed to load courses for " + dept);
 		};
-		this.get('/api/courses?' + dept, onSuccess, onFailure);
+		var deptQuery = queryify({
+			department_name: dept
+		});
+		this.get('/api/courses?' + deptQuery, onSuccess, onFailure);
 	},
 
 	/**

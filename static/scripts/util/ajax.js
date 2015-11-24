@@ -2,6 +2,17 @@ var parse = require('./parse.js');
 
 var apiUrl = 'http://protected-refuge-7067.herokuapp.com';
 
+var queryify = function(query) {
+	query = JSON.stringify(query);
+	return query
+		.replace(/"/g,"")
+		.replace(/{/g,'')
+		.replace(/}/g,'')
+		.replace(/:/g,'=')
+		.replace(/,/g,'&')
+		.replace(/ /g,'%20');
+};
+
 module.exports = {
 	get: function(url, onSuccess, onFailure) {
 		$.ajax({
@@ -84,7 +95,10 @@ module.exports = {
 		var onFailure = function() {
 			console.log("Failed to load courses for " + dept);
 		};
-		this.get('/api/courses?' + dept, onSuccess, onFailure);
+		var deptQuery = queryify({
+			department_name : dept,
+		});
+		this.get('/api/courses?' + deptQuery, onSuccess, onFailure);
 	},
 
 	/**

@@ -8,21 +8,6 @@ var Search  = require('./search.js');
 var Results = require('./results.js');
 
 var Query = React.createClass({
-	clear: function() {
-		this.setState({
-			results : [],
-		});
-	},
-	resultsDisplay: function(results) {
-		this.setState({
-			results : results,
-		});
-	},
-	getInitialState: function() {
-		return {
-			results : [],
-		};
-	},
 	render: function() {
 		return (
 			<div className='query'>

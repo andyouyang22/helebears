@@ -15,7 +15,6 @@ var ajax = require('./util/ajax.js');
 var time = require('./util/time.js');
 
 var Store = require('./store.js');
-
 var store = new Store();
 
 var testUser = "username420";

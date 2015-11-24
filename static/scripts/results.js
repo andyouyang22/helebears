@@ -12,8 +12,18 @@ var ajax = require('./util/ajax.js');
 var time = require('./util/time.js');
 
 var Results = React.createClass({
+	componentDidMount: function() {
+		var that = this;
+		var callback = function() {
+			that.setState({
+				results : that.props.state.results(),
+			});
+		};
+		this.props.store.addResultsListener(callback);
+	},
 	getInitialState: function() {
 		return {
+			results : [],
 			reviews : [],
 		};
 	},
