@@ -1,6 +1,6 @@
 /**
- * The Store constructor. The Store stores the global front-end state associated
- * with the index.html dashboard page.
+ * The Store class. The Store stores the global front-end state associated with
+ *  the index.html dashboard page and offers an API for manipulating this state.
  */
 
 var EventEmitter = require('events');
@@ -14,7 +14,7 @@ var Store = function() {
 	this._results = [];
 };
 
-Store.prototype = EventEmitter;
+Store.prototype = EventEmitter.prototype;
 
 Store.prototype.courses = function() {
 	return this._courses;

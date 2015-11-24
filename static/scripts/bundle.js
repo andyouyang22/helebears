@@ -18969,35 +18969,16 @@ var Calendar = React.createClass({
 		}
 		return false;
 	},
-	getInitialState: function () {
+	componentDidMount: function () {
 		var that = this;
-		var onSuccess = function (data) {
-			if (data.status == -1) {
-				console.log("Failed to load user's schedule");
-				console.log("Errors: " + data.errors);
-				return;
-			}
-			var courses = [];
-			data.results.forEach(function (result) {
-				var course = {
-					name: result.name_and_number,
-					time: result.course_time,
-					room: "420 Barrows", // TODO: store room location in backend
-					ccn: result.ccn
-				};
-				if (course.ccn == undefined) {
-					course.ccn = that.ccn(course.name, course.time);
-				}
-				courses.push(course);
-			});
+		this.props.store.addCoursesListener(function () {
 			that.setState({
-				courses: courses
+				courses: that.props.store.courses()
 			});
-		};
-		var onFailure = function () {
-			console.log("Failed to load user's schedule");
-		};
-		ajax.get('/api/schedules', onSuccess, onFailure);
+		});
+		ajax.getCourses(this.props.store.setCourses);
+	},
+	getInitialState: function () {
 		return {
 			courses: []
 		};
@@ -19929,7 +19910,7 @@ var Store = function () {
 	this._results = [];
 };
 
-Store.prototype = EventEmitter;
+Store.prototype = EventEmitter.prototype;
 
 Store.prototype.courses = function () {
 	return this._courses;
@@ -20006,7 +19987,7 @@ module.exports = {
 	/**
   * Make a GET request for the user's courses.
   * @param {function} callback: Takes in an array of courses and performs an
-  *   action upon it
+  *   action upon it.
   */
 	getCourses: function (callback) {
 		var onSuccess = function (data) {
@@ -20022,6 +20003,15 @@ module.exports = {
 			console.log("Failed to load user's schedule");
 		};
 		this.get('/api/schedules', onSuccess, onFailure);
+	},
+
+	/**
+  * Make a GET request for search results.
+  * @param {function} callback: Takes in an array of results and performs an
+  *   action upon it.
+  */
+	getResults: function (callback) {
+		return;
 	}
 };
 
