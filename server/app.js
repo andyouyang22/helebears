@@ -1,5 +1,4 @@
 var express = require('express');
-var app = express();
 
 var logger = require('morgan');
 var cookieParser = require('cookie-parser');
@@ -15,6 +14,8 @@ var reviews = require('./routes/reviews');
 var session = require('express-session');
 var passport = require('passport');
 var flash = require('connect-flash');
+
+var app = express();
 
 // Set up our Express application
 app.use(morgan('dev')); // Log every request to the console

@@ -58,4 +58,4 @@ module.exports = function(app, passport) {
         // If they aren't redirect them to the home page
         res.redirect('/');
     }
-}
+};
