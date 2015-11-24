@@ -6,8 +6,8 @@
 var React    = require('react');
 var ReactDOM = require('react-dom');
 
-var ajax = require('./ajax.js');
-var time = require('./time.js');
+var ajax = require('./util/ajax.js');
+var time = require('./util/time.js');
 
 var queryify = function(query) {
 	query = JSON.stringify(query);

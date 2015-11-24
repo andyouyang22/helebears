@@ -8,8 +8,8 @@ var ReactDOM = require('react-dom');
 
 var Reviews = require('./reviews.js');
 
-var ajax = require('./ajax.js');
-var time = require('./time.js');
+var ajax = require('./util/ajax.js');
+var time = require('./util/time.js');
 
 var Results = React.createClass({
 	getInitialState: function() {

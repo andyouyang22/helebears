@@ -11,8 +11,8 @@ var Menu     = require('./menu.js');
 var Calendar = require('./calendar.js');
 var Query    = require('./query.js');
 
-var ajax = require('./ajax.js');
-var time = require('./time.js');
+var ajax = require('./util/ajax.js');
+var time = require('./util/time.js');
 
 var Store = require('./store.js');
 

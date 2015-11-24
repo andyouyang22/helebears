@@ -5,7 +5,7 @@
 
 var EventEmitter = require('events');
 
-var ajax = require('./ajax.js');
+var ajax = require('./util/ajax.js');
 
 var Store = function() {
 	// Courses currently displayed on the user's Calendar
@@ -25,19 +25,30 @@ Store.prototype.addCourse = function(course) {
 	this.emit('courses');
 };
 
+Store.prototype.setCourses = function(courses) {
+	this._courses = courses;
+	this.emit('courses');
+};
+
+/**
+ * Make a GET request for the user's courses.
+ */
 Store.prototype.getCourses = function() {
-	// Make AJAX call
+	ajax.getCourses(this.setCourses);
 };
 
 Store.prototype.results = function() {
 	return this._results;
 };
 
-Store.prototype.displayResults = function(results) {
+Store.prototype.setResults = function(results) {
 	this._results = results;
 	this.emit('results');
 };
 
+/**
+ * Make a GET request for search results based on the input query.
+ */
 Store.prototype.getResults = function() {
 	// Make AJAX call
 };

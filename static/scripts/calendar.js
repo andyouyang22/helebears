@@ -7,8 +7,8 @@
 var React    = require('react');
 var ReactDOM = require('react-dom');
 
-var ajax = require('./ajax.js');
-var time = require('./time.js');
+var ajax = require('./util/ajax.js');
+var time = require('./util/time.js');
 
 var hours = [
 	"0800", "0900", "1000", "1100", "1200", "1300", "1400",

@@ -18924,32 +18924,6 @@ module.exports = validateDOMNesting;
 module.exports = require('./lib/React');
 
 },{"./lib/React":52}],158:[function(require,module,exports){
-var apiUrl = 'http://protected-refuge-7067.herokuapp.com';
-
-module.exports = {
-	get: function (url, onSuccess, onFailure) {
-		$.ajax({
-			type: 'GET',
-			url: apiUrl + url,
-			dataType: "json",
-			success: onSuccess,
-			error: onFailure
-		});
-	},
-	make: function (url, data, onSuccess, onFailure) {
-		$.ajax({
-			type: 'POST',
-			url: apiUrl + url,
-			data: JSON.stringify(data),
-			contentType: "application/json",
-			dataType: "json",
-			success: onSuccess,
-			error: onFailure
-		});
-	}
-};
-
-},{}],159:[function(require,module,exports){
 /**
  * The Calendar section of the page. This section graphically displays the user's
  * selected courses in calendar format, and is updated to reflect changes in the
@@ -18959,8 +18933,8 @@ module.exports = {
 var React = require('react');
 var ReactDOM = require('react-dom');
 
-var ajax = require('./ajax.js');
-var time = require('./time.js');
+var ajax = require('./util/ajax.js');
+var time = require('./util/time.js');
 
 var hours = ["0800", "0900", "1000", "1100", "1200", "1300", "1400", "1500", "1600", "1700", "1800", "1900", "2000", "2100"];
 
@@ -19262,7 +19236,7 @@ Calendar.Course.Remove = React.createClass({
 
 module.exports = Calendar;
 
-},{"./ajax.js":158,"./time.js":167,"react":157,"react-dom":28}],160:[function(require,module,exports){
+},{"./util/ajax.js":166,"./util/time.js":167,"react":157,"react-dom":28}],159:[function(require,module,exports){
 
 /**
  * The central script that renders the React components of index.html and stores
@@ -19276,8 +19250,8 @@ var Menu = require('./menu.js');
 var Calendar = require('./calendar.js');
 var Query = require('./query.js');
 
-var ajax = require('./ajax.js');
-var time = require('./time.js');
+var ajax = require('./util/ajax.js');
+var time = require('./util/time.js');
 
 var Store = require('./store.js');
 
@@ -19291,7 +19265,7 @@ var CalendarAPI = ReactDOM.render(React.createElement(Calendar, { store: store, 
 
 var QueryAPI = ReactDOM.render(React.createElement(Query, { store: store }), document.getElementById('container-right'));
 
-},{"./ajax.js":158,"./calendar.js":159,"./menu.js":161,"./query.js":162,"./store.js":166,"./time.js":167,"react":157,"react-dom":28}],161:[function(require,module,exports){
+},{"./calendar.js":158,"./menu.js":160,"./query.js":161,"./store.js":165,"./util/ajax.js":166,"./util/time.js":167,"react":157,"react-dom":28}],160:[function(require,module,exports){
 /**
  * The Menu section of the page. This section displays the logo and may contain
  * additional menu buttons, such as the log-out button.
@@ -19335,7 +19309,7 @@ Menu.Buttons = React.createClass({
 
 module.exports = Menu;
 
-},{"react":157,"react-dom":28}],162:[function(require,module,exports){
+},{"react":157,"react-dom":28}],161:[function(require,module,exports){
 /**
  * The Query section of the page. This section contains Search and Results.
  */
@@ -19375,7 +19349,7 @@ var Query = React.createClass({
 
 module.exports = Query;
 
-},{"./results.js":163,"./search.js":165,"react":157}],163:[function(require,module,exports){
+},{"./results.js":162,"./search.js":164,"react":157}],162:[function(require,module,exports){
 /**
  * The Results section of the page. Results contains a scrollable list of courses
  * that match the user's query.
@@ -19386,8 +19360,8 @@ var ReactDOM = require('react-dom');
 
 var Reviews = require('./reviews.js');
 
-var ajax = require('./ajax.js');
-var time = require('./time.js');
+var ajax = require('./util/ajax.js');
+var time = require('./util/time.js');
 
 var Results = React.createClass({
 	displayName: 'Results',
@@ -19640,7 +19614,7 @@ Results.Course.Sections.Section = React.createClass({
 
 module.exports = Results;
 
-},{"./ajax.js":158,"./reviews.js":164,"./time.js":167,"react":157,"react-dom":28}],164:[function(require,module,exports){
+},{"./reviews.js":163,"./util/ajax.js":166,"./util/time.js":167,"react":157,"react-dom":28}],163:[function(require,module,exports){
 /**
  * The Reviews section of the page. This area is only displayed when selected.
  */
@@ -19648,8 +19622,8 @@ module.exports = Results;
 var React = require('react');
 var ReactDOM = require('react-dom');
 
-var ajax = require('./ajax.js');
-var time = require('./time.js');
+var ajax = require('./util/ajax.js');
+var time = require('./util/time.js');
 
 var Reviews = React.createClass({
 	displayName: 'Reviews',
@@ -19743,7 +19717,7 @@ var Reviews = React.createClass({
 
 module.exports = Reviews;
 
-},{"./ajax.js":158,"./time.js":167,"react":157,"react-dom":28}],165:[function(require,module,exports){
+},{"./util/ajax.js":166,"./util/time.js":167,"react":157,"react-dom":28}],164:[function(require,module,exports){
 /**
  * The Search section of the page. The user inputs search criteria into this
  * section, which sends the query to the backend server.
@@ -19752,8 +19726,8 @@ module.exports = Reviews;
 var React = require('react');
 var ReactDOM = require('react-dom');
 
-var ajax = require('./ajax.js');
-var time = require('./time.js');
+var ajax = require('./util/ajax.js');
+var time = require('./util/time.js');
 
 var queryify = function (query) {
 	query = JSON.stringify(query);
@@ -19938,7 +19912,7 @@ Search.Submit = React.createClass({
 
 module.exports = Search;
 
-},{"./ajax.js":158,"./time.js":167,"react":157,"react-dom":28}],166:[function(require,module,exports){
+},{"./util/ajax.js":166,"./util/time.js":167,"react":157,"react-dom":28}],165:[function(require,module,exports){
 /**
  * The Store constructor. The Store stores the global front-end state associated
  * with the index.html dashboard page.
@@ -19946,7 +19920,7 @@ module.exports = Search;
 
 var EventEmitter = require('events');
 
-var ajax = require('./ajax.js');
+var ajax = require('./util/ajax.js');
 
 var Store = function () {
 	// Courses currently displayed on the user's Calendar
@@ -19966,19 +19940,30 @@ Store.prototype.addCourse = function (course) {
 	this.emit('courses');
 };
 
+Store.prototype.setCourses = function (courses) {
+	this._courses = courses;
+	this.emit('courses');
+};
+
+/**
+ * Make a GET request for the user's courses.
+ */
 Store.prototype.getCourses = function () {
-	// Make AJAX call
+	ajax.getCourses(this.setCourses);
 };
 
 Store.prototype.results = function () {
 	return this._results;
 };
 
-Store.prototype.displayResults = function (results) {
+Store.prototype.setResults = function (results) {
 	this._results = results;
 	this.emit('results');
 };
 
+/**
+ * Make a GET request for search results based on the input query.
+ */
 Store.prototype.getResults = function () {
 	// Make AJAX call
 };
@@ -19993,7 +19978,54 @@ Store.prototype.addResultsListener = function (callback) {
 
 module.exports = Store;
 
-},{"./ajax.js":158,"events":168}],167:[function(require,module,exports){
+},{"./util/ajax.js":166,"events":168}],166:[function(require,module,exports){
+var apiUrl = 'http://protected-refuge-7067.herokuapp.com';
+
+module.exports = {
+	get: function (url, onSuccess, onFailure) {
+		$.ajax({
+			type: 'GET',
+			url: apiUrl + url,
+			dataType: "json",
+			success: onSuccess,
+			error: onFailure
+		});
+	},
+	make: function (url, data, onSuccess, onFailure) {
+		$.ajax({
+			type: 'POST',
+			url: apiUrl + url,
+			data: JSON.stringify(data),
+			contentType: "application/json",
+			dataType: "json",
+			success: onSuccess,
+			error: onFailure
+		});
+	},
+
+	/**
+  * Make a GET request for the user's courses.
+  * @param {function} callback: Takes in an array of courses and performs an
+  *   action upon it
+  */
+	getCourses: function (callback) {
+		var onSuccess = function (data) {
+			if (data.status == -1) {
+				console.log("Failed to load user's schedule; status = -1");
+				console.log("Errors: " + data.errors);
+				return;
+			}
+			var courses = parse.courses(data);
+			callback(courses);
+		};
+		var onFailure = function () {
+			console.log("Failed to load user's schedule");
+		};
+		this.get('/api/schedules', onSuccess, onFailure);
+	}
+};
+
+},{}],167:[function(require,module,exports){
 
 module.exports = {
 	/**
@@ -20432,4 +20464,4 @@ process.chdir = function (dir) {
 };
 process.umask = function() { return 0; };
 
-},{}]},{},[160]);
+},{}]},{},[159]);
