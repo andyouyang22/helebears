@@ -1,9 +1,10 @@
 /**
- * Helper functions for parsing HTTP response data.
+ * Helper functions for parsing HTTP response data. This was mainly a refactoring
+ * effort to keep the code in the core files a bit cleaner.
  */
 
 module.exports = {
-	courses: function(data) {
+	schedule: function(data) {
 		if (data.status == -1) {
 			console.log("Failed to load user's schedule");
 			console.log("Errors: " + data.errors);

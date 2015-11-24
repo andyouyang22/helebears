@@ -46,12 +46,13 @@ var Calendar = React.createClass({
 	},
 	componentDidMount: function() {
 		var that = this;
-		this.props.store.addCoursesListener(function() {
+		var callback = function() {
 			that.setState({
 				courses : that.props.store.courses(),
 			});
-		});
-		ajax.getCourses(this.props.store.setCourses);
+		}
+		this.props.store.addCoursesListener(callback);
+		this.props.store.getCourses();
 	},
 	getInitialState: function() {
 		return {
@@ -133,7 +134,7 @@ Calendar.Grid = React.createClass({
 		var courses = {
 			"M": [], "T": [], "W": [], "R": [], "F": [],
 		};
-		this.props.store.courses().forEach(function(course) {
+		this.props.store.schedule().forEach(function(course) {
 			var t = time.parse(course.time);
 			for (var i = 0; i < t.days.length; i++) {
 				var day = t.days[i]

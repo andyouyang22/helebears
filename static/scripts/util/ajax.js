@@ -23,18 +23,18 @@ module.exports = {
 	},
 
 	/**
-	 * Make a GET request for the user's courses.
+	 * Make a GET request for the user's schedule.
 	 * @param {function} callback: Takes in an array of courses and performs an
 	 *   action upon it.
 	 */
-	getCourses: function(callback) {
+	getSchedule: function(callback) {
 		var onSuccess = function(data) {
 			if (data.status == -1) {
 				console.log("Failed to load user's schedule; status = -1");
 				console.log("Errors: " + data.errors);
 				return
 			}
-			var courses = parse.courses(data);
+			var courses = parse.schedule(data);
 			callback(courses);
 		};
 		var onFailure = function() {

@@ -18971,12 +18971,13 @@ var Calendar = React.createClass({
 	},
 	componentDidMount: function () {
 		var that = this;
-		this.props.store.addCoursesListener(function () {
+		var callback = function () {
 			that.setState({
 				courses: that.props.store.courses()
 			});
-		});
-		ajax.getCourses(this.props.store.setCourses);
+		};
+		this.props.store.addCoursesListener(callback);
+		this.props.store.getCourses();
 	},
 	getInitialState: function () {
 		return {
@@ -19064,7 +19065,7 @@ Calendar.Grid = React.createClass({
 		var courses = {
 			"M": [], "T": [], "W": [], "R": [], "F": []
 		};
-		this.props.store.courses().forEach(function (course) {
+		this.props.store.schedule().forEach(function (course) {
 			var t = time.parse(course.time);
 			for (var i = 0; i < t.days.length; i++) {
 				var day = t.days[i];
@@ -19895,8 +19896,8 @@ module.exports = Search;
 
 },{"./util/ajax.js":166,"./util/time.js":167,"react":157,"react-dom":28}],165:[function(require,module,exports){
 /**
- * The Store constructor. The Store stores the global front-end state associated
- * with the index.html dashboard page.
+ * The Store class. The Store stores the global front-end state associated with
+ *  the index.html dashboard page and offers an API for manipulating this state.
  */
 
 var EventEmitter = require('events');
@@ -19905,32 +19906,32 @@ var ajax = require('./util/ajax.js');
 
 var Store = function () {
 	// Courses currently displayed on the user's Calendar
-	this._courses = [];
+	this._schedule = [];
 	// Results currently displayed in the Results section
 	this._results = [];
 };
 
 Store.prototype = EventEmitter.prototype;
 
-Store.prototype.courses = function () {
-	return this._courses;
+Store.prototype.schedule = function () {
+	return this._schedule;
 };
 
 Store.prototype.addCourse = function (course) {
-	this._courses.push(course);
-	this.emit('courses');
+	this._schedule.push(course);
+	this.emit('schedule');
 };
 
-Store.prototype.setCourses = function (courses) {
-	this._courses = courses;
-	this.emit('courses');
+Store.prototype.setSchedule = function (schedule) {
+	this._schedule = schedule;
+	this.emit('schedule');
 };
 
 /**
- * Make a GET request for the user's courses.
+ * Make a GET request for the user's schedule.
  */
 Store.prototype.getCourses = function () {
-	ajax.getCourses(this.setCourses);
+	ajax.getCourses(this.setSchedule);
 };
 
 Store.prototype.results = function () {
@@ -19949,10 +19950,20 @@ Store.prototype.getResults = function () {
 	// Make AJAX call
 };
 
+/**
+ * Add a listening for the schedule-change event.
+ * @param {function} callback: Whenever the schedule being displayed in the user's
+ *   Calendar changes (e.g. a course is added), this callback is called.
+ */
 Store.prototype.addCoursesListener = function (callback) {
-	this.on('courses', callback);
+	this.on('schedule', callback);
 };
 
+/**
+ * Add a listening for the results-change event.
+ * @param {function} callback: Whenever the results being displayed in the Results
+ *   section changes (e.g. a new search occurs), this callback is called.
+ */
 Store.prototype.addResultsListener = function (callback) {
 	this.on('results', callback);
 };
