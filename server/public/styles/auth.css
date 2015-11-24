@@ -3,6 +3,11 @@ body {
 	font-family: 'Roboto' sans-serif;
 }
 
+.container {
+	padding-left: 80px;
+	padding-right: 80px;
+}
+
 .jumbotron {
 	background-color: #eeeeee;
 }
