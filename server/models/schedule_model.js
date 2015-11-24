@@ -14,6 +14,7 @@ var Schedules = sequelize.define("Schedules", {
       type: Sequelize.STRING,
       primaryKey: true,
   },
+  ccn: Sequelize.INTEGER,
   course_time: Sequelize.STRING,
   section_time: Sequelize.STRING,
   lab_time: Sequelize.STRING
