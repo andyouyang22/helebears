@@ -73,13 +73,13 @@ Results.Course = React.createClass({
 		$(ReactDOM.findDOMNode(this)).find('.results-course-description').slideToggle();
 	},
 	toggleVisual: function () {
-		alert('test!');	
+		$(ReactDOM.findDOMNode(this)).find('.data-visualization').slideToggle();	
 	},
 	render: function() {
 		var c = this.props.course;
 		return (
 			<div className='results-course'>
-				<Results.Course.Lecture store={this.props.store} course_description={c.course_description} name={c.name} desc={c.desc} inst={c.inst} time={c.time} room={c.room} ccn={c.ccn} toggleDescription={this.toggleDescription} toggleVisual={this.toggleVisual} toggleSections={this.toggleSections} showReview={this.showReview} />
+				<Results.Course.Lecture store={this.props.store} recommendation={c.recommendation} course_description={c.course_description} name={c.name} desc={c.desc} inst={c.inst} time={c.time} room={c.room} ccn={c.ccn} toggleDescription={this.toggleDescription} toggleVisual={this.toggleVisual} toggleSections={this.toggleSections} showReview={this.showReview} />
 				<Results.Course.Sections sections={this.props.course.sections} />
 				<div className='review-container'>
 					<Reviews review={this.state.review} hideReview={this.hideReview} />
@@ -142,6 +142,8 @@ Results.Course.Lecture = React.createClass({
 				<div className='results-course-lecture-add' onClick={this.add}>
 					Add Course
 				</div>
+				<div className='data-visualization'>{JSON.stringify(this.props.recommendation)}</div>
+			
 			</div>
 		);
 	}

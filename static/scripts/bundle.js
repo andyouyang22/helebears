@@ -471,14 +471,14 @@ Results.Course = React.createClass({
 		$(ReactDOM.findDOMNode(this)).find('.results-course-description').slideToggle();
 	},
 	toggleVisual: function () {
-		alert('test!');
+		$(ReactDOM.findDOMNode(this)).find('.data-visualization').slideToggle();
 	},
 	render: function () {
 		var c = this.props.course;
 		return React.createElement(
 			'div',
 			{ className: 'results-course' },
-			React.createElement(Results.Course.Lecture, { store: this.props.store, course_description: c.course_description, name: c.name, desc: c.desc, inst: c.inst, time: c.time, room: c.room, ccn: c.ccn, toggleDescription: this.toggleDescription, toggleVisual: this.toggleVisual, toggleSections: this.toggleSections, showReview: this.showReview }),
+			React.createElement(Results.Course.Lecture, { store: this.props.store, recommendation: c.recommendation, course_description: c.course_description, name: c.name, desc: c.desc, inst: c.inst, time: c.time, room: c.room, ccn: c.ccn, toggleDescription: this.toggleDescription, toggleVisual: this.toggleVisual, toggleSections: this.toggleSections, showReview: this.showReview }),
 			React.createElement(Results.Course.Sections, { sections: this.props.course.sections }),
 			React.createElement(
 				'div',
@@ -580,6 +580,11 @@ Results.Course.Lecture = React.createClass({
 				'div',
 				{ className: 'results-course-lecture-add', onClick: this.add },
 				'Add Course'
+			),
+			React.createElement(
+				'div',
+				{ className: 'data-visualization' },
+				JSON.stringify(this.props.recommendation)
 			)
 		);
 	}
@@ -1260,6 +1265,8 @@ module.exports = {
 				ccn: generateCCN(lec.ccn),
 				course_description: "Temporary Course Description LONG LONG LONG LONG LONG LONG LONG LONG LONG LONG LONG LONG LONG LONG LONG LONG LONG ",
 				//course_description : lec.course_description,
+				recommendation: { name: 'CS169', recommendation: { 'CS170': 20, 'CS160': 10, 'CS142': 33 } },
+				//recommendation : lec.recommendation,
 				sections: []
 			};
 			lec.sections.forEach(function (sec) {

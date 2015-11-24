@@ -61,6 +61,8 @@ module.exports = {
 				ccn  : generateCCN(lec.ccn),
 				course_description : "Temporary Course Description LONG LONG LONG LONG LONG LONG LONG LONG LONG LONG LONG LONG LONG LONG LONG LONG LONG ",
 				//course_description : lec.course_description,
+				recommendation : {name:'CS169',recommendation:{'CS170':20,'CS160':10,'CS142':33}},
+				//recommendation : lec.recommendation,
 				sections : [],
 			};
 			lec.sections.forEach(function(sec) {
