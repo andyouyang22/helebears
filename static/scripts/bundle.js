@@ -19263,7 +19263,6 @@ Calendar.Course.Remove = React.createClass({
 module.exports = Calendar;
 
 },{"./ajax.js":158,"./time.js":166,"react":157,"react-dom":28}],160:[function(require,module,exports){
-
 var React = require('react');
 var ReactDOM = require('react-dom');
 
@@ -19274,13 +19273,16 @@ var Query = require('./query.js');
 var ajax = require('./ajax.js');
 var time = require('./time.js');
 
+_courses = [];
+_results = [];
+
 var testUser = "username420";
 
 var MenuAPI = ReactDOM.render(React.createElement(Menu, null), document.getElementById('container-top'));
 
 var CalendarAPI = ReactDOM.render(React.createElement(Calendar, { courses: [], user: testUser }), document.getElementById('container-left'));
 
-var QueryAPI = ReactDOM.render(React.createElement(Query, null), document.getElementById('container-right'));
+var QueryAPI = ReactDOM.render(React.createElement(Query, { calendar: CalendarAPI }), document.getElementById('container-right'));
 
 },{"./ajax.js":158,"./calendar.js":159,"./menu.js":161,"./query.js":162,"./time.js":166,"react":157,"react-dom":28}],161:[function(require,module,exports){
 /**
@@ -19332,7 +19334,6 @@ module.exports = Menu;
  */
 
 var React = require('react');
-var ReactDOM = require('react-dom');
 
 var Search = require('./search.js');
 var Results = require('./results.js');
@@ -19356,6 +19357,10 @@ var Query = React.createClass({
 		};
 	},
 	render: function () {
+		var api = {
+			calendar: this.props.calendar,
+			query: this
+		};
 		return React.createElement(
 			'div',
 			{ className: 'query' },
@@ -19367,7 +19372,7 @@ var Query = React.createClass({
 
 module.exports = Query;
 
-},{"./results.js":163,"./search.js":165,"react":157,"react-dom":28}],163:[function(require,module,exports){
+},{"./results.js":163,"./search.js":165,"react":157}],163:[function(require,module,exports){
 /**
  * The Results section of the page. Results contains a scrollable list of courses
  * that match the user's query.

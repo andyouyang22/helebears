@@ -1,4 +1,10 @@
 
+/**
+ * The central script that renders the React components of index.html and stores
+ * the global page state.
+ */
+
+var React    = require('react');
 var ReactDOM = require('react-dom');
 
 var Menu     = require('./menu.js');
@@ -7,6 +13,11 @@ var Query    = require('./query.js');
 
 var ajax = require('./ajax.js');
 var time = require('./time.js');
+
+var store = {
+	_courses = [];
+	_results = [];
+};
 
 var testUser = "username420";
 
