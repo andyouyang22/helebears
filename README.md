@@ -42,6 +42,26 @@ To view back end coverage, go to the `server/` folder
 	istanbul cover ./node_modules/.bin/_mocha tests/unit_tests/  ./node_modules/.bin/_mocha tests/functional_tests/
 	open coverage/lcov-report/index.html
 
+## ReactJS DOM Structure
+
+The following is the high-level class structure of `index.html`:
+
+	+-----------------------------------------------+
+	| Menu                                          |
+	+-----------------------------------------------+
+	+----------------------+ +----------------------+
+	| Calendar             | | Query                |
+	|                      | | +------------------+ |
+	|                      | | | Search           | |
+	|                      | | +------------------+ |
+	|                      | | +------------------+ |
+	|                      | | | Results          | |
+	|                      | | |                  | |
+	|                      | | |                  | |
+	|                      | | |                  | |
+	|                      | | +------------------+ |
+	+----------------------+ +----------------------+
+
 ## Compiling ReactJS JSX Code
 
 The `scripts/bundle.js` file is the result of compiling the React JSX code in `scripts/main.js`. This code is linked using `browserify` and compiled using Babel. `browserify` allows us to use Node-like `require` syntax to link JavaScript modules in the front end. Babel compiles the JSX code down to JavaScript. Running the `bundle.sh` script will compile `scripts/main.js` and link its dependencies:
