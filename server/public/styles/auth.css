@@ -7,7 +7,7 @@ body {
 	background-color: #eeeeee;
 }
 
-.jumbotron h1 {
+h1 {
 	font-family: 'Roboto Slab' serif;
 	font-weight: bold;
 }
@@ -29,3 +29,15 @@ body {
 	color: #444444;
 	background-color: #cccccc;
 }
+
+form {
+	background-color: #eeeeee;
+	padding: 30px;
+	border-radius: 5px;
+	margin-bottom: 20px;
+}
+
+.form-button {
+	font-size: 100%;
+}
+
