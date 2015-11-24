@@ -14,17 +14,6 @@ var time = require('./time.js');
  * The Query section of the page. This section contains Search and Results.
  */
 
-var queryify = function(query) {
-	query = JSON.stringify(query);
-	return query
-		.replace(/"/g,"")
-		.replace(/{/g,'')
-		.replace(/}/g,'')
-		.replace(/:/g,'=')
-		.replace(/,/g,'&')
-		.replace(/ /g,'%20');
-}
-
 var Query = React.createClass({
 	clear: function() {
 		this.setState({

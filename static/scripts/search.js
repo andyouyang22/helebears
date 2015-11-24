@@ -9,6 +9,17 @@ var ReactDOM = require('react-dom');
 var ajax = require('./ajax.js');
 var time = require('./time.js');
 
+var queryify = function(query) {
+	query = JSON.stringify(query);
+	return query
+		.replace(/"/g,"")
+		.replace(/{/g,'')
+		.replace(/}/g,'')
+		.replace(/:/g,'=')
+		.replace(/,/g,'&')
+		.replace(/ /g,'%20');
+};
+
 var Search = React.createClass({
 	convertCCN: function(ccn) {
 		ccn = ccn + ""
