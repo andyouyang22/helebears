@@ -33,6 +33,7 @@ h1 {
 	cursor: pointer;
 	color: #444444;
 	background-color: #cccccc;
+	text-decoration: none;
 }
 
 form {
