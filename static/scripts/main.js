@@ -4,42 +4,10 @@ var ReactDOM = require('react-dom');
 
 var Menu     = require('./menu.js');
 var Calendar = require('./calendar.js');
-var Search   = require('./search.js');
-var Results  = require('./results.js');
+var Query    = require('./query.js');
 
 var ajax = require('./ajax.js');
 var time = require('./time.js');
-
-/**
- * The Query section of the page. This section contains Search and Results.
- */
-
-var Query = React.createClass({
-	clear: function() {
-		this.setState({
-			results : [],
-		});
-	},
-	display: function(results) {
-		this.setState({
-			results : results,
-		});
-	},
-	getInitialState: function() {
-		return {
-			results : [],
-		};
-	},
-	render: function() {
-		return (
-			<div className='query'>
-				<Search />
-				<Results results={this.state.results} />
-			</div>
-		);
-	}
-});
-
 
 var testUser = "username420";
 

@@ -101,7 +101,7 @@ var Search = React.createClass({
 				});
 				results.push(course);
 			});
-			QueryAPI.display(results);
+			that.props.display(results);
 		};
 		var onFailure = function() {
 			console.error("Failed to load search results");
