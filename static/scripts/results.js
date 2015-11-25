@@ -5,14 +5,12 @@
 
 var React    = require('react');
 var ReactDOM = require('react-dom');
+var PieChart = require("react-chartjs").Pie;
 
 var Reviews = require('./reviews.js');
 
 var ajax = require('./util/ajax.js');
 var time = require('./util/time.js');
-var PieChart = require("react-chartjs").Pie;
-
-
 
 var Results = React.createClass({
 	componentDidMount: function() {
@@ -161,9 +159,7 @@ Results.Course.Lecture.RecommendationChart = React.createClass({
 				<PieChart data={chartData} />
 			</div>
 			);
-
 	}
-
 });
 
 Results.Course.Sections = React.createClass({
