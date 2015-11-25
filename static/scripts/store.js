@@ -44,14 +44,27 @@ Store.prototype.setSchedule = function(schedule) {
 };
 
 Store.prototype.addCourse = function(course) {
-	// AJAX call to backend to store schedule
+	// TODO: Check conflicts
 	this._schedule.push(course);
 	// Emit an event signaling the Calendar state has changed
 	this.emit('schedule');
+	ajax.postAddCourse(course);
 };
 
-Store.prototype.removeCourse = function(ccn) {
-
+Store.prototype.removeCourse = function(course) {
+	// Remove all courses with the same ccn (there should only be one)
+	var removed = false;
+	for (i = 0; i < this._schedule.length; i++) {
+		if (this._schedule[i].ccn == course.ccn) {
+			this._schedule.splice(i, 1);
+			removed = true;
+		}
+	}
+	if (removed) {
+		// Emit an event signaling the Calendar state has changed
+		this.emit('schedule');
+		ajax.postRemoveCourse(course);
+	}
 };
 
 Store.prototype.schedule = function() {
