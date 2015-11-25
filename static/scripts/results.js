@@ -155,7 +155,7 @@ Results.Course.Lecture = React.createClass({
 
 Results.Course.Lecture.RecommendationChart = React.createClass({
 	render: function() {
-		chartData = [{value:300, label:'test1'}, {value:150, label:'test2'}];
+		chartData = [{value:300, label:'test1', color:'#F7464A'}, {value:150, label:'test2', color:'#235497'}];
 		return (
 			<div id="omg">
 				<PieChart data={chartData} />
