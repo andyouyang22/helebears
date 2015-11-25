@@ -71,6 +71,7 @@ var Calendar = React.createClass({
 			course_time     : course.time,
 			section_time    : course.time,
 			lab_time        : course.time,
+			ccn: course.ccn
 		};
 		ajax.post('/api/schedules/add', data, onSuccess, onFailure);
 	},

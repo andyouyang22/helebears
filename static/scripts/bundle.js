@@ -22641,7 +22641,8 @@ var Calendar = React.createClass({
 			name_and_number: course.name,
 			course_time: course.time,
 			section_time: course.time,
-			lab_time: course.time
+			lab_time: course.time,
+			ccn: course.ccn
 		};
 		ajax.post('/api/schedules/add', data, onSuccess, onFailure);
 	},
@@ -23816,7 +23817,8 @@ module.exports = {
 			name_and_number: course.name,
 			course_time: course.time,
 			section_time: course.time,
-			lab_time: course.time
+			lab_time: course.time,
+            ccn: course.ccn
 		};
 		this.post('/api/schedules/add', data, onSuccess, onFailure);
 	},

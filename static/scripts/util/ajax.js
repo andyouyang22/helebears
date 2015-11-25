@@ -139,6 +139,7 @@ module.exports = {
 			course_time     : course.time,
 			section_time    : course.time,
 			lab_time        : course.time,
+			ccn: course.ccn
 		};
 		this.post('/api/schedules/add', data, onSuccess, onFailure);
 	},
