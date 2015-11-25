@@ -144,7 +144,7 @@ Results.Course.Lecture = React.createClass({
 					Add Course
 				</div>
 				<div className='data-visualization'>
-					<Results.Course.Lecture.RecommendationChart />
+					<Results.Course.Lecture.RecommendationChart recommendation={this.props.recommendation}/>
 				</div>
 			</div>
 		);
@@ -153,6 +153,12 @@ Results.Course.Lecture = React.createClass({
 
 Results.Course.Lecture.RecommendationChart = React.createClass({
 	render: function() {
+		var temp = this.props.recommendation;
+		alert(JSON.stringify(temp));
+		for (var i = 0; i < keys(temp); i++){
+			
+		}
+		
 		chartData = [{value:300, label:'test1', color:'#F7464A'}, {value:150, label:'test2', color:'#235497'}];
 		return (
 			<div id="omg">

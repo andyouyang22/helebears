@@ -22950,12 +22950,12 @@ module.exports = Query;
 
 var React = require('react');
 var ReactDOM = require('react-dom');
+var PieChart = require("react-chartjs").Pie;
 
 var Reviews = require('./reviews.js');
 
 var ajax = require('./util/ajax.js');
 var time = require('./util/time.js');
-var PieChart = require("react-chartjs").Pie;
 
 var Results = React.createClass({
 	displayName: 'Results',
@@ -23134,7 +23134,7 @@ Results.Course.Lecture = React.createClass({
 			React.createElement(
 				'div',
 				{ className: 'data-visualization' },
-				React.createElement(Results.Course.Lecture.RecommendationChart, null)
+				React.createElement(Results.Course.Lecture.RecommendationChart, { recommendation: this.props.recommendation })
 			)
 		);
 	}
@@ -23144,6 +23144,12 @@ Results.Course.Lecture.RecommendationChart = React.createClass({
 	displayName: 'RecommendationChart',
 
 	render: function () {
+		var temp = this.props.recommendation;
+		alert(JSON.stringify(temp));
+		for (var i = 0; i < Object.keys(temp); i++) {
+			console.log(i);
+		}
+
 		chartData = [{ value: 300, label: 'test1', color: '#F7464A' }, { value: 150, label: 'test2', color: '#235497' }];
 		return React.createElement(
 			'div',
@@ -23151,7 +23157,6 @@ Results.Course.Lecture.RecommendationChart = React.createClass({
 			React.createElement(PieChart, { data: chartData })
 		);
 	}
-
 });
 
 Results.Course.Sections = React.createClass({
