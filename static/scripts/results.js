@@ -78,27 +78,35 @@ Results.Course = React.createClass({
 	},
 
 	render: function() {
-		var c = this.props.course;
 		return (
 			<div className='results-course'>
-				<Results.Course.Lecture store={this.props.store} units={c.units} enrolled={c.enrolled} limit={c.limit} waitlist={c.waitlist} recommendation={c.recommendation} course_description={c.course_description} name={c.name} desc={c.desc} inst={c.inst} time={c.time} room={c.room} ccn={c.ccn} toggleDescription={this.toggleDescription} toggleVisual={this.toggleVisual} toggleSections={this.toggleSections} showReview={this.showReview} />
+				<Results.Course.Lecture store={this.props.store} course={this.props.course} toggleDescription={this.toggleDescription} toggleVisual={this.toggleVisual} toggleSections={this.toggleSections} showReview={this.showReview} />
 				<Results.Course.Sections sections={this.props.course.sections} />
 				<div className='review-container'>
 					<Reviews review={this.state.review} hideReview={this.hideReview} />
 				</div>
+				<Results.Info store={this.props.store} />
 			</div>
 		);
 	}
 });
 
+Results.Course.Info = React.createClass({
+	getInitialState: function() {
+		return ({
+			contents: null,
+		});
+	},
+	render: function() {
+		<div className='results-course-info'>
+			{this.state.contents}
+		</div>
+	},
+});
+
 Results.Course.Lecture = React.createClass({
 	add: function() {
-		var course = {
-			name : this.props.name,
-			room : this.props.room,
-			time : this.props.time,
-			ccn  : this.props.ccn,
-		};
+		var course = this.props.course;
 		this.props.store.addCourse(course);
 	},
 	reviews: function() {
@@ -127,27 +135,28 @@ Results.Course.Lecture = React.createClass({
 		ajax.get('/api/reviews?professor_name=' + prof, onSuccess, onFailure);
 	},
 	render: function() {
-		var t = time.parse(this.props.time);
+		var c = this.props.course;
+		var t = time.parse(c.time);
 		t = t.days + " " + time.display(t.start) + " - " + time.display(t.end);
 		return (
 			<div className='results-course-lecture'>
-				<div className='results-course-lec-name' onClick={this.props.toggleSections}>{this.props.name}</div>
+				<div className='results-course-lec-name' onClick={this.props.toggleSections}>{c.name}</div>
 				<div className='results-course-data-visualization' onClick={this.props.toggleVisual}>Recommended With</div>
 				<div className='results-course-lec-course-desc' onClick={this.props.toggleDescription}>Course Info</div>
-				<div className='results-course-lec-desc'>{this.props.desc}</div>
-				<div className='results-course-lec-inst' onClick={this.reviews}>{this.props.inst}</div>
+				<div className='results-course-lec-desc'>{c.desc}</div>
+				<div className='results-course-lec-inst' onClick={this.reviews}>{c.inst}</div>
 				<div className='results-course-lec-time'>{t}</div>
 				<div className='results-course-description' style={{display: 'none'}}>
 					<div className='results-course-lecture-add' id='close-button' onClick={this.props.toggleDescription}>Close</div>
-					<div className='results-course-title ci-metadata'>{this.props.name}</div>
+					<div className='results-course-title ci-metadata'>{c.name}</div>
 					<div className='results-course-time ci-metadata'>{t}</div>
-					<div className='results-course-professor ci-metadata'>{this.props.prof}</div>
-					<div className='results-course-enrolled ci-metadata'>Enrolled: {this.props.enrolled}</div>
-					<div className='results-course-limit ci-metadata'>Limit: {this.props.limit}</div>
-					<div className='results-course-waitlist ci-metadata'>Waitlist: {this.props.limit}</div>
-					<div className='results-course-ccn ci-metadata'>CCN: {this.props.ccn}</div>
-					<div className='ci-metadata' id='locationid'> Location: {this.props.room}</div>
-					<p className='long-description ci-metadata'>{this.props.course_description}</p>
+					<div className='results-course-professor ci-metadata'>{c.inst}</div>
+					<div className='results-course-enrolled ci-metadata'>Enrolled: {c.enrolled}</div>
+					<div className='results-course-limit ci-metadata'>Limit: {c.limit}</div>
+					<div className='results-course-waitlist ci-metadata'>Waitlist: {c.limit}</div>
+					<div className='results-course-ccn ci-metadata'>CCN: {c.ccn}</div>
+					<div className='ci-metadata' id='locationid'> Location: {c.room}</div>
+					<p className='long-description ci-metadata'>{c.info}</p>
 				</div>
 				<div className='results-course-lecture-add' onClick={this.add}>
 					Add Course

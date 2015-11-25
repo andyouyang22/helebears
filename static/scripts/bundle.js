@@ -23014,17 +23014,34 @@ Results.Course = React.createClass({
 	},
 
 	render: function () {
-		var c = this.props.course;
 		return React.createElement(
 			'div',
 			{ className: 'results-course' },
-			React.createElement(Results.Course.Lecture, { store: this.props.store, units: c.units, enrolled: c.enrolled, limit: c.limit, waitlist: c.waitlist, recommendation: c.recommendation, course_description: c.course_description, name: c.name, desc: c.desc, inst: c.inst, time: c.time, room: c.room, ccn: c.ccn, toggleDescription: this.toggleDescription, toggleVisual: this.toggleVisual, toggleSections: this.toggleSections, showReview: this.showReview }),
+			React.createElement(Results.Course.Lecture, { store: this.props.store, course: this.props.course, toggleDescription: this.toggleDescription, toggleVisual: this.toggleVisual, toggleSections: this.toggleSections, showReview: this.showReview }),
 			React.createElement(Results.Course.Sections, { sections: this.props.course.sections }),
 			React.createElement(
 				'div',
 				{ className: 'review-container' },
 				React.createElement(Reviews, { review: this.state.review, hideReview: this.hideReview })
-			)
+			),
+			React.createElement(Results.Info, { store: this.props.store })
+		);
+	}
+});
+
+Results.Course.Info = React.createClass({
+	displayName: 'Info',
+
+	getInitialState: function () {
+		return {
+			contents: null
+		};
+	},
+	render: function () {
+		React.createElement(
+			'div',
+			{ className: 'results-course-info' },
+			this.state.contents
 		);
 	}
 });
@@ -23033,12 +23050,7 @@ Results.Course.Lecture = React.createClass({
 	displayName: 'Lecture',
 
 	add: function () {
-		var course = {
-			name: this.props.name,
-			room: this.props.room,
-			time: this.props.time,
-			ccn: this.props.ccn
-		};
+		var course = this.props.course;
 		this.props.store.addCourse(course);
 	},
 	reviews: function () {
@@ -23067,7 +23079,8 @@ Results.Course.Lecture = React.createClass({
 		ajax.get('/api/reviews?professor_name=' + prof, onSuccess, onFailure);
 	},
 	render: function () {
-		var t = time.parse(this.props.time);
+		var c = this.props.course;
+		var t = time.parse(c.time);
 		t = t.days + " " + time.display(t.start) + " - " + time.display(t.end);
 		return React.createElement(
 			'div',
@@ -23075,7 +23088,7 @@ Results.Course.Lecture = React.createClass({
 			React.createElement(
 				'div',
 				{ className: 'results-course-lec-name', onClick: this.props.toggleSections },
-				this.props.name
+				c.name
 			),
 			React.createElement(
 				'div',
@@ -23090,12 +23103,12 @@ Results.Course.Lecture = React.createClass({
 			React.createElement(
 				'div',
 				{ className: 'results-course-lec-desc' },
-				this.props.desc
+				c.desc
 			),
 			React.createElement(
 				'div',
 				{ className: 'results-course-lec-inst', onClick: this.reviews },
-				this.props.inst
+				c.inst
 			),
 			React.createElement(
 				'div',
@@ -23113,7 +23126,7 @@ Results.Course.Lecture = React.createClass({
 				React.createElement(
 					'div',
 					{ className: 'results-course-title ci-metadata' },
-					this.props.name
+					c.name
 				),
 				React.createElement(
 					'div',
@@ -23123,42 +23136,42 @@ Results.Course.Lecture = React.createClass({
 				React.createElement(
 					'div',
 					{ className: 'results-course-professor ci-metadata' },
-					this.props.prof
+					c.inst
 				),
 				React.createElement(
 					'div',
 					{ className: 'results-course-enrolled ci-metadata' },
 					'Enrolled: ',
-					this.props.enrolled
+					c.enrolled
 				),
 				React.createElement(
 					'div',
 					{ className: 'results-course-limit ci-metadata' },
 					'Limit: ',
-					this.props.limit
+					c.limit
 				),
 				React.createElement(
 					'div',
 					{ className: 'results-course-waitlist ci-metadata' },
 					'Waitlist: ',
-					this.props.limit
+					c.limit
 				),
 				React.createElement(
 					'div',
 					{ className: 'results-course-ccn ci-metadata' },
 					'CCN: ',
-					this.props.ccn
+					c.ccn
 				),
 				React.createElement(
 					'div',
 					{ className: 'ci-metadata', id: 'locationid' },
 					' Location: ',
-					this.props.room
+					c.room
 				),
 				React.createElement(
 					'p',
 					{ className: 'long-description ci-metadata' },
-					this.props.course_description
+					c.info
 				)
 			),
 			React.createElement(
@@ -23189,17 +23202,14 @@ Results.Course.Lecture.RecommendationChart = React.createClass({
 				tempDict['value'] = temp[recc_courses[i]];
 				var letters = '0123456789ABCDEF'.split('');
 				var color = '#';
-				for (var j = 0; j < 6; j++) color += letters[Math.floor(Math.random() * 16)];
-
+				for (var j = 0; j < 6; j++) {
+					color += letters[Math.floor(Math.random() * 16)];
+				}
 				tempDict['color'] = color;
 				chartData.push(tempDict);
 			}
-			//console.log(JSON.stringify(chartData));
-			/*chartData = [{value:300, label:'test1', color:'#F7464A'}, {value:150, label:'test2', color:'#235497'}];*/
 			return React.createElement(PieChart, { data: chartData });
 		} else {
-			//var emptyChart = [{value:1, label:'Be the first to take this course!', color:'#F7464A'}];
-			//<PieChart data={emptyChart} />
 			return React.createElement(
 				'div',
 				null,
@@ -23968,7 +23978,7 @@ module.exports = {
 			var course = {
 				name: result.name_and_number,
 				time: result.course_time,
-				room: "420 Barrows", // TODO: store room location in backend
+				room: result.location,
 				ccn: result.ccn
 			};
 			if (course.ccn == undefined) {
@@ -24003,18 +24013,12 @@ module.exports = {
 				time: time.convert(lec.time),
 				ccn: generateCCN(lec.ccn),
 				units: lec.units,
-				enrolled: lec.enrolled,
 				limit: lec.limit,
+				rec: lec.recommendation,
+				info: lec.course_description,
+				enrolled: lec.enrolled,
 				waitlist: lec.waitlist,
-				//BEFORE PUSHING TO HEROKU COMMENT ME OUT
-				//course_description : "Temporary Course Description LONG LONG LONG LONG LONG LONG LONG LONG LONG LONG LONG LONG LONG LONG LONG LONG LONG ",
-				//recommendation : {name:'CS169',recommendation:{'CS170':20,'CS160':10,'CS142':33}},
-
-				//BEFORE PUSHING TO HEROKU UNCOMMENT ME
-				recommendation: lec.recommendation,
-				course_description: lec.course_description,
 				sections: []
-
 			};
 			lec.sections.forEach(function (sec) {
 				course.sections.push({

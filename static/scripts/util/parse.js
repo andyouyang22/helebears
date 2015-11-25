@@ -25,7 +25,7 @@ module.exports = {
 			var course = {
 				name : result.name_and_number,
 				time : result.course_time,
-				room : "420 Barrows", // TODO: store room location in backend
+				room : result.location,
 				ccn  : result.ccn,
 			};
 			if (course.ccn == undefined) {
@@ -53,18 +53,18 @@ module.exports = {
 		var results = [];
 		data.results.forEach(function(lec) {
 			var course = {
-				name : lec.department_name + " " + lec.name,
-				desc : lec.title,
-				inst : lec.professor_name,
-				room : lec.location,
-				time : time.convert(lec.time),
-				ccn  : generateCCN(lec.ccn),
-				units: lec.units,
-				enrolled: lec.enrolled,
-				limit: lec.limit,
-				waitlist: lec.waitlist,
-				recommendation : lec.recommendation,
-				course_description : lec.course_description,
+				name  : lec.department_name + " " + lec.name,
+				desc  : lec.title,
+				inst  : lec.professor_name,
+				room  : lec.location,
+				time  : time.convert(lec.time),
+				ccn   : generateCCN(lec.ccn),
+				units : lec.units,
+				limit : lec.limit,
+				rec   : lec.recommendation,
+				info  : lec.course_description,
+				enrolled : lec.enrolled,
+				waitlist : lec.waitlist,
 				sections : [],
 			};
 			lec.sections.forEach(function(sec) {
