@@ -52,8 +52,8 @@ var Search = React.createClass({
 		this.props.store.setDepartment(dept);
 	},
 	handleSubmission: function(e) {
-		var that = this;
 		e.preventDefault();
+		var that = this;
 		var formDOM = $(ReactDOM.findDOMNode(this));
 		var form = {
 			department_name : formDOM.find('.search-dept').val(),

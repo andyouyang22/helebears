@@ -22719,14 +22719,16 @@ Calendar.Course = React.createClass({
 	componentDidMount: function () {
 		var that = this;
 		var callback = function () {
-			if (that.props.store.conflict()) {}
+			var conflict = that.props.store.conflict() != null;
+			that.setState({
+				conflict: conflict
+			});
 		};
 		this.props.store.addConflictListener(callback);
 	},
 	getInitialState: function () {
 		return {
-			conflict: false,
-			style: this.position()
+			conflict: false
 		};
 	},
 	remove: function (e) {
@@ -22750,11 +22752,20 @@ Calendar.Course = React.createClass({
 			top: time.duration("0800", t.start) * 34 / 60
 		};
 	},
+	style: function () {
+		debugger;
+		var css = this.position();
+		if (this.state.conflict) {
+			debugger;
+			css['border'] = "2px solid red";
+		}
+		return css;
+	},
 	render: function () {
 		var c = this.props.course;
 		return React.createElement(
 			'div',
-			{ className: 'calendar-course', style: this.state.style },
+			{ className: 'calendar-course', style: this.style() },
 			React.createElement(
 				'div',
 				{ className: 'calendar-course-name' },
@@ -24052,7 +24063,6 @@ module.exports = {
   * the same class (same CCN); return false otherwise.
   */
 	conflict: function (a, b) {
-		debugger;
 		if (a.ccn == b.ccn) {
 			return true;
 		}
