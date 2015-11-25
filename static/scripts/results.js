@@ -90,17 +90,6 @@ Results.Course = React.createClass({
 			infoContent : [],
 		};
 	},
-	showReview: function(name, ratings) {
-		var review = {
-			name    : name,
-			ratings : ratings,
-		}
-		this.setState({
-			review : review,
-		});
-		var container = $(ReactDOM.findDOMNode(this)).find('.review-container');
-		container.slideDown();
-	},
 	toggleSections: function() {
 		$(ReactDOM.findDOMNode(this)).find('.results-course-sections').slideToggle();
 	},

@@ -16,16 +16,6 @@ var hours = [
 ];
 
 var Calendar = React.createClass({
-	ccn: function(a, b) {
-		// Hash to a CCN
-		var hashCode = function(s) {
-			return s.split("").reduce(function(a, b) {
-				a = ((a << 5) - a) + b.charCodeAt(0);
-				return a & a;
-			}, 0);
-		};
-		return ((hashCode(a) * 1373 + hashCode(b) * 11) + "").slice(0, 5);
-	},
 	componentDidMount: function() {
 		var that = this;
 		var callback = function() {
