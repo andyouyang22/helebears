@@ -1,8 +1,7 @@
 var parse = require('./parse.js');
 var time  = require('./time.js');
 
-//var apiUrl = 'http://protected-refuge-7067.herokuapp.com';
-var apiUrl = '';
+var apiUrl = 'https://protected-refuge-7067.herokuapp.com';
 
 var queryify = function(query) {
 	query = JSON.stringify(query);
@@ -111,7 +110,6 @@ module.exports = {
 	getResults: function(form, callback) {
 		var request = queryify(form);
 		var onSuccess = function(data) {
-			//console.log(JSON.stringify(data));
 			if (data.status == -1) {
 				console.log("Failed to load search results; status = -1");
 				console.log("Errors: " + data.errors);
@@ -141,7 +139,7 @@ module.exports = {
 			course_time     : course.time,
 			section_time    : course.time,
 			lab_time        : course.time,
-			ccn: course.ccn
+			ccn             : course.ccn
 		};
 		this.post('/api/schedules/add', data, onSuccess, onFailure);
 	},
