@@ -18,6 +18,13 @@
     "react": "^0.14.3",
     "react-chartjs": "^0.6.0",
     "sequelize": "^3.12.2",
-    "serve-favicon": "~2.3.0"
+    "serve-favicon": "~2.3.0",
+    "sequence": "^3.0.0",
+    "ejs": "^2.3.4",
+    "connect-flash": "^0.1.1",
+    "express-session": "^1.12.1",
+    "passport": "^0.3.0",
+    "passport-google-oauth": "^0.2.0",
+    "passport-local": "^1.0.0"
   }
 }
