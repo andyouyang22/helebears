@@ -154,6 +154,7 @@ Results.Course.Lecture = React.createClass({
 Results.Course.Lecture.RecommendationChart = React.createClass({	
 	render: function() {
 		var temp = this.props.recommendation;
+		if(temp != null){
 		var recc_courses = Object.keys(temp.recommendation);
 		chartData = [];
 		for (var i = 0; i < recc_courses.length; i++){
@@ -173,6 +174,11 @@ Results.Course.Lecture.RecommendationChart = React.createClass({
 		return (
 				<PieChart data={chartData} />
 			);
+		}else{
+		return (
+			<div>Nobody is  taking this class yet!</div>	
+			);
+		}
 	}
 });
 

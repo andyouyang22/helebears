@@ -23169,22 +23169,30 @@ Results.Course.Lecture.RecommendationChart = React.createClass({
 
 	render: function () {
 		var temp = this.props.recommendation;
-		var recc_courses = Object.keys(temp.recommendation);
-		chartData = [];
-		for (var i = 0; i < recc_courses.length; i++) {
-			tempDict = {};
-			tempDict['label'] = recc_courses[i];
-			tempDict['value'] = temp.recommendation[recc_courses[i]];
-			var letters = '0123456789ABCDEF'.split('');
-			var color = '#';
-			for (var j = 0; j < 6; j++) color += letters[Math.floor(Math.random() * 16)];
+		if (temp != null) {
+			var recc_courses = Object.keys(temp.recommendation);
+			chartData = [];
+			for (var i = 0; i < recc_courses.length; i++) {
+				tempDict = {};
+				tempDict['label'] = recc_courses[i];
+				tempDict['value'] = temp.recommendation[recc_courses[i]];
+				var letters = '0123456789ABCDEF'.split('');
+				var color = '#';
+				for (var j = 0; j < 6; j++) color += letters[Math.floor(Math.random() * 16)];
 
-			tempDict['color'] = color;
-			chartData.push(tempDict);
+				tempDict['color'] = color;
+				chartData.push(tempDict);
+			}
+			//console.log(JSON.stringify(chartData));
+			/*chartData = [{value:300, label:'test1', color:'#F7464A'}, {value:150, label:'test2', color:'#235497'}];*/
+			return React.createElement(PieChart, { data: chartData });
+		} else {
+			return React.createElement(
+				'div',
+				null,
+				'Nobody is  taking this class yet!'
+			);
 		}
-		//console.log(JSON.stringify(chartData));
-		/*chartData = [{value:300, label:'test1', color:'#F7464A'}, {value:150, label:'test2', color:'#235497'}];*/
-		return React.createElement(PieChart, { data: chartData });
 	}
 });
 
