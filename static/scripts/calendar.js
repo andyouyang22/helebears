@@ -195,11 +195,11 @@ Calendar.Course = React.createClass({
 		};
 	},
 	style: function() {
-		debugger
 		var css = this.position();
 		if (this.state.conflict) {
-			debugger
 			css['border'] = "2px solid red";
+			css['left'] = "calc(4% - 1px)";
+			css['top'] -= 1;
 		}
 		return css;
 	},
