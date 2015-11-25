@@ -9,6 +9,17 @@ var ReactDOM = require('react-dom');
 var ajax = require('./util/ajax.js');
 var time = require('./util/time.js');
 
+/**
+ * Remove all key-value entries in 'dict' where the value is equal to 'val'.
+ */
+var clear_dict_key = function(val, dict){
+	for (var key in dict) {
+		if (dict[key] == val) {
+			delete dict[key];
+		};
+	}
+};
+
 var Search = React.createClass({
 	componentDidMount: function() {
 		// Used to ensure 'this' is consistent during asynchronous callbacks
@@ -41,22 +52,15 @@ var Search = React.createClass({
 		this.props.store.setDepartment(dept);
 	},
 	handleSubmission: function(e) {
-		e.preventDefault();
-		var clear_dict_key = function(del_value,request){
-			for(var key in request) {
-				if(request[key] == del_value) {
-				delete request[key];
-				};
-			};
-		};
 		var that = this;
+		e.preventDefault();
 		var formDOM = $(ReactDOM.findDOMNode(this));
 		var form = {
 			department_name : formDOM.find('.search-dept').val(),
 			name            : formDOM.find('.search-course').val(),
 		};
-		clear_dict_key(null,form);
-		clear_dict_key('',form);
+		clear_dict_key(null, form);
+		clear_dict_key('', form);
 		this.props.store.getResults(form);
 	},
 	render: function() {

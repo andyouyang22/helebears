@@ -23392,6 +23392,17 @@ var ReactDOM = require('react-dom');
 var ajax = require('./util/ajax.js');
 var time = require('./util/time.js');
 
+/**
+ * Remove all key-value entries in 'dict' where the value is equal to 'val'.
+ */
+var clear_dict_key = function (val, dict) {
+	for (var key in dict) {
+		if (dict[key] == val) {
+			delete dict[key];
+		};
+	}
+};
+
 var Search = React.createClass({
 	displayName: 'Search',
 
@@ -23426,15 +23437,8 @@ var Search = React.createClass({
 		this.props.store.setDepartment(dept);
 	},
 	handleSubmission: function (e) {
-		e.preventDefault();
-		var clear_dict_key = function (del_value, request) {
-			for (var key in request) {
-				if (request[key] == del_value) {
-					delete request[key];
-				};
-			};
-		};
 		var that = this;
+		e.preventDefault();
 		var formDOM = $(ReactDOM.findDOMNode(this));
 		var form = {
 			department_name: formDOM.find('.search-dept').val(),
