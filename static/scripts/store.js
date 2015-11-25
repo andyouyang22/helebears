@@ -13,6 +13,7 @@
 var EventEmitter = require('events');
 
 var ajax = require('./util/ajax.js');
+var time = require('./util/time.js');
 
 /**
  * Note: course Objects should have the properties 'name', 'room', 'inst',
@@ -50,7 +51,13 @@ Store.prototype.setSchedule = function(schedule) {
 };
 
 Store.prototype.addCourse = function(course) {
-	// TODO: Check conflicts
+	// Check for conflicts
+	for (c in this._schedule) {
+		if (time.conflict(c, course)) {
+			console.log("These courses conflict " + c + ", " + course);
+			return;
+		}
+	}
 	this._schedule.push(course);
 	// Emit an event signaling the Calendar state has changed
 	this.emit('schedule');

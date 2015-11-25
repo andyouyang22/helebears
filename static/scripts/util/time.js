@@ -57,15 +57,15 @@ module.exports = {
 		if (a.ccn == b.ccn) {
 			return true;
 		}
-		at  = time.parse(a.time);
-		bt  = time.parse(b.time);
+		at  = this.parse(a.time);
+		bt  = this.parse(b.time);
 		var aStart = parseInt(at.start);
 		var aEnd   = parseInt(at.end);
 		var bStart = parseInt(bt.start);
 		var bEnd   = parseInt(bt.end);
-		if (aStart >= bStart && aStart <= bEnd) {
+		if (aStart >= bStart && aStart < bEnd) {
 			return true;
-		} else if (bStart >= aStart && bStart <= aEnd) {
+		} else if (bStart >= aStart && bStart < aEnd) {
 			return true;
 		}
 		return false;
