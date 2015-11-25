@@ -208,17 +208,32 @@
 	cursor: pointer;
 }
 
+.results-course-title {
+	text-align: center;
+	margin-bottom: 8px;
+	font-size: 125%;
+	font-family: 'Roboto Slab' serif;
+}
+.ci-metadata{
+	font-family: 'Roboto Slab' serif;
+	margin-left: 4px;
+}
+#locationid{
+	font-family: 'Roboto Slab' serif;
+	margin-left: 4px;
+}
+
 .results-course-description {
 	opacity: 1;
 	/*background-color: #eeeeee;*/
 	background-color: white;
 	position: fixed;
 	/*border: 20px solid #00b85c; */
-	border: 20px solid #eeeeee;
-	top: calc(50% - 100px);
-	width: 500px;
-	height: 200px;
-	left: calc(50% - 250px)
+	border: 20px solid #444444;
+	top: calc(50% - 125px);
+	width: 600px;
+	height: 250px;
+	left: calc(50% - 300px)
 }
 
 .results-course-lec-course-desc:hover {

@@ -23047,12 +23047,13 @@ Results.Course = React.createClass({
 	toggleVisual: function () {
 		$(ReactDOM.findDOMNode(this)).find('.data-visualization').slideToggle();
 	},
+
 	render: function () {
 		var c = this.props.course;
 		return React.createElement(
 			'div',
 			{ className: 'results-course' },
-			React.createElement(Results.Course.Lecture, { store: this.props.store, recommendation: c.recommendation, course_description: c.course_description, name: c.name, desc: c.desc, inst: c.inst, time: c.time, room: c.room, ccn: c.ccn, toggleDescription: this.toggleDescription, toggleVisual: this.toggleVisual, toggleSections: this.toggleSections, showReview: this.showReview }),
+			React.createElement(Results.Course.Lecture, { store: this.props.store, units: c.units, enrolled: c.enrolled, limit: c.limit, waitlist: c.waitlist, recommendation: c.recommendation, course_description: c.course_description, name: c.name, desc: c.desc, inst: c.inst, time: c.time, room: c.room, ccn: c.ccn, toggleDescription: this.toggleDescription, toggleVisual: this.toggleVisual, toggleSections: this.toggleSections, showReview: this.showReview }),
 			React.createElement(Results.Course.Sections, { sections: this.props.course.sections }),
 			React.createElement(
 				'div',
@@ -23145,8 +23146,53 @@ Results.Course.Lecture = React.createClass({
 					'Close'
 				),
 				React.createElement(
+					'div',
+					{ className: 'results-course-title ci-metadata' },
+					this.props.name
+				),
+				React.createElement(
+					'div',
+					{ className: 'results-course-time ci-metadata' },
+					t
+				),
+				React.createElement(
+					'div',
+					{ className: 'results-course-professor ci-metadata' },
+					this.props.prof
+				),
+				React.createElement(
+					'div',
+					{ className: 'results-course-enrolled ci-metadata' },
+					'Enrolled: ',
+					this.props.enrolled
+				),
+				React.createElement(
+					'div',
+					{ className: 'results-course-limit ci-metadata' },
+					'Limit: ',
+					this.props.limit
+				),
+				React.createElement(
+					'div',
+					{ className: 'results-course-waitlist ci-metadata' },
+					'Waitlist: ',
+					this.props.limit
+				),
+				React.createElement(
+					'div',
+					{ className: 'results-course-ccn ci-metadata' },
+					'CCN: ',
+					this.props.ccn
+				),
+				React.createElement(
+					'div',
+					{ ClassName: 'ci-metadata', id: 'locationid' },
+					' Location: ',
+					this.props.room
+				),
+				React.createElement(
 					'p',
-					{ className: 'long-description' },
+					{ className: 'long-description ci-metadata' },
 					this.props.course_description
 				)
 			),
@@ -23819,7 +23865,7 @@ module.exports = {
 	getResults: function (form, callback) {
 		var request = queryify(form);
 		var onSuccess = function (data) {
-			//console.log(JSON.stringify(data));
+			console.log(JSON.stringify(data));
 			if (data.status == -1) {
 				console.log("Failed to load search results; status = -1");
 				console.log("Errors: " + data.errors);
@@ -23938,7 +23984,10 @@ module.exports = {
 				room: lec.location,
 				time: time.convert(lec.time),
 				ccn: generateCCN(lec.ccn),
-
+				units: lec.units,
+				enrolled: lec.enrolled,
+				limit: lec.limit,
+				waitlist: lec.waitlist,
 				//BEFORE PUSHING TO HEROKU COMMENT ME OUT
 				//course_description : "Temporary Course Description LONG LONG LONG LONG LONG LONG LONG LONG LONG LONG LONG LONG LONG LONG LONG LONG LONG ",
 				//recommendation : {name:'CS169',recommendation:{'CS170':20,'CS160':10,'CS142':33}},
@@ -23947,6 +23996,7 @@ module.exports = {
 				recommendation: lec.recommendation,
 				course_description: lec.course_description,
 				sections: []
+
 			};
 			lec.sections.forEach(function (sec) {
 				course.sections.push({
