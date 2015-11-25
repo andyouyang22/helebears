@@ -1,8 +1,8 @@
 var parse = require('./parse.js');
 var time  = require('./time.js');
 
-var apiUrl = 'http://protected-refuge-7067.herokuapp.com';
-//var apiUrl = '';
+//var apiUrl = 'http://protected-refuge-7067.herokuapp.com';
+var apiUrl = '';
 
 var queryify = function(query) {
 	query = JSON.stringify(query);
