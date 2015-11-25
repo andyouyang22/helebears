@@ -75,20 +75,24 @@ var Results = React.createClass({
 
 Results.Course = React.createClass({
 	componentDidMount: function() {
-		var that = this;
-		var reviewsCallback = function() {
-			var inst = that.props.course.inst;
-			var reviews = that.props.store.reviews();
-			that.setState({
-				infoContent : [<Reviews key="420" inst={inst} reviews={reviews} />],
-			});
-		};
-		this.props.store.addReviewsListener(reviewsCallback);
+		this.props.store.addReviewsListener(this.showReviews);
 	},
 	getInitialState: function() {
 		return {
 			infoContent : [],
 		};
+	},
+	openReviewForm: function() {
+		this.setState({
+			infoContent : [<ReviewForm key="419" inst={inst} />],
+		});
+	},
+	showReviews: function() {
+		var inst = this.props.course.inst;
+		var reviews = this.props.store.reviews();
+		this.setState({
+			infoContent : [<Reviews key="420" inst={inst} reviews={reviews} />],
+		});
 	},
 	toggleSections: function() {
 		$(ReactDOM.findDOMNode(this)).find('.results-course-sections').slideToggle();
