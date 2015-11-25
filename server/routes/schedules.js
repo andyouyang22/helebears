@@ -18,7 +18,7 @@ router.get('/', function(req, res, next) {
 });
 
 /* POST request for adding a class to schedule */
-router.post('/add',function(req, res, next) {
+router.post('/add', function(req, res, next) {
 	if (!("user" in req)) {
 		res.json({
 			status : -1,
@@ -38,7 +38,7 @@ router.post('/add',function(req, res, next) {
 });
 
 /* POST request for removing a class to schedule */
-router.post('/remove',function(req, res, next) {
+router.post('/remove', function(req, res, next) {
 	if (!("user" in req)) {
 		res.json({
 			status : -1,

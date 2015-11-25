@@ -77,8 +77,11 @@ Results.Course = React.createClass({
 	},
 	toggleVisual: function () {
 		$(ReactDOM.findDOMNode(this)).find('.data-visualization').slideToggle();
+<<<<<<< HEAD
 		
 		
+=======
+>>>>>>> 94da3f1e3b7ff959b5aa93013e5f641dca291821
 	},
 	render: function() {
 		var c = this.props.course;
@@ -142,14 +145,19 @@ Results.Course.Lecture = React.createClass({
 				<div className='results-course-lec-time'>{t}</div>
 				<div className='results-course-description' style={{display: 'none'}}>
 					<div className='results-course-lecture-add' id='close-button' onClick={this.props.toggleDescription}>Close</div>
-					<p className='long-description'>{this.props.course_description}</p>	
+					<p className='long-description'>{this.props.course_description}</p>
 				</div>
 				<div className='results-course-lecture-add' onClick={this.add}>
 					Add Course
 				</div>
+<<<<<<< HEAD
 				<div className='data-visualization'>
 					<Results.Course.Lecture.RecommendationChart />
 				</div>
+=======
+				<div className='data-visualization'>{JSON.stringify(this.props.recommendation)}</div>
+
+>>>>>>> 94da3f1e3b7ff959b5aa93013e5f641dca291821
 			</div>
 		);
 	}

@@ -116,13 +116,7 @@ Calendar.Axis = React.createClass({
 
 Calendar.Grid = React.createClass({
 	componentDidMount: function() {
-		var that = this;
-		var callback = function() {
-			var schedule = that.props.store.schedule();
-			that.setState({
-				courses : that.updatedCourses(schedule),
-			});
-		};
+		var callback = this.updateState;
 		this.props.store.addScheduleListener(callback);
 	},
 	getInitialState: function() {
@@ -152,12 +146,18 @@ Calendar.Grid = React.createClass({
 		});
 		return courses;
 	},
+	updateState: function() {
+		var schedule = this.props.store.schedule();
+		this.setState({
+			courses : this.updatedCourses(schedule),
+		});
+	},
 	render: function() {
 		var columns = [];
 		var courses = this.updatedCourses();
 		for (var day in courses) {
 			columns.push(
-				<Calendar.Grid.Column key={day} day={day} courses={courses[day]} />
+				<Calendar.Grid.Column store={this.props.store} key={day} day={day} courses={courses[day]} />
 			);
 		}
 		return (
@@ -185,7 +185,7 @@ Calendar.Grid.Column = React.createClass({
 				<div className='calendar-grid-column-header'>
 					{days[this.props.day]}
 				</div>
-				<Calendar.Grid.Column.Courses courses={this.props.courses} />
+				<Calendar.Grid.Column.Courses store={this.props.store} courses={this.props.courses} />
 				{cells}
 			</div>
 		);
@@ -196,10 +196,11 @@ Calendar.Grid.Column.Courses = React.createClass({
 	// Graphically insert course into the Calendar. A conflict check should already
 	// have occurred.
 	render: function() {
+		var that = this;
 		var courses = [];
 		this.props.courses.forEach(function(course) {
 			courses.push(
-				<Calendar.Course course={course} key={course.ccn} />
+				<Calendar.Course store={that.props.store} course={course} key={course.ccn} />
 			);
 		});
 		return (
@@ -212,24 +213,9 @@ Calendar.Grid.Column.Courses = React.createClass({
 
 // http://facebook.github.io/react/docs/multiple-components.html#dynamic-children
 Calendar.Course = React.createClass({
-	removeCourse: function(e) {
+	remove: function(e) {
 		var c = this.props.course;
-		CalendarAPI.removeCourse(c.ccn);
-		var onSuccess = function(data) {
-			if (data == -1) {
-				console.log("Failed to removed course from user's schedule in backend");
-				console.log("Errors: " + data.errors);
-			} else {
-				console.log("Successfully removed course from user's schedule");
-			}
-		};
-		var onFailure = function() {
-			console.log("Failed to removed course from user's schedule in backend");
-		};
-		var data = {
-			name_and_number : c.name,
-		};
-		ajax.post('/api/schedules/remove', data, onSuccess, onFailure);
+		this.props.store.removeCourse(course);
 	},
 	shorten: function(str) {
 		var tokens = str.split(" ");
@@ -256,16 +242,10 @@ Calendar.Course = React.createClass({
 				<div className='calendar-course-name'>{this.shorten(c.name)}</div>
 				<div className='calendar-course-type' hidden>{c.type}</div>
 				<div className='calendar-course-room'>{c.room}</div>
-				<Calendar.Course.Remove remove={this.removeCourse} />
+				<div className='calendar-course-remove' onClick={this.remove}>
+					X
+				</div>
 			</div>
-		);
-	}
-});
-
-Calendar.Course.Remove = React.createClass({
-	render: function() {
-		return (
-			<div className='calendar-course-remove' onClick={this.props.remove}>X</div>
 		);
 	}
 });

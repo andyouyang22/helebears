@@ -24,7 +24,7 @@ module.exports = {
 			error: onFailure
 		});
 	},
-	make: function(url, data, onSuccess, onFailure) {
+	post: function(url, data, onSuccess, onFailure) {
 		$.ajax({
 			type: 'POST',
 			url: apiUrl + url,
@@ -122,5 +122,45 @@ module.exports = {
 			console.error("Failed to load search results");
 		};
 		this.get('/api/courses?' + request, onSuccess, onFailure);
-	}
+	},
+
+	/**
+	 * Make a POST request to add the course with the given info.
+	 */
+	postAddCourse: function(course) {
+		var onSuccess = function() {
+			console.log("Successfully added course to user's schedule in backend");
+		};
+		var onFailure = function() {
+			console.log("Failed to add course to user's schedule in backend");
+		};
+		var data = {
+			name_and_number : course.name,
+			course_time     : course.time,
+			section_time    : course.time,
+			lab_time        : course.time,
+		};
+		this.post('/api/schedules/add', data, onSuccess, onFailure);
+	},
+
+	/**
+	 * Make a POST request to remove the course with the given info.
+	 */
+	postRemoveCourse: function(course) {
+		var onSuccess = function(data) {
+			if (data == -1) {
+				console.log("Failed to removed course from user's schedule in backend");
+				console.log("Errors: " + data.errors);
+			} else {
+				console.log("Successfully removed course from user's schedule");
+			}
+		};
+		var onFailure = function() {
+			console.log("Failed to removed course from user's schedule in backend");
+		};
+		var data = {
+			name_and_number : course.name,
+		};
+		this.post('/api/schedules/remove', data, onSuccess, onFailure);
+	},
 };
