@@ -151,15 +151,25 @@ Results.Course.Lecture = React.createClass({
 	}
 });
 
-Results.Course.Lecture.RecommendationChart = React.createClass({
+Results.Course.Lecture.RecommendationChart = React.createClass({	
 	render: function() {
 		var temp = this.props.recommendation;
-		alert(JSON.stringify(temp));
-		for (var i = 0; i < keys(temp); i++){
+		var recc_courses = Object.keys(temp.recommendation);
+		chartData = [];
+		for (var i = 0; i < recc_courses.length; i++){
+			tempDict = {};
+			tempDict['label'] = recc_courses[i];
+			tempDict['value'] = temp.recommendation[recc_courses[i]];
+			var letters = '0123456789ABCDEF'.split('');
+    		var color = '#';
+			for (var j = 0; j < 6; j++ )
+        		color += letters[Math.floor(Math.random() * 16)];
 			
+			tempDict['color'] = color;
+			chartData.push(tempDict);
 		}
-		
-		chartData = [{value:300, label:'test1', color:'#F7464A'}, {value:150, label:'test2', color:'#235497'}];
+		console.log(JSON.stringify(chartData));
+		/*chartData = [{value:300, label:'test1', color:'#F7464A'}, {value:150, label:'test2', color:'#235497'}];*/
 		return (
 			<div id="omg">
 				<PieChart data={chartData} />
