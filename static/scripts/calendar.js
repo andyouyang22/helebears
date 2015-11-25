@@ -116,7 +116,13 @@ Calendar.Axis = React.createClass({
 
 Calendar.Grid = React.createClass({
 	componentDidMount: function() {
-		var callback = this.updateState;
+		var that = this;
+		var callback = function() {
+			var schedule = that.props.store.schedule();
+			that.setState({
+				courses : that.updatedCourses(schedule),
+			});
+		};
 		this.props.store.addScheduleListener(callback);
 	},
 	getInitialState: function() {
@@ -145,12 +151,6 @@ Calendar.Grid = React.createClass({
 			}
 		});
 		return courses;
-	},
-	updateState: function() {
-		var schedule = this.props.store.schedule();
-		this.setState({
-			courses : this.updatedCourses(schedule),
-		});
 	},
 	render: function() {
 		var columns = [];
