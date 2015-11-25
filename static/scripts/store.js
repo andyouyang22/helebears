@@ -164,6 +164,16 @@ Store.prototype.selected = function() {
 
 // ------------------------------- Reviews ------------------------------- //
 
+Store.prototype.postReview = function() {
+	var callback = function(review) {
+		if (this._selected != null && this._selected.inst == review.inst) {
+			this._reviews.push(review);
+			this.emit('reviews');
+		}
+	}.bind(this);
+	ajax.postReview(callback);
+};
+
 /**
  * @param {string} inst The name of the professor
  */

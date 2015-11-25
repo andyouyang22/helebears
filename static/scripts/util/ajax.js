@@ -3,6 +3,7 @@ var time  = require('./time.js');
 
 //var apiUrl = 'https://protected-refuge-7067.herokuapp.com';
 var apiUrl = '';
+
 var queryify = function(query) {
 	query = JSON.stringify(query);
 	return query
@@ -186,5 +187,37 @@ module.exports = {
 			name_and_number : course.name,
 		};
 		this.post('/api/schedules/remove', data, onSuccess, onFailure);
+	},
+
+	/**
+	 * Make a POST request to remove the course with the given info.
+	 * @param {Object} review The review ratings and text
+	 * @param {string} inst The instructor about which the review was written
+	 * @param {funciton} callback Function that takes in the newly-created
+	 *   review and performs some action on it
+	 */
+	postReview: function(review, inst, callback) {
+		var onSuccess = function(data) {
+			if (data == -1) {
+				console.log("Failed to record review in backend");
+				console.log("Errors: " + data.errors);
+			} else {
+				console.log("Successfully recorded review");
+			}
+		};
+		var onFailure = function() {
+			console.log("Failed to record review in backend");
+		};
+		var data = {
+			rating_1 : review.rating_1,
+			rating_2 : review.rating_2,
+			rating_3 : review.rating_3,
+			review   : review.desc,
+			professor_name : inst,
+		};
+		this.post('/api/reviews/create', data, onSuccess, onFailure);
+
+		review.inst = inst;
+		callback(review);
 	},
 };

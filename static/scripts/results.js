@@ -82,7 +82,7 @@ Results.Course = React.createClass({
 			that.setState({
 				infoContent : [<Reviews key="420" inst={inst} reviews={reviews} />],
 			});
-		}
+		};
 		this.props.store.addReviewsListener(reviewsCallback);
 	},
 	getInitialState: function() {
