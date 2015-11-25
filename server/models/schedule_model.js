@@ -30,7 +30,6 @@ var scheduleModel = {
             scheduleModel.searchQuery(userDataValues,res);
         }
 
-
     },
     searchQuery: function(unique_id,res) {
         Schedules.findAll({where: {"unique_id": unique_id}}).then(
