@@ -49,7 +49,7 @@ var Courses = sequelize.define('Courses', {
   enrolled: Sequelize.INTEGER,
   waitlist: Sequelize.INTEGER,
   note: Sequelize.STRING,
-    course_description: Sequelize.JSON,
+    course_description: Sequelize.STRING,
     recommendation: Sequelize.JSON
 });
 
