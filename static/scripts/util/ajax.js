@@ -110,7 +110,6 @@ module.exports = {
 	getResults: function(form, callback) {
 		var request = queryify(form);
 		var onSuccess = function(data) {
-			//console.log(JSON.stringify(data));
 			if (data.status == -1) {
 				console.log("Failed to load search results; status = -1");
 				console.log("Errors: " + data.errors);
@@ -123,6 +122,29 @@ module.exports = {
 			console.error("Failed to load search results");
 		};
 		this.get('/api/courses?' + request, onSuccess, onFailure);
+	},
+
+	/**
+	 * Make a GET request for search results for the given form info.
+	 * @param {string}   inst: Name of the professor
+	 * @param {function} callback: Takes in an array of results and performs an
+	 *   action upon it.
+	 */
+	getReviews: function(inst, callback) {
+		var request = queryify(inst);
+		var onSuccess = function(data) {
+			if (data.status == -1) {
+				console.log("Failed to load professor reviews; status = -1");
+				console.log("Errors: " + data.errors);
+				return;
+			}
+			var reviews = data.results;
+			callback(reviews);
+		};
+		var onFailure = function() {
+			console.log("Failed to load professor reviews");
+		};
+		this.get('/api/reviews?professor_name=' + inst, onSuccess, onFailure);
 	},
 
 	/**
