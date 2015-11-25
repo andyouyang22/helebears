@@ -23995,8 +23995,8 @@ module.exports = Store;
 var parse = require('./parse.js');
 var time = require('./time.js');
 
-var apiUrl = 'https://protected-refuge-7067.herokuapp.com';
-// var apiUrl = '';
+//var apiUrl = 'https://protected-refuge-7067.herokuapp.com';
+ var apiUrl = '';
 
 var queryify = function (query) {
 	query = JSON.stringify(query);
