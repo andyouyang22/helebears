@@ -42,43 +42,5 @@ var departmentModel = {
 };
 
 
-//var d = Departments.build({department_name: "Math Science"})
-//d.save();
-//
-//var d = Departments.build({department_name: "Computer Science"})
-//d.save();
-//
-//
-//var d = Departments.build({department_name: "Physics"})
-//d.save();
-//
-//
-//var d = Departments.build({department_name: "Biology"})
-//d.save();
-//
-//
-//var d = Departments.build({department_name: "History"})
-//d.save();
-//
-//
-//var d = Departments.build({department_name: "Political Science"})
-//d.save();
-//
-//
-//var d = Departments.build({department_name: "UGBA"})
-//d.save();
-//
-//
-//var d = Departments.build({department_name: "Economics"})
-//d.save();
-//
-//
-//var d = Departments.build({department_name: "Geography"})
-//d.save();
-//
-//
-//var d = Departments.build({department_name: "Electrical Engineering"})
-//d.save();
-
 module.exports.departmentModel = departmentModel;
 module.exports.Departments = Departments;
