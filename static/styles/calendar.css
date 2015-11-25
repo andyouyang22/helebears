@@ -1,24 +1,24 @@
 
 #main-body {
-	padding-top: 90px;
+	padding-top: 70px;
 	padding-left: 20px;
 	padding-right: 100px;
 	font-family: 'Roboto' sans-serif;
 }
 
 #container-right {
+	margin-top: 20px;
 	padding-left: 30px;
-	width: calc(50% - 30px);
+	width: calc(50% - 60px);
 }
 
 /* Calendar */
 
 .calendar {
-	margin-top: 10px;
 	position: relative;
 	float: left;
-	margin-left: 50px;
-	margin-right: 50px;
+	margin-left: 60px;
+	margin-right: 40px;
 	height: 518px;
 	width: calc(100% - 100px);
 }
@@ -103,6 +103,18 @@
 	cursor: pointer;
 }
 
+.calendar-conflict {
+	position: relative;
+	left: 30px;
+	margin-top: 10px;
+	margin-bottom: 10px;
+	height: 15px;
+	width: calc(100% - 40px);
+	font-size: 80%;
+	color: red;
+	text-align: center;
+}
+
 /* Search */
 
 .search {
@@ -134,13 +146,20 @@
 	font-size: 90%;
 }
 
+.search-submit:hover {
+	cursor: pointer;
+	color: #444444;
+	background-color: #cccccc;
+	text-decoration: none;
+}
+
 /* Results */
 
 .results {
 	position: relative;
 	left: -10px;
 	overflow-y: scroll;
-	height: 390px;
+	height: 420px;
 	width: 100%;
 	font-size: 80%;
 	padding-left: 10px;
@@ -159,6 +178,18 @@
 	background-image: -moz-linear-gradient(#3399ff 30px, white 30px);
 	background-image: -webkit-linear-gradient(#3399ff 30px, white 30px);
 	background-image: -ms-linear-gradient(#3399ff 30px, white 30px);
+}
+
+.results-course-lecture-back {
+	position: absolute;
+	right: 12px;
+	padding-top: 2px;
+	color: #eeeeee;
+}
+
+.results-course-lecture-back:hover {
+	cursor: pointer;
+	text-decoration: underline;
 }
 
 .results-course-lecture-add {
@@ -199,7 +230,7 @@
 }
 
 .results-course-data-visualization {
-	float: right;	
+	float: right;
 }
 
 .results-course-data-visualization:hover {
@@ -214,6 +245,15 @@
 	font-size: 125%;
 	font-family: 'Roboto Slab' serif;
 }
+
+.results-course-info {
+	width: calc(100% - 31px);
+	padding: 15px;
+	border: 1px solid #cccccc;
+	border-radius: 2px;
+	height: 250px;
+}
+
 .ci-metadata{
 	font-family: 'Roboto Slab' serif;
 	margin-left: 4px;
@@ -286,44 +326,87 @@
 
 /* Reviews */
 
-.user-reviews-page-holder {
-	width: 100%;
-	background-color: #eeeeee;
-	border-radius: 10px;
-	padding: 20px;
+.reviews {
+	position: relative;
 }
 
-.review-overall {
+.reviews-overall {
+	width: calc(50%);
+	position: absolute;
+}
+
+.reviews-overall-header {
+	margin-top: 45px;
+	margin-right: 20px;
+	font-family: 'Roboto Slab' serif;
+	text-align: right;
+}
+
+.reviews-overall-inst {
+	display: inline-block;
+	position: relative;
+	margin-right: 15px;
+	top: 3px;
+	font-size: 150%;
+	font-weight: bold;
+	color: #3399ff;
+}
+
+.reviews-overall-overall {
+	display: inline-block;
+	background-color: #3399ff;
 	text-align: center;
+	color: #eeeeee;
+	padding: 4px;
+	height: 18px;
+	width: 22px;
+	border-radius: 3px;
 }
 
-.review-values {
-	margin-left: auto;
-	margin-right: auto;
+.reviews-overall-table {
+	float: right;
+    position: relative;
+    font-size: 110%;
+    right: 21px;
+    margin-top: 10px
 }
 
-.professor-name {
-	font-size: 200%;
+.reviews-overall-table-left {
+	padding: 10px;
+	padding-right: 15px;
 	text-align: right;
+	border-right: 1px solid #3399ff;
 }
 
-.overall-rating {
+.reviews-overall-table-right {
+	padding: 10px;
+	padding-left: 15px;
 	text-align: left;
 }
 
-tr td:first-child {
-	text-align: right;
+.reviews-entries {
+	position: absolute;
+	width: 43%;
+	top: 20px;
+	right: 15px;
 }
 
-tr td:last-child {
-	text-align: left;
+.reviews-entries-header {
+	padding: 5px;
+	padding-left: 10px;
+	background-color: #3399ff;
+	color: #eeeeee;
+	border-radius: 2px;
+	font-size: 115%;
+	font-family: 'Roboto Slab' serif;
 }
 
-.review-container {
-	display: none;
+.reviews-entries-container {
+	margin-top: 2px;
+	height: 175px;
 }
 
-.hide-review:hover {
-	text-decoration: underline;
-	cursor: pointer;
+.reviews-entries-none {
+	margin-left: 9px;
+	margin-top: 5px;
 }

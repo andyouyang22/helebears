@@ -13,6 +13,12 @@
 var EventEmitter = require('events');
 
 var ajax = require('./util/ajax.js');
+var time = require('./util/time.js');
+
+/**
+ * Note: course Objects should have the properties 'name', 'room', 'inst',
+ * 'time', and 'ccn'.
+ */
 
 var Store = function() {
 	// Courses currently displayed on the user's Calendar
@@ -23,8 +29,15 @@ var Store = function() {
 	this._courses = [];
 	// Results currently displayed in the Results section
 	this._results = [];
+	// Course that is currently selected in the Result section
+	this._selected = null;
+	// Reviews for the course that is currently selected
+	this._reviews = null;
+	// Course currently causing a conflict during addCourse
+	this._conflict = null;
 };
 
+// Inherit from the EventEmitter class
 Store.prototype = EventEmitter.prototype;
 
 // ------------------------------- Schedule ------------------------------- //
@@ -44,7 +57,15 @@ Store.prototype.setSchedule = function(schedule) {
 };
 
 Store.prototype.addCourse = function(course) {
-	// TODO: Check conflicts
+	// Check for any conflicts
+	for (i = 0; i < this._schedule.length; i++) {
+		var c = this._schedule[i];
+		if (time.conflict(c, course)) {
+			console.log("These courses conflict " + c + ", " + course);
+			this.conflictOn(c);
+			return;
+		}
+	}
 	this._schedule.push(course);
 	// Emit an event signaling the Calendar state has changed
 	this.emit('schedule');
@@ -123,10 +144,60 @@ Store.prototype.results = function() {
 	return this._results;
 };
 
+// ------------------------------- Selected ------------------------------- //
+
+Store.prototype.select = function(course) {
+	this._selected = course;
+	this.emit('selected');
+};
+
+Store.prototype.unselect = function() {
+	this._selected = null;
+	this.emit('selected');
+};
+
+Store.prototype.selected = function() {
+	return this._selected;
+};
+
+// ------------------------------- Reviews ------------------------------- //
+
+/**
+ * @param {string} inst The name of the professor
+ */
+Store.prototype.getReviews = function(inst) {
+	ajax.getReviews(inst, this.setReviews.bind(this));
+}
+
+Store.prototype.setReviews = function(reviews) {
+	this._reviews = reviews;
+	this.emit('reviews');
+};
+
+Store.prototype.reviews = function() {
+	return this._reviews;
+};
+
+// ------------------------------- Conflict ------------------------------- //
+
+Store.prototype.conflictOn = function(course) {
+	this._conflict = course;
+	this.emit('conflict');
+};
+
+Store.prototype.conflictOff = function() {
+	this._conflict = null;
+	this.emit('conflict');
+};
+
+Store.prototype.conflict = function() {
+	return this._conflict;
+};
+
 // ------------------------------- Listeners ------------------------------- //
 
 /**
- * Add a listening for the schedule-change event.
+ * Add a listener for the schedule-change event.
  * @param {function} callback: Whenever the schedule being displayed in the user's
  *   Calendar changes (e.g. a course is added), this callback is called.
  */
@@ -135,7 +206,7 @@ Store.prototype.addScheduleListener = function(callback) {
 };
 
 /**
- * Add a listening for the courses-change event.
+ * Add a listener for the courses-change event.
  * @param {function} callback: Whenever the courses being displayed in the form
  *   change (e.g. a new dept is selected), this callback is called.
  */
@@ -144,12 +215,45 @@ Store.prototype.addCoursesListener = function(callback) {
 };
 
 /**
- * Add a listening for the results-change event.
+ * Add a listener for the results-change event.
  * @param {function} callback: Whenever the results being displayed in the Results
  *   section changes (e.g. a new search occurs), this callback is called.
  */
 Store.prototype.addResultsListener = function(callback) {
 	this.on('results', callback);
+};
+
+/**
+ * Add a listener for the selection event. This event is emitted whenever the user
+ * selects any clickable part of a result (except for "Add Course"). this._selected
+ * is assigned to this result. The event is also emitted when the result loses
+ * focus, and this._selected is set back to null.
+ * @param (function) callback: Whenever a selection event is emitted, this
+ *   callback is called.
+ */
+Store.prototype.addSelectedListener = function(callback) {
+	this.on('selected', callback);
+};
+
+/**
+ * Add a listener for the reviews-change event. This event is emitted when the
+ * user selects the professor's name and when the result becomes unselected.
+ */
+Store.prototype.addReviewsListener = function(callback) {
+	this.on('reviews', callback);
+};
+
+/**
+ * Add a listener for the conflict event. Whenever a conflict occurs, this event
+ * will be emitted, and this._conflict will be set to the course in this_schedule
+ * that causes the conflict. After the user submits a new search, this._conflict
+ * will be reset to an empty object.
+ * @param (function) callback: Whenever a conflict event is emitted, this callback
+ *   is called. It should check the value of this._conflict to determine whether
+ *   or not it should be executed.
+ */
+Store.prototype.addConflictListener = function(callback) {
+	this.on('conflict', callback);
 };
 
 module.exports = Store;

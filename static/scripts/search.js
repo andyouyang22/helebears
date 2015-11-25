@@ -52,8 +52,8 @@ var Search = React.createClass({
 		this.props.store.setDepartment(dept);
 	},
 	handleSubmission: function(e) {
-		var that = this;
 		e.preventDefault();
+		var that = this;
 		var formDOM = $(ReactDOM.findDOMNode(this));
 		var form = {
 			department_name : formDOM.find('.search-dept').val(),
@@ -62,6 +62,9 @@ var Search = React.createClass({
 		clear_dict_key(null, form);
 		clear_dict_key('', form);
 		this.props.store.getResults(form);
+
+		// Remove the conflict indicator on the Calendar after moving on to new course
+		this.props.store.conflictOff();
 	},
 	render: function() {
 		return (

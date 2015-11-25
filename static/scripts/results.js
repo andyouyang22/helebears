@@ -15,27 +15,56 @@ var time = require('./util/time.js');
 var Results = React.createClass({
 	componentDidMount: function() {
 		var that = this;
-		var callback = function() {
+
+		// Respond appropriately when results change (e.g. new search)
+		var resultsCallback = function() {
 			that.setState({
 				results : that.props.store.results(),
 			});
 		};
-		this.props.store.addResultsListener(callback);
+		this.props.store.addResultsListener(resultsCallback);
+
+		// Respond appropriately when a result is selected
+		var selectedCallback = function() {
+			var selected = that.props.store.selected();
+			var results = [selected];
+			if (selected == null) {
+				// If a result is unselected (loses focus), show all results again
+				results = that.props.store.results();
+			}
+			that.setState({
+				results  : results,
+				selected : selected,
+			});
+		};
+		this.props.store.addSelectedListener(selectedCallback);
 	},
 	getInitialState: function() {
 		return {
-			results : [],
-			reviews : [],
+			reviews  : [],
+			results  : [],
+			selected : null,
 		};
 	},
 	render: function() {
 		var that = this;
 		var results = [];
-		this.state.results.forEach(function(c) {
+		// If 'selected' is not null, something must be selected, and there will
+		// only be one result to show
+		if (this.state.selected != null) {
+			var s = this.state.selected;
 			results.push(
-				<Results.Course store={that.props.store} key={c.ccn} course={c} />
+				<Results.Course store={that.props.store} key={s.ccn} course={s} selected />
 			);
-		});
+		}
+		// Otherwise, generate all Results immediately after a search
+		else {
+			this.state.results.forEach(function(c) {
+				results.push(
+					<Results.Course store={that.props.store} key={c.ccn} course={c} />
+				);
+			});
+		}
 		return (
 			<div className='results'>
 				{results}
@@ -45,12 +74,20 @@ var Results = React.createClass({
 });
 
 Results.Course = React.createClass({
+	componentDidMount: function() {
+		var that = this;
+		var reviewsCallback = function() {
+			var inst = that.props.course.inst;
+			var reviews = that.props.store.reviews();
+			that.setState({
+				infoContent : [<Reviews key="420" inst={inst} reviews={reviews} />],
+			});
+		}
+		this.props.store.addReviewsListener(reviewsCallback);
+	},
 	getInitialState: function() {
 		return {
-			review : {
-				name    : "",
-				ratings : [],
-			},
+			infoContent : [],
 		};
 	},
 	showReview: function(name, ratings) {
@@ -64,9 +101,6 @@ Results.Course = React.createClass({
 		var container = $(ReactDOM.findDOMNode(this)).find('.review-container');
 		container.slideDown();
 	},
-	hideReview: function() {
-		$(ReactDOM.findDOMNode(this)).find('.review-container').slideUp();
-	},
 	toggleSections: function() {
 		$(ReactDOM.findDOMNode(this)).find('.results-course-sections').slideToggle();
 	},
@@ -76,78 +110,96 @@ Results.Course = React.createClass({
 	toggleVisual: function () {
 		$(ReactDOM.findDOMNode(this)).find('.data-visualization').slideToggle();
 	},
-	
+
 	render: function() {
-		var c = this.props.course;
+		var info = [];
+		if (this.props.selected) {
+			// 'key' property needed to make React happy
+			info.push(
+				<Results.Course.Info key="420" store={this.props.store} info={this.state.infoContent} />
+			);
+		}
 		return (
 			<div className='results-course'>
-				<Results.Course.Lecture store={this.props.store} units={c.units} enrolled={c.enrolled} limit={c.limit} waitlist={c.waitlist} recommendation={c.recommendation} course_description={c.course_description} name={c.name} desc={c.desc} inst={c.inst} time={c.time} room={c.room} ccn={c.ccn} toggleDescription={this.toggleDescription} toggleVisual={this.toggleVisual} toggleSections={this.toggleSections} showReview={this.showReview} />
-				<Results.Course.Sections sections={this.props.course.sections} />
-				<div className='review-container'>
-					<Reviews review={this.state.review} hideReview={this.hideReview} />
-				</div>
+				<Results.Course.Lecture store={this.props.store} course={this.props.course} selected={this.props.selected} toggleDescription={this.toggleDescription} toggleVisual={this.toggleVisual} toggleSections={this.toggleSections} />
+				{info}
 			</div>
 		);
 	}
 });
 
+
+/**
+ * Info is a container for information associated with this Course. It can contain
+ * section information, reviews, or recommendations. Info is only displayed when its
+ * corresponding Course is 'selected'.
+ */
+Results.Course.Info = React.createClass({
+	render: function() {
+		return(
+			<div className='results-course-info'>
+				{this.props.info}
+			</div>
+		);
+	},
+});
+
 Results.Course.Lecture = React.createClass({
 	add: function() {
-		var course = {
-			name : this.props.name,
-			room : this.props.room,
-			time : this.props.time,
-			ccn  : this.props.ccn,
-		};
+		var course = this.props.course;
 		this.props.store.addCourse(course);
 	},
+	back: function() {
+		this.props.store.unselect();
+	},
+	sections: function() {
+		var course = this.props.course;
+		this.props.store.select(course);
+	},
 	reviews: function() {
-		var that = this;
-		var onSuccess = function(data) {
-			if (data.status == -1) {
-				console.log("Failed to load professor reviews");
-				console.log("Errors: " + data.errors);
-			}
-			var r = data.results;
-			var ratings = [0, 0, 0];
-			for (var i = 0; i < r.length; i++) {
-				ratings[0] += r[i].rating_1;
-				ratings[1] += r[i].rating_2;
-				ratings[2] += r[i].rating_3;
-			}
-			ratings[0] /= r.length;
-			ratings[1] /= r.length;
-			ratings[2] /= r.length;
-			that.props.showReview(name, ratings);
-		};
-		var onFailure = function() {
-			console.log("Failed to load professor reviews");
-		};
-		var prof = this.props.inst;
-		ajax.get('/api/reviews?professor_name=' + prof, onSuccess, onFailure);
+		var inst = this.props.course.inst;
+		this.props.store.getReviews(inst);
+		this.select();
+	},
+	select: function() {
+		var course = this.props.course;
+		this.props.store.select(course);
+	},
+	unselect: function() {
+		return
 	},
 	render: function() {
-		var t = time.parse(this.props.time);
+		var back = [];
+		if (this.props.selected) {
+			back.push(
+				<div className='results-course-lecture-back' key="420" onClick={this.back}>
+					Return to results
+				</div>
+			);
+		}
+		var c = this.props.course;
+		var t = time.parse(c.time);
 		t = t.days + " " + time.display(t.start) + " - " + time.display(t.end);
 		return (
 			<div className='results-course-lecture'>
-				<div className='results-course-lec-name' onClick={this.props.toggleSections}>{this.props.name}</div>
+				{back}
+				<div className='results-course-lec-name' onClick={this.sections}>{c.name}</div>
 				<div className='results-course-data-visualization' onClick={this.props.toggleVisual}>Recommended With</div>
 				<div className='results-course-lec-course-desc' onClick={this.props.toggleDescription}>Course Info</div>
-				<div className='results-course-lec-desc'>{this.props.desc}</div>
-				<div className='results-course-lec-inst' onClick={this.reviews}>{this.props.inst}</div>
+				<div className='results-course-lec-desc'>{c.desc}</div>
+				<div className='results-course-lec-inst' onClick={this.reviews}>{c.inst}</div>
 				<div className='results-course-lec-time'>{t}</div>
 				<div className='results-course-description' style={{display: 'none'}}>
 					<div className='results-course-lecture-add' id='close-button' onClick={this.props.toggleDescription}>Close</div>
-					<div className='results-course-title ci-metadata'>{this.props.name}</div>
+					<div className='results-course-title ci-metadata'>{c.name}</div>
 					<div className='results-course-time ci-metadata'>{t}</div>
-					<div className='results-course-professor ci-metadata'>{this.props.prof}</div>
-					<div className='results-course-enrolled ci-metadata'>Enrolled: {this.props.enrolled}</div>
-					<div className='results-course-limit ci-metadata'>Limit: {this.props.limit}</div>
-					<div className='results-course-waitlist ci-metadata'>Waitlist: {this.props.limit}</div>
-					<div className='results-course-ccn ci-metadata'>CCN: {this.props.ccn}</div>
-					<div ClassName='ci-metadata' id='locationid'> Location: {this.props.room}</div>
-					<p className='long-description ci-metadata'>{this.props.course_description}</p>
+					<div className='results-course-professor ci-metadata'>{c.inst}</div>
+					<div className='results-course-enrolled ci-metadata'>Enrolled: {c.enrolled}</div>
+					<div className='results-course-limit ci-metadata'>Limit: {c.limit}</div>
+					<div className='results-course-waitlist ci-metadata'>Waitlist: {c.limit}</div>
+					<div className='results-course-ccn ci-metadata'>CCN: {c.ccn}</div>
+					<div className='ci-metadata' id='locationid'> Location: {c.room}</div>
+					<p className='long-description ci-metadata'>{c.info}</p>
 				</div>
 				<div className='results-course-lecture-add' onClick={this.add}>
 					Add Course
@@ -160,33 +212,29 @@ Results.Course.Lecture = React.createClass({
 	}
 });
 
-Results.Course.Lecture.RecommendationChart = React.createClass({	
+Results.Course.Lecture.RecommendationChart = React.createClass({
 	render: function() {
 		var temp = this.props.recommendation;
-		if(temp != null){
-		var recc_courses = Object.keys(temp);
-		var chartData = [];
-		for (var i = 0; i < recc_courses.length; i++){
-			tempDict = {};
-			tempDict['label'] = recc_courses[i];
-			tempDict['value'] = temp[recc_courses[i]];
-			var letters = '0123456789ABCDEF'.split('');
-    		var color = '#';
-			for (var j = 0; j < 6; j++ )
-        		color += letters[Math.floor(Math.random() * 16)];
-			
-			tempDict['color'] = color;
-			chartData.push(tempDict);
-		}
-		//console.log(JSON.stringify(chartData));
-		/*chartData = [{value:300, label:'test1', color:'#F7464A'}, {value:150, label:'test2', color:'#235497'}];*/
-		return (
+		if (temp != null) {
+			var recc_courses = Object.keys(temp);
+			var chartData = [];
+			for (var i = 0; i < recc_courses.length; i++) {
+				tempDict = {};
+				tempDict['label'] = recc_courses[i];
+				tempDict['value'] = temp[recc_courses[i]];
+				var letters = '0123456789ABCDEF'.split('');
+	    		var color = '#';
+				for (var j = 0; j < 6; j++ ) {
+	        		color += letters[Math.floor(Math.random() * 16)];
+				}
+				tempDict['color'] = color;
+				chartData.push(tempDict);
+			}
+			return (
 				<PieChart data={chartData} />
 			);
-		}else{
-			//var emptyChart = [{value:1, label:'Be the first to take this course!', color:'#F7464A'}];
-			//<PieChart data={emptyChart} />
-		return (
+		} else {
+			return (
 				<div>Be the first to take this course!</div>
 			);
 		}
