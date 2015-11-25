@@ -27,16 +27,33 @@ var Calendar = React.createClass({
 		return ((hashCode(a) * 1373 + hashCode(b) * 11) + "").slice(0, 5);
 	},
 	componentDidMount: function() {
+		var that = this;
+		var callback = function() {
+			that.setState({
+				conflict : that.props.store.conflict(),
+			});
+		};
+		this.props.store.addConflictListener(callback);
 		this.props.store.getSchedule();
+	},
+	conflictString: function() {
+		var conflict = this.state.conflict;
+		if (conflict != null) {
+			return "There is a conflict with " + conflict.name;
+		}
+		return "";
 	},
 	getInitialState: function() {
 		return {
-			courses : [],
+			conflict : null,
 		};
 	},
 	render: function() {
 		return (
 			<div className='calendar'>
+				<div className='calendar-conflict'>
+					{this.conflictString()}
+				</div>
 				<Calendar.Axis />
 				<Calendar.Grid store={this.props.store} />
 			</div>
@@ -191,7 +208,7 @@ Calendar.Course = React.createClass({
 		// These are hard-coded appropriately to the static Calendar
 		return {
 			height : time.duration(t.start, t.end) * 32 / 60 - 1,
-			top    : time.duration("0800", t.start) * 34 / 60,
+			top    : time.duration("0800", t.start) * 34 / 60 + 35,
 		};
 	},
 	style: function() {

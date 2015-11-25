@@ -1,12 +1,13 @@
 
 #main-body {
-	padding-top: 90px;
+	padding-top: 70px;
 	padding-left: 20px;
 	padding-right: 100px;
 	font-family: 'Roboto' sans-serif;
 }
 
 #container-right {
+	margin-top: 20px;
 	padding-left: 30px;
 	width: calc(50% - 30px);
 }
@@ -14,7 +15,6 @@
 /* Calendar */
 
 .calendar {
-	margin-top: 10px;
 	position: relative;
 	float: left;
 	margin-left: 50px;
@@ -101,6 +101,18 @@
 .calendar-course-remove:hover {
 	color: #cccccc;
 	cursor: pointer;
+}
+
+.calendar-conflict {
+	position: relative;
+	left: 30px;
+	margin-top: 10px;
+	margin-bottom: 10px;
+	height: 15px;
+	width: calc(100% - 40px);
+	font-size: 80%;
+	color: red;
+	text-align: center;
 }
 
 /* Search */
@@ -199,7 +211,7 @@
 }
 
 .results-course-data-visualization {
-	float: right;	
+	float: right;
 }
 
 .results-course-data-visualization:hover {
