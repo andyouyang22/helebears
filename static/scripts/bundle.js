@@ -23438,12 +23438,22 @@ var Search = React.createClass({
 	},
 	handleSubmission: function (e) {
 		e.preventDefault();
+		var clear_dict_key = function (del_value, request) {
+			for (var key in request) {
+				if (request[key] == del_value) {
+					delete request[key];
+				};
+			};
+		};
 		var that = this;
 		var formDOM = $(ReactDOM.findDOMNode(this));
 		var form = {
 			department_name: formDOM.find('.search-dept').val(),
 			name: formDOM.find('.search-course').val()
 		};
+		clear_dict_key(null, form);
+		clear_dict_key('', form);
+		alert(JSON.stringify(form));
 		this.props.store.getResults(form);
 	},
 	render: function () {
@@ -23800,6 +23810,7 @@ module.exports = {
 	getResults: function (form, callback) {
 		var request = queryify(form);
 		var onSuccess = function (data) {
+			console.log(JSON.stringify(data));
 			if (data.status == -1) {
 				console.log("Failed to load search results; status = -1");
 				console.log("Errors: " + data.errors);

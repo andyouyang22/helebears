@@ -42,12 +42,22 @@ var Search = React.createClass({
 	},
 	handleSubmission: function(e) {
 		e.preventDefault();
+		var clear_dict_key = function(del_value,request){
+			for(var key in request) {
+				if(request[key] == del_value) {
+				delete request[key];
+				};
+			};
+		};
 		var that = this;
 		var formDOM = $(ReactDOM.findDOMNode(this));
 		var form = {
 			department_name : formDOM.find('.search-dept').val(),
 			name            : formDOM.find('.search-course').val(),
 		};
+		clear_dict_key(null,form);
+		clear_dict_key('',form);
+		alert(JSON.stringify(form));
 		this.props.store.getResults(form);
 	},
 	render: function() {
