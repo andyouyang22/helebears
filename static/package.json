@@ -10,6 +10,13 @@
   "license": "ISC",
   "dependencies": {
     "body-parser": "^1.14.1",
-    "express": "^4.13.3"
+    "chart.js": "^1.0.2",
+    "express": "^4.13.3",
+    "react": "^0.14.3",
+    "react-chartjs": "^0.6.0",
+    "react-dom": "^0.14.3"
+  },
+  "devDependencies": {
+    "babelify": "^7.2.0"
   }
 }

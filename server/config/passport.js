@@ -12,8 +12,6 @@ var Users = user_model.Users;
 var UserMethods = user_model.UserMethods;
 
 
-
-
 // expose this function to our app using module.exports
 module.exports = function(passport) {
 
@@ -62,9 +60,6 @@ module.exports = function(passport) {
                 // we are checking to see if the user trying to login already exists
                 Users.findOne({ where:{email :  email }
                              }).then(function(user) {
-                    // if there are any errors, return the error
-                    //if (err)
-                    //    return done(err);
 
                     // check to see if theres already a user with that email
                     if (user) {
@@ -104,9 +99,6 @@ module.exports = function(passport) {
 
             Users.findOne({ where:{email : email }
             }).then(function(user) {
-                // if there are any errors, return the error
-                //if (err)
-                //    return done(err);
 
                 // if no user is found, return the message
                 if (!user)

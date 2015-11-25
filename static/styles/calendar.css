@@ -175,6 +175,12 @@
 	padding-right: 8px;
 }
 
+#close-button {
+	right: 5px;
+	bottom: 0px;
+	margin-left: 5px;
+}
+
 .results-course-lecture-add:hover {
 	background-color: #eeeeee;
 	cursor: pointer;
@@ -191,6 +197,36 @@
 	cursor: pointer;
 	color: white;
 }
+
+.results-course-data-visualization {
+	float: right;	
+}
+
+.results-course-data-visualization:hover {
+	color: #3399ff;
+	text-decoration: underline;
+	cursor: pointer;
+}
+
+.results-course-description {
+	opacity: 1;
+	/*background-color: #eeeeee;*/
+	background-color: white;
+	position: fixed;
+	/*border: 20px solid #00b85c; */
+	border: 20px solid #eeeeee;
+	top: calc(50% - 100px);
+	width: 500px;
+	height: 200px;
+	left: calc(50% - 250px)
+}
+
+.results-course-lec-course-desc:hover {
+	color: #3399ff;
+	text-decoration: underline;
+	cursor: pointer;
+}
+
 
 .results-course-lec-desc {
 	margin-bottom: 5px;

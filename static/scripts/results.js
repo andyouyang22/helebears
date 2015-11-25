@@ -1,156 +1,245 @@
-var Results = function() {
+/**
+ * The Results section of the page. Results contains a scrollable list of courses
+ * that match the user's query.
+ */
 
-	var templateDepartment;
-	var overallReview;
-	var user_reviews;
-	var userReviewTemplateHtml;
-	var user_input;
-	var name_of_professor;
-	var classSingle;
-	var all_classes;
-	var classSingleTemplateHtml;
-	var sectionTableTemplateHtml;
-	var labTableTemplateHtml;
+var React    = require('react');
+var ReactDOM = require('react-dom');
+var PieChart = require("react-chartjs").Pie;
 
-	var response  // delete me once ready!
+var Reviews = require('./reviews.js');
 
-	var makeGetRequest = function(url, onSuccess, onFailure) {
-	   $.ajax({
-		   type: 'GET',
-		   url: apiUrl + url,
-		   dataType: "json",
-		   success: onSuccess,
-		   error: onFailure
-	   });
-   };
+var ajax = require('./util/ajax.js');
+var time = require('./util/time.js');
 
-	var makePostRequest = function(url, data, onSuccess, onFailure) {
-		$.ajax({
-			type: 'POST',
-			url: url,
-			data: JSON.stringify(data),
-			contentType: "application/json",
-			dataType: "json",
-			success: onSuccess,
-			error: onFailure
+var Results = React.createClass({
+	componentDidMount: function() {
+		var that = this;
+		var callback = function() {
+			that.setState({
+				results : that.props.store.results(),
+			});
+		};
+		this.props.store.addResultsListener(callback);
+	},
+	getInitialState: function() {
+		return {
+			results : [],
+			reviews : [],
+		};
+	},
+	render: function() {
+		var that = this;
+		var results = [];
+		this.state.results.forEach(function(c) {
+			results.push(
+				<Results.Course store={that.props.store} key={c.ccn} course={c} />
+			);
 		});
-	};
-
-	var check_post_request = function(review){
-		var error_list = [];
-		if(review.professor.length == 0)
-			error_list.push('Professor is empty!');
-		if(review.professor.length > 64)
-			error_list.push('Professor name must be 64 characters or less!');
-		if((review.rating_1 < 1)||(review.rating_1 > 10))
-			error_list.push('rating_1 must be between 1 and 10!');
-		if((review.rating_2 < 1)||(review.rating_2 > 10))
-			error_list.push('rating_2 must be between 1 and 10!');
-		if((review.rating_3 < 1)||(review.rating_3 > 10))
-			error_list.push('rating_3 must be between 1 and 10!');
-		if(review.review.length < 1)
-			error_list.push('review is empty!');
-		if(review.review.length > 2048)
-			error_list.push('review must be 2048 characters or less!');
-		return error_list;
+		return (
+			<div className='results'>
+				{results}
+			</div>
+		);
 	}
+});
 
-	var insertClass = function(cla){
-		var i;
-		var newElem = $(classSingleTemplateHtml);
-		newElem.find('.header-table').find('td')[0].innerHTML = cla.course;
-		newElem.find('.header-table').find('td').find('input').attr('value',cla.professor);
-		newElem.find('.header-table').find('td')[2].innerHTML = cla.CCN;
-		newElem.find('.header-table').find('td')[3].innerHTML = cla.time;
-
-		var section_list = cla.sections;
-
-		for(i = 0; i < section_list.length; i++){
-			var newSectionLab = section_list[i];
-			if(newSectionLab.type == 'section'){
-				newElem.find('.section-table').find('td')[0].innerHTML = newSectionLab.type;
-				newElem.find('.section-table').find('td')[1].innerHTML = newSectionLab.CCN;
-				newElem.find('.section-table').find('td')[2].innerHTML = newSectionLab.time;
-				newElem.find('.section-table').find('td')[3].innerHTML = newSectionLab.enrolled;
-				newElem.find('.section-table').find('td')[4].innerHTML = newSectionLab.limit;
-			};
-			if(newSectionLab.type == 'lab'){
-				newElem.find('.lab-table').find('td')[0].innerHTML = newSectionLab.type;
-				newElem.find('.lab-table').find('td')[1].innerHTML = newSectionLab.CCN;
-				newElem.find('.lab-table').find('td')[2].innerHTML = newSectionLab.time;
-				newElem.find('.lab-table').find('td')[3].innerHTML = newSectionLab.enrolled;
-				newElem.find('.lab-table').find('td')[4].innerHTML = newSectionLab.limit;
-			};
+Results.Course = React.createClass({
+	getInitialState: function() {
+		return {
+			review : {
+				name    : "",
+				ratings : [],
+			},
 		};
-		if (newElem.find('.lab-table').find('td')[0].innerHTML == 'REMOVE')
-			newElem.find('.lab-div').remove();
-		if (newElem.find('.section-table').find('td')[0].innerHTML == 'REMOVE')
-			newElem.find('.section-div').remove();
-		all_classes.append(newElem);
-	};
+	},
+	showReview: function(name, ratings) {
+		var review = {
+			name    : name,
+			ratings : ratings,
+		}
+		this.setState({
+			review : review,
+		});
+		var container = $(ReactDOM.findDOMNode(this)).find('.review-container');
+		container.slideDown();
+	},
+	hideReview: function() {
+		$(ReactDOM.findDOMNode(this)).find('.review-container').slideUp();
+	},
+	toggleSections: function() {
+		$(ReactDOM.findDOMNode(this)).find('.results-course-sections').slideToggle();
+	},
+	toggleDescription: function () {
+		$(ReactDOM.findDOMNode(this)).find('.results-course-description').slideToggle();
+	},
+	toggleVisual: function () {
+		$(ReactDOM.findDOMNode(this)).find('.data-visualization').slideToggle();
+	},
+	render: function() {
+		var c = this.props.course;
+		return (
+			<div className='results-course'>
+				<Results.Course.Lecture store={this.props.store} recommendation={c.recommendation} course_description={c.course_description} name={c.name} desc={c.desc} inst={c.inst} time={c.time} room={c.room} ccn={c.ccn} toggleDescription={this.toggleDescription} toggleVisual={this.toggleVisual} toggleSections={this.toggleSections} showReview={this.showReview} />
+				<Results.Course.Sections sections={this.props.course.sections} />
+				<div className='review-container'>
+					<Reviews review={this.state.review} hideReview={this.hideReview} />
+				</div>
+			</div>
+		);
+	}
+});
 
-
-	var insertQueryResults = function(response){
-		var j;
-		for(j = 0; j < response.results.length; j++){
-			console.log(j);
-			insertClass(response.results[j]);
+Results.Course.Lecture = React.createClass({
+	add: function() {
+		var course = {
+			name : this.props.name,
+			room : this.props.room,
+			time : this.props.time,
+			ccn  : this.props.ccn,
 		};
-	};
+		this.props.store.addCourse(course);
+	},
+	reviews: function() {
+		var that = this;
+		var onSuccess = function(data) {
+			if (data.status == -1) {
+				console.log("Failed to load professor reviews");
+				console.log("Errors: " + data.errors);
+			}
+			var r = data.results;
+			var ratings = [0, 0, 0];
+			for (var i = 0; i < r.length; i++) {
+				ratings[0] += r[i].rating_1;
+				ratings[1] += r[i].rating_2;
+				ratings[2] += r[i].rating_3;
+			}
+			ratings[0] /= r.length;
+			ratings[1] /= r.length;
+			ratings[2] /= r.length;
+			that.props.showReview(name, ratings);
+		};
+		var onFailure = function() {
+			console.log("Failed to load professor reviews");
+		};
+		var prof = this.props.inst;
+		ajax.get('/api/reviews?professor_name=' + prof, onSuccess, onFailure);
+	},
+	render: function() {
+		var t = time.parse(this.props.time);
+		t = t.days + " " + time.display(t.start) + " - " + time.display(t.end);
+		return (
+			<div className='results-course-lecture'>
+				<div className='results-course-lec-name' onClick={this.props.toggleSections}>{this.props.name}</div>
+				<div className='results-course-data-visualization' onClick={this.props.toggleVisual}>Recommended With</div>
+				<div className='results-course-lec-course-desc' onClick={this.props.toggleDescription}>Course Info</div>
+				<div className='results-course-lec-desc'>{this.props.desc}</div>
+				<div className='results-course-lec-inst' onClick={this.reviews}>{this.props.inst}</div>
+				<div className='results-course-lec-time'>{t}</div>
+				<div className='results-course-description' style={{display: 'none'}}>
+					<div className='results-course-lecture-add' id='close-button' onClick={this.props.toggleDescription}>Close</div>
+					<p className='long-description'>{this.props.course_description}</p>
+				</div>
+				<div className='results-course-lecture-add' onClick={this.add}>
+					Add Course
+				</div>
+				<div className='data-visualization'>
+					<Results.Course.Lecture.RecommendationChart recommendation={this.props.recommendation}/>
+				</div>
+			</div>
+		);
+	}
+});
 
-	var start = function() {
-		// When this page is added onto the Query results page, we will call
-		// insertProfessorOverallRatings when a professor name is clicked as well as
-		// insertProfessorUserRatings to retreive the overall ratings and the
-		// individual user ratings. All of the functions that attach handlers will
-		// be moved to the start function. On the query results page (because the
-		// contents inside of reviews.html will be placed inside of query.html and
-		// hidden). The vars will be moved inside of the other start function as
-		// well.
+Results.Course.Lecture.RecommendationChart = React.createClass({	
+	render: function() {
+		var temp = this.props.recommendation;
+		var recc_courses = Object.keys(temp.recommendation);
+		chartData = [];
+		for (var i = 0; i < recc_courses.length; i++){
+			tempDict = {};
+			tempDict['label'] = recc_courses[i];
+			tempDict['value'] = temp.recommendation[recc_courses[i]];
+			var letters = '0123456789ABCDEF'.split('');
+    		var color = '#';
+			for (var j = 0; j < 6; j++ )
+        		color += letters[Math.floor(Math.random() * 16)];
+			
+			tempDict['color'] = color;
+			chartData.push(tempDict);
+		}
+		console.log(JSON.stringify(chartData));
+		/*chartData = [{value:300, label:'test1', color:'#F7464A'}, {value:150, label:'test2', color:'#235497'}];*/
+		return (
+			<div id="omg">
+				<PieChart data={chartData} />
+			</div>
+			);
+	}
+});
 
-		classSingle = $('.single-class');
-		all_classes = $('.all-class-results');
-		classSingleTemplateHtml = $(".all-class-results .single-class")[0].outerHTML;
-		sectionTableTemplateHtml = $(".section-div")[0].outerHTML;
-		labTableTemplateHtml = $(".lab-div")[0].outerHTML;
+Results.Course.Sections = React.createClass({
+	render: function() {
+		var sections = {
+			mon   : [],
+			tues  : [],
+			wed   : [],
+			thurs : [],
+			fri   : []
+		}
+		for (var i = 0; i < this.props.sections.length; i++) {
+			var sec = this.props.sections[i];
+			var t = time.parse(sec.time);
+			switch (t.days) {
+				case "M":
+					sections.mon.push(<Results.Course.Sections.Section key={sec.ccn} time={sec.time}/>); break;
+				case "T":
+					sections.tues.push(<Results.Course.Sections.Section key={sec.ccn} time={sec.time}/>); break;
+				case "W":
+					sections.wed.push(<Results.Course.Sections.Section key={sec.ccn} time={sec.time}/>); break;
+				case "R":
+					sections.thurs.push(<Results.Course.Sections.Section key={sec.ccn} time={sec.time}/>); break;
+				case "F":
+					sections.fri.push(<Results.Course.Sections.Section key={sec.ccn} time={sec.time}/>); break;
+			}
+		}
+		return (
+			<div className='results-course-sections' style={{display: 'none'}}>
+				<div className='results-course-sections-col'>
+					<div className='results-course-sections-col-header'>Mon</div>
+					{sections.mon}
+				</div>
+				<div className='results-course-sections-col'>
+					<div className='results-course-sections-col-header'>Tues</div>
+					{sections.tues}
+				</div>
+				<div className='results-course-sections-col'>
+					<div className='results-course-sections-col-header'>Wed</div>
+					{sections.wed}
+				</div>
+				<div className='results-course-sections-col'>
+					<div className='results-course-sections-col-header'>Thurs</div>
+					{sections.thurs}
+				</div>
+				<div className='results-course-sections-col'>
+					<div className='results-course-sections-col-header'>Fri</div>
+					{sections.fri}
+				</div>
+			</div>
+		);
+	}
+});
 
-		all_classes.html('');
+Results.Course.Sections.Section = React.createClass({
+	render: function() {
+		var t = time.parse(this.props.time);
+		t = time.display(t.start) + " - " + time.display(t.end);
+		return (
+			<div className='results-course-sections-sec'>
+				{t}
+			</div>
+		);
+	}
+});
 
-		// attachUserInputHandler();
-
-		// insertProfessorOverallRatings('prof_name');
-		// insertProfessorUserRatings('prof_name');
-		var res = {};
-		res.results = [];
-		response = {};
-		response.course = 'course';
-		response.professor = 'prof';
-		response.CCN = '123123'
-		response.time = 'time'
-		var sections = [];
-		var s1= {};
-		var c1 = {};
-
-		s1.type = 'section'
-		s1.CCN = 'CCN'
-		s1.time = 'asdf'
-		s1.enrolled= 35;
-		s1.limit = 24;
-		sections.push(s1);
-
-		c1.type = 'lab'
-		c1.CCN = 'CCN'
-		c1.time = 'asdf'
-		c1.enrolled= 35;
-		c1.limit = 24;
-		sections.push(c1);
-		response.sections = sections;
-		res.results.push(response);
-		res.results.push(response);
-		insertQueryResults(res);
-	};
-
-	return {
-		start: start
-	};
-}();
+module.exports = Results
