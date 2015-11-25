@@ -31,21 +31,21 @@ Menu.Buttons = React.createClass({
 		var onSuccess = function(data){
 			console.log('logged out!');
 		};
-		
+
 		var onFailure = function(){
 			console.error('could not find path');
 		};
-		
+
 		ajax.get('/logout',onSuccess, onFailure);
 		//The bottom line is just to check if ajax requests are ever successful
 		//ajax.get('/api/courses?department_name=Math%20Science&course_name=52', onSuccess, onFailure);
 	},
-	
-	
+
+
 	render: function() {
 		return (
 			<ul className='pure-menu-list'>
-				<a className='pure-menu-link' href='http://protected-refuge-7067.herokuapp.com/logout'>Log Out</a>
+				<a className='pure-menu-link menu-logout' href='http://protected-refuge-7067.herokuapp.com/logout'>Log Out</a>
 			</ul>
 		);
 	}

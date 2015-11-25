@@ -22897,7 +22897,7 @@ Menu.Buttons = React.createClass({
 			{ className: 'pure-menu-list' },
 			React.createElement(
 				'a',
-				{ className: 'pure-menu-link', href: 'http://protected-refuge-7067.herokuapp.com/logout' },
+				{ className: 'pure-menu-link menu-logout', href: 'http://protected-refuge-7067.herokuapp.com/logout' },
 				'Log Out'
 			)
 		);
@@ -23042,15 +23042,14 @@ Results.Course = React.createClass({
 
 	render: function () {
 		var info = [];
-		if (true) {
-			debugger;
+		if (this.props.selected) {
 			// 'key' property needed to make React happy
 			info.push(React.createElement(Results.Course.Info, { key: '420', store: this.props.store }));
 		}
 		return React.createElement(
 			'div',
 			{ className: 'results-course' },
-			React.createElement(Results.Course.Lecture, { store: this.props.store, course: this.props.course, toggleDescription: this.toggleDescription, toggleVisual: this.toggleVisual, toggleSections: this.toggleSections, showReview: this.showReview }),
+			React.createElement(Results.Course.Lecture, { store: this.props.store, course: this.props.course, selected: this.props.selected, toggleDescription: this.toggleDescription, toggleVisual: this.toggleVisual, toggleSections: this.toggleSections, showReview: this.showReview }),
 			React.createElement(Results.Course.Sections, { sections: this.props.course.sections }),
 			React.createElement(
 				'div',
@@ -23091,6 +23090,9 @@ Results.Course.Lecture = React.createClass({
 		var course = this.props.course;
 		this.props.store.addCourse(course);
 	},
+	back: function () {
+		this.props.store.unselect();
+	},
 	sections: function () {
 		var course = this.props.course;
 		this.props.store.select(course);
@@ -23121,12 +23123,21 @@ Results.Course.Lecture = React.createClass({
 		ajax.get('/api/reviews?professor_name=' + prof, onSuccess, onFailure);
 	},
 	render: function () {
+		var back = [];
+		if (this.props.selected) {
+			back.push(React.createElement(
+				'div',
+				{ className: 'results-course-lecture-back', key: '420', onClick: this.back },
+				'Return to results'
+			));
+		}
 		var c = this.props.course;
 		var t = time.parse(c.time);
 		t = t.days + " " + time.display(t.start) + " - " + time.display(t.end);
 		return React.createElement(
 			'div',
 			{ className: 'results-course-lecture' },
+			back,
 			React.createElement(
 				'div',
 				{ className: 'results-course-lec-name', onClick: this.sections },

@@ -116,7 +116,7 @@ Results.Course = React.createClass({
 		}
 		return (
 			<div className='results-course'>
-				<Results.Course.Lecture store={this.props.store} course={this.props.course} toggleDescription={this.toggleDescription} toggleVisual={this.toggleVisual} toggleSections={this.toggleSections} showReview={this.showReview} />
+				<Results.Course.Lecture store={this.props.store} course={this.props.course} selected={this.props.selected} toggleDescription={this.toggleDescription} toggleVisual={this.toggleVisual} toggleSections={this.toggleSections} showReview={this.showReview} />
 				<Results.Course.Sections sections={this.props.course.sections} />
 				<div className='review-container'>
 					<Reviews review={this.state.review} hideReview={this.hideReview} />
@@ -153,6 +153,9 @@ Results.Course.Lecture = React.createClass({
 		var course = this.props.course;
 		this.props.store.addCourse(course);
 	},
+	back: function() {
+		this.props.store.unselect();
+	},
 	sections: function() {
 		var course = this.props.course;
 		this.props.store.select(course);
@@ -183,11 +186,20 @@ Results.Course.Lecture = React.createClass({
 		ajax.get('/api/reviews?professor_name=' + prof, onSuccess, onFailure);
 	},
 	render: function() {
+		var back = [];
+		if (this.props.selected) {
+			back.push(
+				<div className='results-course-lecture-back' key="420" onClick={this.back}>
+					Return to results
+				</div>
+			);
+		}
 		var c = this.props.course;
 		var t = time.parse(c.time);
 		t = t.days + " " + time.display(t.start) + " - " + time.display(t.end);
 		return (
 			<div className='results-course-lecture'>
+				{back}
 				<div className='results-course-lec-name' onClick={this.sections}>{c.name}</div>
 				<div className='results-course-data-visualization' onClick={this.props.toggleVisual}>Recommended With</div>
 				<div className='results-course-lec-course-desc' onClick={this.props.toggleDescription}>Course Info</div>
