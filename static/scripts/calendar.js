@@ -52,41 +52,6 @@ var Calendar = React.createClass({
 			courses : [],
 		};
 	},
-	insertCourse: function(course) {
-		// TODO: check for conflict
-		// TODO: move time parsing to outside-most layer
-		this.setState(function(state, props) {
-			return {
-				courses : state.courses.concat([course]),
-			};
-		});
-		var onSuccess = function() {
-			console.log("Successfully added course to user's schedule in backend");
-		};
-		var onFailure = function() {
-			console.log("Failed to add course to user's schedule in backend");
-		};
-		var data = {
-			name_and_number : course.name,
-			course_time     : course.time,
-			section_time    : course.time,
-			lab_time        : course.time,
-			ccn: course.ccn
-		};
-		ajax.post('/api/schedules/add', data, onSuccess, onFailure);
-	},
-	removeCourse: function(ccn) {
-		this.setState(function(state, props) {
-			for (var i = 0; i < state.courses.length; i++) {
-				if (state.courses[i].ccn == ccn) {
-					state.courses.splice(i, 1);
-				}
-			}
-			return {
-				courses : state.courses,
-			};
-		});
-	},
 	render: function() {
 		return (
 			<div className='calendar'>
@@ -216,7 +181,7 @@ Calendar.Grid.Column.Courses = React.createClass({
 Calendar.Course = React.createClass({
 	remove: function(e) {
 		var c = this.props.course;
-		this.props.store.removeCourse(course);
+		this.props.store.removeCourse(c);
 	},
 	shorten: function(str) {
 		var tokens = str.split(" ");
