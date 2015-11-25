@@ -56,6 +56,9 @@ module.exports = function(passport) {
             // User.findOne wont fire unless data is sent back
             process.nextTick(function() {
 
+                if(email.indexOf("@berkeley.edu") < 0){
+                    return done(null, false, req.flash('signupMessage', 'Must be a @berkeley.edu email account'));
+                }
                 // find a user whose email is the same as the forms email
                 // we are checking to see if the user trying to login already exists
                 Users.findOne({ where:{email :  email }
