@@ -23453,7 +23453,6 @@ var Search = React.createClass({
 		};
 		clear_dict_key(null, form);
 		clear_dict_key('', form);
-		alert(JSON.stringify(form));
 		this.props.store.getResults(form);
 	},
 	render: function () {
