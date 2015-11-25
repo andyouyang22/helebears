@@ -10,6 +10,9 @@ var Reviews = require('./reviews.js');
 
 var ajax = require('./util/ajax.js');
 var time = require('./util/time.js');
+var PieChart = require("react-chartjs").Pie;
+
+
 
 var Results = React.createClass({
 	componentDidMount: function() {
@@ -73,7 +76,9 @@ Results.Course = React.createClass({
 		$(ReactDOM.findDOMNode(this)).find('.results-course-description').slideToggle();
 	},
 	toggleVisual: function () {
-		$(ReactDOM.findDOMNode(this)).find('.data-visualization').slideToggle();	
+		$(ReactDOM.findDOMNode(this)).find('.data-visualization').slideToggle();
+		
+		
 	},
 	render: function() {
 		var c = this.props.course;
@@ -142,11 +147,25 @@ Results.Course.Lecture = React.createClass({
 				<div className='results-course-lecture-add' onClick={this.add}>
 					Add Course
 				</div>
-				<div className='data-visualization'>{JSON.stringify(this.props.recommendation)}</div>
-			
+				<div className='data-visualization'>
+					<Results.Course.Lecture.RecommendationChart />
+				</div>
 			</div>
 		);
 	}
+});
+
+Results.Course.Lecture.RecommendationChart = React.createClass({
+	render: function() {
+		chartData = [{value:300, label:'test1'}, {value:150, label:'test2'}];
+		return (
+			<div id="omg">
+				<PieChart data={chartData} />
+			</div>
+			);
+		
+	}
+	
 });
 
 Results.Course.Sections = React.createClass({
