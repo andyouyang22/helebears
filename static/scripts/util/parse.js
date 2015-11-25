@@ -63,16 +63,9 @@ module.exports = {
 				enrolled: lec.enrolled,
 				limit: lec.limit,
 				waitlist: lec.waitlist,
-				//BEFORE PUSHING TO HEROKU COMMENT ME OUT
-				//course_description : "Temporary Course Description LONG LONG LONG LONG LONG LONG LONG LONG LONG LONG LONG LONG LONG LONG LONG LONG LONG ",
-				//recommendation : {name:'CS169',recommendation:{'CS170':20,'CS160':10,'CS142':33}},
-				
-				//BEFORE PUSHING TO HEROKU UNCOMMENT ME
 				recommendation : lec.recommendation,
 				course_description : lec.course_description,
 				sections : [],
-				
-				
 			};
 			lec.sections.forEach(function(sec) {
 				course.sections.push({

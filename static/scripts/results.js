@@ -163,30 +163,26 @@ Results.Course.Lecture = React.createClass({
 Results.Course.Lecture.RecommendationChart = React.createClass({
 	render: function() {
 		var temp = this.props.recommendation;
-		if(temp != null){
-		var recc_courses = Object.keys(temp);
-		var chartData = [];
-		for (var i = 0; i < recc_courses.length; i++){
-			tempDict = {};
-			tempDict['label'] = recc_courses[i];
-			tempDict['value'] = temp[recc_courses[i]];
-			var letters = '0123456789ABCDEF'.split('');
-    		var color = '#';
-			for (var j = 0; j < 6; j++ )
-        		color += letters[Math.floor(Math.random() * 16)];
-
-			tempDict['color'] = color;
-			chartData.push(tempDict);
-		}
-		//console.log(JSON.stringify(chartData));
-		/*chartData = [{value:300, label:'test1', color:'#F7464A'}, {value:150, label:'test2', color:'#235497'}];*/
-		return (
+		if (temp != null) {
+			var recc_courses = Object.keys(temp);
+			var chartData = [];
+			for (var i = 0; i < recc_courses.length; i++) {
+				tempDict = {};
+				tempDict['label'] = recc_courses[i];
+				tempDict['value'] = temp[recc_courses[i]];
+				var letters = '0123456789ABCDEF'.split('');
+	    		var color = '#';
+				for (var j = 0; j < 6; j++ ) {
+	        		color += letters[Math.floor(Math.random() * 16)];
+				}
+				tempDict['color'] = color;
+				chartData.push(tempDict);
+			}
+			return (
 				<PieChart data={chartData} />
 			);
-		}else{
-			//var emptyChart = [{value:1, label:'Be the first to take this course!', color:'#F7464A'}];
-			//<PieChart data={emptyChart} />
-		return (
+		} else {
+			return (
 				<div>Be the first to take this course!</div>
 			);
 		}
