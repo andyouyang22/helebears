@@ -22912,7 +22912,15 @@ Menu.Buttons = React.createClass({
 	displayName: 'Buttons',
 
 	render: function () {
-		return React.createElement('ul', { className: 'pure-menu-list' });
+		return React.createElement(
+			'ul',
+			{ className: 'pure-menu-list' },
+			React.createElement(
+				'a',
+				{ className: 'pure-menu-link' },
+				'Log Out'
+			)
+		);
 	}
 });
 
@@ -23144,15 +23152,6 @@ Results.Course.Lecture = React.createClass({
 Results.Course.Lecture.RecommendationChart = React.createClass({
 	displayName: 'RecommendationChart',
 
-	getRandomColor: function () {
-		var letters = '0123456789ABCDEF'.split('');
-		var color = '#';
-		for (var i = 0; i < 6; i++) {
-			color += letters[Math.floor(Math.random() * 16)];
-		}
-		return color;
-	},
-
 	render: function () {
 		var temp = this.props.recommendation;
 		var recc_courses = Object.keys(temp.recommendation);
@@ -23168,13 +23167,9 @@ Results.Course.Lecture.RecommendationChart = React.createClass({
 			tempDict['color'] = color;
 			chartData.push(tempDict);
 		}
-		console.log(JSON.stringify(chartData));
+		//console.log(JSON.stringify(chartData));
 		/*chartData = [{value:300, label:'test1', color:'#F7464A'}, {value:150, label:'test2', color:'#235497'}];*/
-		return React.createElement(
-			'div',
-			{ id: 'omg' },
-			React.createElement(PieChart, { data: chartData })
-		);
+		return React.createElement(PieChart, { data: chartData });
 	}
 });
 
@@ -23686,7 +23681,8 @@ module.exports = Store;
 var parse = require('./parse.js');
 var time = require('./time.js');
 
-var apiUrl = '';
+var apiUrl = 'http://protected-refuge-7067.herokuapp.com';
+//var apiUrl = '';
 
 var queryify = function (query) {
 	query = JSON.stringify(query);
@@ -23818,7 +23814,7 @@ module.exports = {
 			course_time: course.time,
 			section_time: course.time,
 			lab_time: course.time,
-            ccn: course.ccn
+			ccn: course.ccn
 		};
 		this.post('/api/schedules/add', data, onSuccess, onFailure);
 	},

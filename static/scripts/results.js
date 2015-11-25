@@ -168,12 +168,10 @@ Results.Course.Lecture.RecommendationChart = React.createClass({
 			tempDict['color'] = color;
 			chartData.push(tempDict);
 		}
-		console.log(JSON.stringify(chartData));
+		//console.log(JSON.stringify(chartData));
 		/*chartData = [{value:300, label:'test1', color:'#F7464A'}, {value:150, label:'test2', color:'#235497'}];*/
 		return (
-			<div id="omg">
 				<PieChart data={chartData} />
-			</div>
 			);
 	}
 });

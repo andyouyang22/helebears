@@ -29,6 +29,7 @@ Menu.Buttons = React.createClass({
 	render: function() {
 		return (
 			<ul className='pure-menu-list'>
+				<a className='pure-menu-link'>Log Out</a>
 			</ul>
 		);
 	}
