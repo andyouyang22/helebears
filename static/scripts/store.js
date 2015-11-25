@@ -29,6 +29,8 @@ var Store = function() {
 	this._courses = [];
 	// Results currently displayed in the Results section
 	this._results = [];
+	// Course currently causing a conflict during addCourse
+	this._conflict = null;
 };
 
 // Inherit from the EventEmitter class
@@ -51,10 +53,12 @@ Store.prototype.setSchedule = function(schedule) {
 };
 
 Store.prototype.addCourse = function(course) {
-	// Check for conflicts
-	for (c in this._schedule) {
+	// Check for any conflicts
+	for (i = 0; i < this._schedule.length; i++) {
+		var c = this._schedule[i];
 		if (time.conflict(c, course)) {
 			console.log("These courses conflict " + c + ", " + course);
+			this.conflictOn(c);
 			return;
 		}
 	}
@@ -136,10 +140,26 @@ Store.prototype.results = function() {
 	return this._results;
 };
 
+// ------------------------------- Conflict ------------------------------- //
+
+Store.prototype.conflictOn = function(course) {
+	this._conflict = course;
+	this.emit('conflict');
+};
+
+Store.prototype.conflictOff = function() {
+	this._conflict = null;
+	this.emit('conflict');
+};
+
+Store.prototype.conflict = function() {
+	return this._conflict;
+};
+
 // ------------------------------- Listeners ------------------------------- //
 
 /**
- * Add a listening for the schedule-change event.
+ * Add a listener for the schedule-change event.
  * @param {function} callback: Whenever the schedule being displayed in the user's
  *   Calendar changes (e.g. a course is added), this callback is called.
  */
@@ -148,7 +168,7 @@ Store.prototype.addScheduleListener = function(callback) {
 };
 
 /**
- * Add a listening for the courses-change event.
+ * Add a listener for the courses-change event.
  * @param {function} callback: Whenever the courses being displayed in the form
  *   change (e.g. a new dept is selected), this callback is called.
  */
@@ -157,12 +177,25 @@ Store.prototype.addCoursesListener = function(callback) {
 };
 
 /**
- * Add a listening for the results-change event.
+ * Add a listener for the results-change event.
  * @param {function} callback: Whenever the results being displayed in the Results
  *   section changes (e.g. a new search occurs), this callback is called.
  */
 Store.prototype.addResultsListener = function(callback) {
 	this.on('results', callback);
+};
+
+/**
+ * Add a listener for the conflict event. Whenever a conflict occurs, this event
+ * will be emitted, and this._conflict will be set to the course in this_schedule
+ * that causes the conflict. After the user submits a new search, this._conflict
+ * will be reset to an empty object.
+ * @param (function) callback: Whenever a conflict event is emitted, this callback
+ *   is called. It should check the value of this._conflict to determine whether
+ *   or not it should be executed.
+ */
+Store.prototype.addConflictListener = function(callback) {
+	this.on('conflict', callback);
 };
 
 module.exports = Store;

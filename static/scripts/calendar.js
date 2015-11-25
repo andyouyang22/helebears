@@ -141,8 +141,6 @@ Calendar.Grid.Column = React.createClass({
 });
 
 Calendar.Grid.Column.Courses = React.createClass({
-	// Graphically insert course into the Calendar. A conflict check should already
-	// have occurred.
 	render: function() {
 		var that = this;
 		var courses = [];
@@ -159,8 +157,22 @@ Calendar.Grid.Column.Courses = React.createClass({
 	}
 });
 
-// http://facebook.github.io/react/docs/multiple-components.html#dynamic-children
 Calendar.Course = React.createClass({
+	componentDidMount: function() {
+		var that = this;
+		var callback = function() {
+			if (that.props.store.conflict()) {
+
+			}
+		};
+		this.props.store.addConflictListener(callback);
+	},
+	getInitialState: function() {
+		return {
+			conflict : false,
+			style    : this.position(),
+		};
+	},
 	remove: function(e) {
 		var c = this.props.course;
 		this.props.store.removeCourse(c);
@@ -173,20 +185,19 @@ Calendar.Course = React.createClass({
 		}
 		return result + " " + tokens[tokens.length - 1];
 	},
-	style: function() {
-		var css = {};
+	position: function() {
 		var c = this.props.course;
 		var t = time.parse(c.time);
 		// These are hard-coded appropriately to the static Calendar
-		css.height = time.duration(t.start, t.end) * 32 / 60 - 1;
-		css.top = time.duration("0800", t.start) * 34 / 60;
-		return css;
+		return {
+			height : time.duration(t.start, t.end) * 32 / 60 - 1,
+			top    : time.duration("0800", t.start) * 34 / 60,
+		};
 	},
 	render: function() {
 		var c = this.props.course;
-		var css = this.style();
 		return (
-			<div className='calendar-course' style={css}>
+			<div className='calendar-course' style={this.state.style}>
 				<div className='calendar-course-name'>{this.shorten(c.name)}</div>
 				<div className='calendar-course-type' hidden>{c.type}</div>
 				<div className='calendar-course-room'>{c.room}</div>
