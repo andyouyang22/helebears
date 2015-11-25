@@ -1,7 +1,7 @@
 /**
  * Created by nirshtern on 10/21/15.
  */
-    
+
 var sequelize_modules = require("./init");
 
 var sequelize = sequelize_modules.sequelize;
@@ -20,7 +20,6 @@ var professorsModel = {
         }
 
     },
-
 
     searchQuery: function(filter,res) {
         Professors.findAll({where: filter}).then(
@@ -41,7 +40,6 @@ var professorsModel = {
         professorsModel.preprocess(query_args,type,res);
 
     }
-
 };
 
 module.exports.Professors = Professors;
