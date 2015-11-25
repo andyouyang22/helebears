@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+{% block title %}UCB Schedule of Classes: Classes with Highest Seat Limit{% endblock %}
+{% block content %}
+<h1>
+  Classes with Highest Seat Limit
+  <small>
+    <a href="{{ url_for('index') }}">Back?</a>
+  </small>
+</h1>
+<hr/>
+{% if depts %}
+<form class="form-horizontal" role="form"
+      action="{{ url_for('biggest') }}" method="POST">
+  <div class="form-group">
+    <label class="col-lg-2 control-label" for="dept">Department</label>
+    <div class="col-lg-8">
+      <select name="dept" class="form-control">
+      <option value="all">All</option>
+      {% for dept in depts %}
+      <option value="{{ dept[0] }}">{{ dept[1] }} ({{ dept[0] }})</option>
+      {% endfor %}
+      </select>
+    </div>
+    <div class="col-lg-1">
+      <button type="submit" class="btn btn-default btn-block">Go!</button>
+    </div>
+  </div>
+</form>
+<hr/>
+{% endif %}
+{% if not ranked %}
+<p>Sorry, but we couldn't get any data for the day specified. Try again later.</p>
+{% else %}
+<div class="table-responsive">
+  <table class="table table-condensed table-hover">
+    <thead>
+      <tr>
+        <th>Rank</th>
+        <th>Section</th>
+        <th>Location</th>
+        <th>Seat Limit</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for triplet in ranked %}
+      <tr>
+        <td>{{ triplet[0] }}</td>
+        <td>{{ triplet[1] }}</td>
+        <td>{{ triplet[1].location }}</td>
+        <td>{{ triplet[2] }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endif %}
+{% endblock %}

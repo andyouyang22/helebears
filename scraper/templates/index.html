@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+{% block title %}UCB Schedule of Classes: API and Analysis{% endblock %}
+{% block content %}
+<h1>
+  UCB Schedule of Classes
+  <small>
+    by <a href="http://www.ocf.berkeley.edu/~rkwan/">Ronald Kwan</a>
+  </small>
+</h1>
+<hr/>
+<div class="row">
+  <div class="col-md-6">
+    <h2>API</h2>
+    <p>
+      We provide an API for data obtained from scraping the UC Berkeley Schedule of Classes.
+      Currently, data from Fall 2014 (starting from 2014-04-06) is in the database.
+      Examples:
+    </p>
+    <ul>
+        <li>
+          <code>/api/departments?page=1</code>:
+          returns first page of departments
+        </li>
+        <li>
+          <code>/api/departments/36</code>:
+          returns department with <code>id=36</code> (COMPSCI)
+        </li>
+        <li>
+          <code>/api/departments/36/courses?page=1</code>:
+          returns first page of courses with department COMPSCI
+        </li>
+        <li>
+          <code>/api/courses/610</code>:
+          returns course with <code>id=615</code> (COMPSCI 176, Fall 2014)
+        </li>
+        <li>
+          <code>/api/sections/2001</code>:
+          returns section with <code>id=2001</code> (COMPSCI 176 LEC 001, Fall 2014)
+        </li>
+        <li>
+          <code>/api/sections/2001/instances</code>:
+          returns instances (where an instance is a section's data for a particular day)
+          of COMPSCI 176 LEC 001, Fall 2014
+        </li>
+    </ul>
+  </div>
+  <div class="col-md-6">
+    <h2>Analysis</h2>
+    <p>
+      Here are various statistics for and analysis of the Schedule of Classes data.
+    </p>
+    <ul>
+      <li>
+        <a href="{{ url_for('mostfull') }}">Classes with Highest Enrollment</a>
+      </li>
+      <li>
+        <a href="{{ url_for('biggest') }}">Classes with Highest Seat Limit</a>
+      </li>
+    </ul>
+  </div>
+</div>
+{% endblock %}
