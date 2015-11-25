@@ -3,6 +3,8 @@ var router = express.Router();
 
 var schedules_model = require("../models/schedule_model")
 var scheduleModel = schedules_model.scheduleModel
+var course_models = require("../models/course_models")
+var courseModel = course_models.courseModel;
 /* GET users listing. */
 router.get('/', function(req, res, next) {
     if("user" in req) {
@@ -22,8 +24,8 @@ router.post('/add',function(req, res, next) {
         res.json({status:-1, errors: ["name_and_number not sent with post request's body"]})
     }
     else{
-        req.body.unique_id = req.user.dataValues.email
-        scheduleModel.createQuery(req.body, res)
+        req.body.unique_id = req.user.dataValues.email;
+        courseModel.aggregateRecommendations(req.body, res)
     }
 });
 

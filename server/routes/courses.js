@@ -2,7 +2,7 @@ var express = require('express');
 var router = express.Router();
 
 var course_models = require("../models/course_models")
-var courseModel = course_models.courseModel
+var courseModel = course_models.courseModel;
 
 
 /* GET request for course listings based on parameters */
