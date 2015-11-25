@@ -65,6 +65,8 @@ var Search = React.createClass({
 
 		// Remove the conflict indicator on the Calendar after moving on to new course
 		this.props.store.conflictOff();
+		// Unselect after a search to display new search results
+		this.props.store.unselect();
 	},
 	render: function() {
 		return (
