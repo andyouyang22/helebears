@@ -76,7 +76,7 @@ Results.Course = React.createClass({
 	toggleVisual: function () {
 		$(ReactDOM.findDOMNode(this)).find('.data-visualization').slideToggle();
 	},
-	
+
 	render: function() {
 		var c = this.props.course;
 		return (
@@ -146,7 +146,7 @@ Results.Course.Lecture = React.createClass({
 					<div className='results-course-limit ci-metadata'>Limit: {this.props.limit}</div>
 					<div className='results-course-waitlist ci-metadata'>Waitlist: {this.props.limit}</div>
 					<div className='results-course-ccn ci-metadata'>CCN: {this.props.ccn}</div>
-					<div ClassName='ci-metadata' id='locationid'> Location: {this.props.room}</div>
+					<div className='ci-metadata' id='locationid'> Location: {this.props.room}</div>
 					<p className='long-description ci-metadata'>{this.props.course_description}</p>
 				</div>
 				<div className='results-course-lecture-add' onClick={this.add}>
@@ -160,7 +160,7 @@ Results.Course.Lecture = React.createClass({
 	}
 });
 
-Results.Course.Lecture.RecommendationChart = React.createClass({	
+Results.Course.Lecture.RecommendationChart = React.createClass({
 	render: function() {
 		var temp = this.props.recommendation;
 		if(temp != null){
@@ -174,7 +174,7 @@ Results.Course.Lecture.RecommendationChart = React.createClass({
     		var color = '#';
 			for (var j = 0; j < 6; j++ )
         		color += letters[Math.floor(Math.random() * 16)];
-			
+
 			tempDict['color'] = color;
 			chartData.push(tempDict);
 		}
