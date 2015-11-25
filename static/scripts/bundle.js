@@ -22882,6 +22882,7 @@ var QueryAPI = ReactDOM.render(React.createElement(Query, { store: store }), doc
 
 var React = require('react');
 var ReactDOM = require('react-dom');
+var ajax = require('./util/ajax.js');
 
 var Menu = React.createClass({
 	displayName: 'Menu',
@@ -22911,13 +22912,27 @@ Menu.Logo = React.createClass({
 Menu.Buttons = React.createClass({
 	displayName: 'Buttons',
 
+	LogOutRequest: function () {
+		var onSuccess = function (data) {
+			console.log('logged out!');
+		};
+
+		var onFailure = function () {
+			console.error('could not find path');
+		};
+
+		ajax.get('/logout', onSuccess, onFailure);
+		//The bottom line is just to check if ajax requests are ever successful
+		//ajax.get('/api/courses?department_name=Math%20Science&course_name=52', onSuccess, onFailure);
+	},
+
 	render: function () {
 		return React.createElement(
 			'ul',
 			{ className: 'pure-menu-list' },
 			React.createElement(
 				'a',
-				{ className: 'pure-menu-link' },
+				{ className: 'pure-menu-link', onClick: this.LogOutRequest },
 				'Log Out'
 			)
 		);
@@ -22926,7 +22941,7 @@ Menu.Buttons = React.createClass({
 
 module.exports = Menu;
 
-},{"react":166,"react-dom":10}],170:[function(require,module,exports){
+},{"./util/ajax.js":175,"react":166,"react-dom":10}],170:[function(require,module,exports){
 /**
  * The Query section of the page. This section contains Search and Results.
  */
