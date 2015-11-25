@@ -110,6 +110,7 @@ module.exports = {
 	getResults: function(form, callback) {
 		var request = queryify(form);
 		var onSuccess = function(data) {
+			//console.log(JSON.stringify(data));
 			if (data.status == -1) {
 				console.log("Failed to load search results; status = -1");
 				console.log("Errors: " + data.errors);
