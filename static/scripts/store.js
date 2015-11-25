@@ -31,6 +31,8 @@ var Store = function() {
 	this._results = [];
 	// Course that is currently selected in the Result section
 	this._selected = null;
+	// Reviews for the course that is currently selected
+	this._reviews = null;
 	// Course currently causing a conflict during addCourse
 	this._conflict = null;
 };
@@ -158,6 +160,24 @@ Store.prototype.selected = function() {
 	return this._selected;
 };
 
+// ------------------------------- Reviews ------------------------------- //
+
+/**
+ * @param {string} inst The name of the professor
+ */
+Store.prototype.getReviews = function(inst) {
+	ajax.getReviews(inst, this.setReviews.bind(this));
+}
+
+Store.prototype.setReviews = function(reviews) {
+	this._reviews = reviews;
+	this.emit('reviews');
+};
+
+Store.prototype.reviews = function() {
+	return this._reviews;
+};
+
 // ------------------------------- Conflict ------------------------------- //
 
 Store.prototype.conflictOn = function(course) {
@@ -213,6 +233,14 @@ Store.prototype.addResultsListener = function(callback) {
  */
 Store.prototype.addSelectedListener = function(callback) {
 	this.on('selected', callback);
+};
+
+/**
+ * Add a listener for the reviews-change event. This event is emitted when the
+ * user selects the professor's name and when the result becomes unselected.
+ */
+Store.prototype.addReviewsListener = function(callback) {
+	this.on('reviews', callback);
 };
 
 /**

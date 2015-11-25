@@ -74,12 +74,20 @@ var Results = React.createClass({
 });
 
 Results.Course = React.createClass({
+	componentDidMount: function() {
+		var that = this;
+		var reviewsCallback = function() {
+			var inst = that.props.course.inst;
+			var reviews = that.props.store.reviews();
+			that.setState({
+				infoContent : [<Reviews key="420" inst={inst} reviews={reviews} />],
+			});
+		}
+		this.props.store.addReviewsListener(reviewsCallback);
+	},
 	getInitialState: function() {
 		return {
-			review : {
-				name     : "",
-				ratings  : [],
-			},
+			infoContent : [],
 		};
 	},
 	showReview: function(name, ratings) {
@@ -92,9 +100,6 @@ Results.Course = React.createClass({
 		});
 		var container = $(ReactDOM.findDOMNode(this)).find('.review-container');
 		container.slideDown();
-	},
-	hideReview: function() {
-		$(ReactDOM.findDOMNode(this)).find('.review-container').slideUp();
 	},
 	toggleSections: function() {
 		$(ReactDOM.findDOMNode(this)).find('.results-course-sections').slideToggle();
@@ -111,16 +116,12 @@ Results.Course = React.createClass({
 		if (this.props.selected) {
 			// 'key' property needed to make React happy
 			info.push(
-				<Results.Course.Info key="420" store={this.props.store} />
+				<Results.Course.Info key="420" store={this.props.store} info={this.state.infoContent} />
 			);
 		}
 		return (
 			<div className='results-course'>
-				<Results.Course.Lecture store={this.props.store} course={this.props.course} selected={this.props.selected} toggleDescription={this.toggleDescription} toggleVisual={this.toggleVisual} toggleSections={this.toggleSections} showReview={this.showReview} />
-				<Results.Course.Sections sections={this.props.course.sections} />
-				<div className='review-container'>
-					<Reviews review={this.state.review} hideReview={this.hideReview} />
-				</div>
+				<Results.Course.Lecture store={this.props.store} course={this.props.course} selected={this.props.selected} toggleDescription={this.toggleDescription} toggleVisual={this.toggleVisual} toggleSections={this.toggleSections} />
 				{info}
 			</div>
 		);
@@ -134,15 +135,10 @@ Results.Course = React.createClass({
  * corresponding Course is 'selected'.
  */
 Results.Course.Info = React.createClass({
-	getInitialState: function() {
-		return ({
-			contents: [],
-		});
-	},
 	render: function() {
 		return(
 			<div className='results-course-info'>
-				{this.state.contents}
+				{this.props.info}
 			</div>
 		);
 	},
@@ -161,29 +157,16 @@ Results.Course.Lecture = React.createClass({
 		this.props.store.select(course);
 	},
 	reviews: function() {
-		var that = this;
-		var onSuccess = function(data) {
-			if (data.status == -1) {
-				console.log("Failed to load professor reviews");
-				console.log("Errors: " + data.errors);
-			}
-			var r = data.results;
-			var ratings = [0, 0, 0];
-			for (var i = 0; i < r.length; i++) {
-				ratings[0] += r[i].rating_1;
-				ratings[1] += r[i].rating_2;
-				ratings[2] += r[i].rating_3;
-			}
-			ratings[0] /= r.length;
-			ratings[1] /= r.length;
-			ratings[2] /= r.length;
-			that.props.showReview(name, ratings);
-		};
-		var onFailure = function() {
-			console.log("Failed to load professor reviews");
-		};
-		var prof = this.props.inst;
-		ajax.get('/api/reviews?professor_name=' + prof, onSuccess, onFailure);
+		var inst = this.props.course.inst;
+		this.props.store.getReviews(inst);
+		this.select();
+	},
+	select: function() {
+		var course = this.props.course;
+		this.props.store.select(course);
+	},
+	unselect: function() {
+		return
 	},
 	render: function() {
 		var back = [];

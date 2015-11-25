@@ -247,8 +247,10 @@
 }
 
 .results-course-info {
-	width: 100%;
-	background-color: #eeeeee;
+	width: calc(100% - 31px);
+	padding: 15px;
+	border: 1px solid #cccccc;
+	border-radius: 2px;
 	height: 250px;
 }
 
@@ -324,44 +326,87 @@
 
 /* Reviews */
 
-.user-reviews-page-holder {
-	width: 100%;
-	background-color: #eeeeee;
-	border-radius: 10px;
-	padding: 20px;
+.reviews {
+	position: relative;
 }
 
-.review-overall {
+.reviews-overall {
+	width: calc(50%);
+	position: absolute;
+}
+
+.reviews-overall-header {
+	margin-top: 45px;
+	margin-right: 20px;
+	font-family: 'Roboto Slab' serif;
+	text-align: right;
+}
+
+.reviews-overall-inst {
+	display: inline-block;
+	position: relative;
+	margin-right: 15px;
+	top: 3px;
+	font-size: 150%;
+	font-weight: bold;
+	color: #3399ff;
+}
+
+.reviews-overall-overall {
+	display: inline-block;
+	background-color: #3399ff;
 	text-align: center;
+	color: #eeeeee;
+	padding: 4px;
+	height: 18px;
+	width: 22px;
+	border-radius: 3px;
 }
 
-.review-values {
-	margin-left: auto;
-	margin-right: auto;
+.reviews-overall-table {
+	float: right;
+    position: relative;
+    font-size: 110%;
+    right: 21px;
+    margin-top: 10px
 }
 
-.professor-name {
-	font-size: 200%;
+.reviews-overall-table-left {
+	padding: 10px;
+	padding-right: 15px;
 	text-align: right;
+	border-right: 1px solid #3399ff;
 }
 
-.overall-rating {
+.reviews-overall-table-right {
+	padding: 10px;
+	padding-left: 15px;
 	text-align: left;
 }
 
-tr td:first-child {
-	text-align: right;
+.reviews-entries {
+	position: absolute;
+	width: 43%;
+	top: 20px;
+	right: 15px;
 }
 
-tr td:last-child {
-	text-align: left;
+.reviews-entries-header {
+	padding: 5px;
+	padding-left: 10px;
+	background-color: #3399ff;
+	color: #eeeeee;
+	border-radius: 2px;
+	font-size: 115%;
+	font-family: 'Roboto Slab' serif;
 }
 
-.review-container {
-	display: none;
+.reviews-entries-container {
+	margin-top: 2px;
+	height: 175px;
 }
 
-.hide-review:hover {
-	text-decoration: underline;
-	cursor: pointer;
+.reviews-entries-none {
+	margin-left: 9px;
+	margin-top: 5px;
 }

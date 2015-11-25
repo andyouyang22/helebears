@@ -23008,12 +23008,20 @@ var Results = React.createClass({
 Results.Course = React.createClass({
 	displayName: 'Course',
 
+	componentDidMount: function () {
+		var that = this;
+		var reviewsCallback = function () {
+			var inst = that.props.course.inst;
+			var reviews = that.props.store.reviews();
+			that.setState({
+				infoContent: [React.createElement(Reviews, { key: '420', inst: inst, reviews: reviews })]
+			});
+		};
+		this.props.store.addReviewsListener(reviewsCallback);
+	},
 	getInitialState: function () {
 		return {
-			review: {
-				name: "",
-				ratings: []
-			}
+			infoContent: []
 		};
 	},
 	showReview: function (name, ratings) {
@@ -23026,9 +23034,6 @@ Results.Course = React.createClass({
 		});
 		var container = $(ReactDOM.findDOMNode(this)).find('.review-container');
 		container.slideDown();
-	},
-	hideReview: function () {
-		$(ReactDOM.findDOMNode(this)).find('.review-container').slideUp();
 	},
 	toggleSections: function () {
 		$(ReactDOM.findDOMNode(this)).find('.results-course-sections').slideToggle();
@@ -23044,18 +23049,12 @@ Results.Course = React.createClass({
 		var info = [];
 		if (this.props.selected) {
 			// 'key' property needed to make React happy
-			info.push(React.createElement(Results.Course.Info, { key: '420', store: this.props.store }));
+			info.push(React.createElement(Results.Course.Info, { key: '420', store: this.props.store, info: this.state.infoContent }));
 		}
 		return React.createElement(
 			'div',
 			{ className: 'results-course' },
-			React.createElement(Results.Course.Lecture, { store: this.props.store, course: this.props.course, selected: this.props.selected, toggleDescription: this.toggleDescription, toggleVisual: this.toggleVisual, toggleSections: this.toggleSections, showReview: this.showReview }),
-			React.createElement(Results.Course.Sections, { sections: this.props.course.sections }),
-			React.createElement(
-				'div',
-				{ className: 'review-container' },
-				React.createElement(Reviews, { review: this.state.review, hideReview: this.hideReview })
-			),
+			React.createElement(Results.Course.Lecture, { store: this.props.store, course: this.props.course, selected: this.props.selected, toggleDescription: this.toggleDescription, toggleVisual: this.toggleVisual, toggleSections: this.toggleSections }),
 			info
 		);
 	}
@@ -23069,16 +23068,11 @@ Results.Course = React.createClass({
 Results.Course.Info = React.createClass({
 	displayName: 'Info',
 
-	getInitialState: function () {
-		return {
-			contents: []
-		};
-	},
 	render: function () {
 		return React.createElement(
 			'div',
 			{ className: 'results-course-info' },
-			this.state.contents
+			this.props.info
 		);
 	}
 });
@@ -23098,29 +23092,16 @@ Results.Course.Lecture = React.createClass({
 		this.props.store.select(course);
 	},
 	reviews: function () {
-		var that = this;
-		var onSuccess = function (data) {
-			if (data.status == -1) {
-				console.log("Failed to load professor reviews");
-				console.log("Errors: " + data.errors);
-			}
-			var r = data.results;
-			var ratings = [0, 0, 0];
-			for (var i = 0; i < r.length; i++) {
-				ratings[0] += r[i].rating_1;
-				ratings[1] += r[i].rating_2;
-				ratings[2] += r[i].rating_3;
-			}
-			ratings[0] /= r.length;
-			ratings[1] /= r.length;
-			ratings[2] /= r.length;
-			that.props.showReview(name, ratings);
-		};
-		var onFailure = function () {
-			console.log("Failed to load professor reviews");
-		};
-		var prof = this.props.inst;
-		ajax.get('/api/reviews?professor_name=' + prof, onSuccess, onFailure);
+		var inst = this.props.course.inst;
+		this.props.store.getReviews(inst);
+		this.select();
+	},
+	select: function () {
+		var course = this.props.course;
+		this.props.store.select(course);
+	},
+	unselect: function () {
+		return;
 	},
 	render: function () {
 		var back = [];
@@ -23387,84 +23368,198 @@ var Reviews = React.createClass({
 	displayName: 'Reviews',
 
 	render: function () {
-		var r = this.props.review.ratings;
-		var overall = (r[0] + r[1] + r[2]) / 3;
+		var reviews = this.props.reviews;
 		return React.createElement(
 			'div',
-			{ className: 'user-reviews-page-holder', id: 'user-reviews-page' },
+			{ className: 'reviews' },
+			React.createElement(Reviews.Overall, { reviews: reviews, inst: this.props.inst }),
+			React.createElement(Reviews.Entries, { reviews: reviews })
+		);
+	}
+});
+
+Reviews.Overall = React.createClass({
+	displayName: 'Overall',
+
+	averages: function () {
+		var avgs = [0, 0, 0];
+		var reviews = this.props.reviews;
+		for (i = 0; i < reviews.length; i++) {
+			var r = reviews[i];
+			avgs[0] += r.rating_1 / review.length;
+			avgs[1] += r.rating_2 / review.length;
+			avgs[2] += r.rating_3 / review.length;
+		}
+		return avgs;
+	},
+	render: function () {
+		var avgs = this.averages();
+		var overall = (avgs[0] + avgs[1] + avgs[2]) / 3;
+		return React.createElement(
+			'div',
+			{ className: 'reviews-overall' },
 			React.createElement(
 				'div',
-				{ className: 'hide-review', onClick: this.props.hideReview },
-				'Hide'
+				{ className: 'reviews-overall-header' },
+				React.createElement(
+					'span',
+					{ className: 'reviews-overall-inst' },
+					this.props.inst
+				),
+				React.createElement(
+					'span',
+					{ className: 'reviews-overall-overall' },
+					overall
+				)
+			),
+			React.createElement(Reviews.Overall.Table, { averages: avgs })
+		);
+	}
+});
+
+Reviews.Overall.Table = React.createClass({
+	displayName: 'Table',
+
+	render: function () {
+		return React.createElement(
+			'table',
+			{ className: 'reviews-overall-table' },
+			React.createElement(
+				'tbody',
+				null,
+				React.createElement(
+					'tr',
+					null,
+					React.createElement(
+						'td',
+						{ className: 'reviews-overall-table-left' },
+						'Difficulty'
+					),
+					React.createElement(
+						'td',
+						{ className: 'reviews-overall-table-right' },
+						this.props.averages[0]
+					)
+				),
+				React.createElement(
+					'tr',
+					null,
+					React.createElement(
+						'td',
+						{ className: 'reviews-overall-table-left' },
+						'Engagement'
+					),
+					React.createElement(
+						'td',
+						{ className: 'reviews-overall-table-right' },
+						this.props.averages[1]
+					)
+				),
+				React.createElement(
+					'tr',
+					null,
+					React.createElement(
+						'td',
+						{ className: 'reviews-overall-table-left' },
+						'Content'
+					),
+					React.createElement(
+						'td',
+						{ className: 'reviews-overall-table-right' },
+						this.props.averages[2]
+					)
+				)
+			)
+		);
+	}
+});
+
+Reviews.Entries = React.createClass({
+	displayName: 'Entries',
+
+	render: function () {
+		var entries = [];
+		for (i = 0; i < this.props.reviews.length; i++) {
+			r = this.props.reviews[i];
+			entries.push(React.createElement(Reviews.Entry, { key: i, review: r }));
+		}
+		if (entries.length == 0) {
+			entries.push(React.createElement(
+				'div',
+				{ className: 'reviews-entries-none' },
+				"None"
+			));
+		}
+		return React.createElement(
+			'div',
+			{ className: 'reviews-entries' },
+			React.createElement(
+				'div',
+				{ className: 'reviews-entries-header' },
+				'Reviews'
 			),
 			React.createElement(
 				'div',
-				{ className: 'review review-overall' },
+				{ className: 'reviews-entries-container' },
+				entries
+			)
+		);
+	}
+});
+
+Reviews.Entry = React.createClass({
+	displayName: 'Entry',
+
+	render: function () {
+		return React.createElement(
+			'div',
+			{ className: 'reviews-entry' },
+			React.createElement(
+				'table',
+				{ className: 'reviews-entry-table' },
 				React.createElement(
-					'table',
-					{ className: 'pure-table review-values' },
+					'tbody',
+					null,
 					React.createElement(
-						'thead',
+						'tr',
 						null,
 						React.createElement(
-							'tr',
-							{ className: 'row-1' },
-							React.createElement(
-								'th',
-								{ className: 'pure-group professor-name' },
-								this.props.name
-							),
-							React.createElement(
-								'th',
-								{ className: 'overall-rating' },
-								overall
-							)
+							'td',
+							{ className: 'reviews-entry-table-left' },
+							'Difficulty'
+						),
+						React.createElement(
+							'td',
+							{ className: 'reviews-entry-table-right' },
+							this.props.review.rating_1
 						)
 					),
 					React.createElement(
-						'tbody',
+						'tr',
 						null,
 						React.createElement(
-							'tr',
-							{ className: 'row-2' },
-							React.createElement(
-								'td',
-								null,
-								'Clarity of Content'
-							),
-							React.createElement(
-								'td',
-								null,
-								r[0]
-							)
+							'td',
+							{ className: 'reviews-entry-table-left' },
+							'Engagement'
 						),
 						React.createElement(
-							'tr',
-							{ className: 'row-3' },
-							React.createElement(
-								'td',
-								null,
-								'Excitement Level'
-							),
-							React.createElement(
-								'td',
-								null,
-								r[1]
-							)
+							'td',
+							{ className: 'reviews-entry-table-right' },
+							this.props.review.rating_2
+						)
+					),
+					React.createElement(
+						'tr',
+						null,
+						React.createElement(
+							'td',
+							{ className: 'reviews-entry-table-left' },
+							'Content'
 						),
 						React.createElement(
-							'tr',
-							{ className: 'row-4' },
-							React.createElement(
-								'td',
-								null,
-								'Easiness'
-							),
-							React.createElement(
-								'td',
-								null,
-								r[2]
-							)
+							'td',
+							{ className: 'reviews-entry-table-right' },
+							this.props.review.rating_3
 						)
 					)
 				)
@@ -23669,6 +23764,8 @@ var Store = function () {
 	this._results = [];
 	// Course that is currently selected in the Result section
 	this._selected = null;
+	// Reviews for the course that is currently selected
+	this._reviews = null;
 	// Course currently causing a conflict during addCourse
 	this._conflict = null;
 };
@@ -23796,6 +23893,24 @@ Store.prototype.selected = function () {
 	return this._selected;
 };
 
+// ------------------------------- Reviews ------------------------------- //
+
+/**
+ * @param {string} inst The name of the professor
+ */
+Store.prototype.getReviews = function (inst) {
+	ajax.getReviews(inst, this.setReviews.bind(this));
+};
+
+Store.prototype.setReviews = function (reviews) {
+	this._reviews = reviews;
+	this.emit('reviews');
+};
+
+Store.prototype.reviews = function () {
+	return this._reviews;
+};
+
 // ------------------------------- Conflict ------------------------------- //
 
 Store.prototype.conflictOn = function (course) {
@@ -23851,6 +23966,14 @@ Store.prototype.addResultsListener = function (callback) {
  */
 Store.prototype.addSelectedListener = function (callback) {
 	this.on('selected', callback);
+};
+
+/**
+ * Add a listener for the reviews-change event. This event is emitted when the
+ * user selects the professor's name and when the result becomes unselected.
+ */
+Store.prototype.addReviewsListener = function (callback) {
+	this.on('reviews', callback);
 };
 
 /**
@@ -23989,6 +24112,30 @@ module.exports = {
 			console.error("Failed to load search results");
 		};
 		this.get('/api/courses?' + request, onSuccess, onFailure);
+	},
+
+	/**
+  * Make a GET request for search results for the given form info.
+  * @param {string}   inst: Name of the professor
+  * @param {function} callback: Takes in an array of results and performs an
+  *   action upon it.
+  */
+	getReviews: function (inst, callback) {
+		var request = queryify(inst);
+		var onSuccess = function (data) {
+			//console.log(JSON.stringify(data));
+			if (data.status == -1) {
+				console.log("Failed to load professor reviews; status = -1");
+				console.log("Errors: " + data.errors);
+				return;
+			}
+			var reviews = data.results;
+			callback(reviews);
+		};
+		var onFailure = function () {
+			console.log("Failed to load professor reviews");
+		};
+		this.get('/api/reviews?professor_name=' + inst, onSuccess, onFailure);
 	},
 
 	/**
