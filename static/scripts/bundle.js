@@ -22950,12 +22950,12 @@ module.exports = Query;
 
 var React = require('react');
 var ReactDOM = require('react-dom');
+var PieChart = require("react-chartjs").Pie;
 
 var Reviews = require('./reviews.js');
 
 var ajax = require('./util/ajax.js');
 var time = require('./util/time.js');
-var PieChart = require("react-chartjs").Pie;
 
 var Results = React.createClass({
 	displayName: 'Results',
@@ -23151,7 +23151,6 @@ Results.Course.Lecture.RecommendationChart = React.createClass({
 			React.createElement(PieChart, { data: chartData })
 		);
 	}
-
 });
 
 Results.Course.Sections = React.createClass({
@@ -23538,7 +23537,7 @@ Store.prototype = EventEmitter.prototype;
  * if necessary.
  */
 Store.prototype.getSchedule = function () {
-	ajax.getSchedule(this.setSchedule);
+	ajax.getSchedule(this.setSchedule.bind(this));
 };
 
 Store.prototype.setSchedule = function (schedule) {
@@ -23662,7 +23661,7 @@ module.exports = Store;
 var parse = require('./parse.js');
 var time = require('./time.js');
 
-var apiUrl = 'http://protected-refuge-7067.herokuapp.com';
+var apiUrl = '';
 
 var queryify = function (query) {
 	query = JSON.stringify(query);
@@ -23704,7 +23703,7 @@ module.exports = {
 				return;
 			}
 			var courses = parse.schedule(data);
-			callback(schedule);
+			callback(courses);
 		};
 		var onFailure = function () {
 			console.log("Failed to load user's schedule");

@@ -34,7 +34,7 @@ Store.prototype = EventEmitter.prototype;
  * if necessary.
  */
 Store.prototype.getSchedule = function() {
-	ajax.getSchedule(this.setSchedule);
+	ajax.getSchedule(this.setSchedule.bind(this));
 };
 
 Store.prototype.setSchedule = function(schedule) {

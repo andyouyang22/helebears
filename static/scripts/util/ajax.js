@@ -1,7 +1,7 @@
 var parse = require('./parse.js');
 var time  = require('./time.js');
 
-var apiUrl = 'http://protected-refuge-7067.herokuapp.com';
+var apiUrl = '';
 
 var queryify = function(query) {
 	query = JSON.stringify(query);
@@ -49,7 +49,7 @@ module.exports = {
 				return;
 			}
 			var courses = parse.schedule(data);
-			callback(schedule);
+			callback(courses);
 		};
 		var onFailure = function() {
 			console.log("Failed to load user's schedule");
