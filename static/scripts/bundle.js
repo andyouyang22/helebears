@@ -22932,7 +22932,7 @@ Menu.Buttons = React.createClass({
 			{ className: 'pure-menu-list' },
 			React.createElement(
 				'a',
-				{ className: 'pure-menu-link', onClick: this.LogOutRequest },
+				{ className: 'pure-menu-link', href: 'http://protected-refuge-7067.herokuapp.com/logout' },
 				'Log Out'
 			)
 		);
