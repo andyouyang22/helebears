@@ -155,12 +155,12 @@ Results.Course.Lecture.RecommendationChart = React.createClass({
 	render: function() {
 		var temp = this.props.recommendation;
 		if(temp != null){
-		var recc_courses = Object.keys(temp.recommendation);
+		var recc_courses = Object.keys(temp);
 		var chartData = [];
 		for (var i = 0; i < recc_courses.length; i++){
 			tempDict = {};
 			tempDict['label'] = recc_courses[i];
-			tempDict['value'] = temp.recommendation[recc_courses[i]];
+			tempDict['value'] = temp[recc_courses[i]];
 			var letters = '0123456789ABCDEF'.split('');
     		var color = '#';
 			for (var j = 0; j < 6; j++ )
