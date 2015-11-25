@@ -49,4 +49,25 @@ module.exports = {
 		// TODO: list all days for sections
 		return t.days[0] + " " + t.start.slice(0, 4) + " " + t.end.slice(0, 4);
 	},
+	/**
+	 * Return true if courses 'a' and 'b' conflict, including when 'a' and 'b' are
+	 * the same class (same CCN); return false otherwise.
+	 */
+	conflict: function(a, b) {
+		if (a.ccn == b.ccn) {
+			return true;
+		}
+		at  = time.parse(a.time);
+		bt  = time.parse(b.time);
+		var aStart = parseInt(at.start);
+		var aEnd   = parseInt(at.end);
+		var bStart = parseInt(bt.start);
+		var bEnd   = parseInt(bt.end);
+		if (aStart >= bStart && aStart <= bEnd) {
+			return true;
+		} else if (bStart >= aStart && bStart <= aEnd) {
+			return true;
+		}
+		return false;
+	},
 };

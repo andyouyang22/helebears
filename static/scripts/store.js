@@ -14,6 +14,11 @@ var EventEmitter = require('events');
 
 var ajax = require('./util/ajax.js');
 
+/**
+ * Note: course Objects should have the properties 'name', 'room', 'inst',
+ * 'time', and 'ccn'.
+ */
+
 var Store = function() {
 	// Courses currently displayed on the user's Calendar
 	this._schedule = [];
@@ -25,6 +30,7 @@ var Store = function() {
 	this._results = [];
 };
 
+// Inherit from the EventEmitter class
 Store.prototype = EventEmitter.prototype;
 
 // ------------------------------- Schedule ------------------------------- //

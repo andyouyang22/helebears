@@ -26,24 +26,6 @@ var Calendar = React.createClass({
 		};
 		return ((hashCode(a) * 1373 + hashCode(b) * 11) + "").slice(0, 5);
 	},
-	conflictsWith: function(newCourse) {
-		return false;
-		for (var i = 0; i < this.state.courses.length; i++) {
-			var course = this.state.courses[i];
-			var a  = time.parse(newCourse.time);
-			var b  = time.parse(course.time);
-			var aStart = parseInt(a.start);
-			var aEnd   = parseInt(a.end);
-			var bStart = parseInt(b.start);
-			var bEnd   = parseInt(b.end);
-			if (aStart >= bStart && aStart <= bEnd) {
-				return true;
-			} else if (aEnd >= bStart && aEnd <= bEnd) {
-				return true;
-			}
-		}
-		return false;
-	},
 	componentDidMount: function() {
 		this.props.store.getSchedule();
 	},
