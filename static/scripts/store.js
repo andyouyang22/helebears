@@ -29,6 +29,8 @@ var Store = function() {
 	this._courses = [];
 	// Results currently displayed in the Results section
 	this._results = [];
+	// Course that is currently selected in the Result section
+	this._selected = null;
 	// Course currently causing a conflict during addCourse
 	this._conflict = null;
 };
@@ -140,6 +142,22 @@ Store.prototype.results = function() {
 	return this._results;
 };
 
+// ------------------------------- Selected ------------------------------- //
+
+Store.prototype.select = function(course) {
+	this._selected = course;
+	this.emit('selected');
+};
+
+Store.prototype.unselect = function() {
+	this._selected = null;
+	this.emit('selected');
+};
+
+Store.prototype.selected = function() {
+	return this._selected;
+};
+
 // ------------------------------- Conflict ------------------------------- //
 
 Store.prototype.conflictOn = function(course) {
@@ -183,6 +201,18 @@ Store.prototype.addCoursesListener = function(callback) {
  */
 Store.prototype.addResultsListener = function(callback) {
 	this.on('results', callback);
+};
+
+/**
+ * Add a listener for the selection event. This event is emitted whenever the user
+ * selects any clickable part of a result (except for "Add Course"). this._selected
+ * is assigned to this result. The event is also emitted when the result loses
+ * focus, and this._selected is set back to null.
+ * @param (function) callback: Whenever a selection event is emitted, this
+ *   callback is called.
+ */
+Store.prototype.addSelectedListener = function(callback) {
+	this.on('selected', callback);
 };
 
 /**

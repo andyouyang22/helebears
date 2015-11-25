@@ -15,27 +15,56 @@ var time = require('./util/time.js');
 var Results = React.createClass({
 	componentDidMount: function() {
 		var that = this;
-		var callback = function() {
+
+		// Respond appropriately when results change (e.g. new search)
+		var resultsCallback = function() {
 			that.setState({
 				results : that.props.store.results(),
 			});
 		};
-		this.props.store.addResultsListener(callback);
+		this.props.store.addResultsListener(resultsCallback);
+
+		// Respond appropriately when a result is selected
+		var selectedCallback = function() {
+			var selected = that.props.store.selected();
+			var results = [selected];
+			if (selected == null) {
+				// If a result is unselected (loses focus), show all results again
+				results = that.props.store.results();
+			}
+			that.setState({
+				results  : results,
+				selected : selected,
+			});
+		};
+		this.props.store.addSelectedListener(selectedCallback);
 	},
 	getInitialState: function() {
 		return {
-			results : [],
-			reviews : [],
+			reviews  : [],
+			results  : [],
+			selected : null,
 		};
 	},
 	render: function() {
 		var that = this;
 		var results = [];
-		this.state.results.forEach(function(c) {
+		// If 'selected' is not null, something must be selected, and there will
+		// only be one result to show
+		if (this.state.selected != null) {
+			var s = this.state.selected;
 			results.push(
-				<Results.Course store={that.props.store} key={c.ccn} course={c} />
+				<Results.Course store={that.props.store} key={s.ccn} course={s} selected />
 			);
-		});
+		}
+		// Otherwise, generate all Results immediately after a search
+		else {
+			this.state.results.forEach(function(c) {
+				results.push(
+					<Results.Course store={that.props.store} key={c.ccn} course={c} />
+				);
+			});
+		}
 		return (
 			<div className='results'>
 				{results}
@@ -48,8 +77,8 @@ Results.Course = React.createClass({
 	getInitialState: function() {
 		return {
 			review : {
-				name    : "",
-				ratings : [],
+				name     : "",
+				ratings  : [],
 			},
 		};
 	},
@@ -78,6 +107,13 @@ Results.Course = React.createClass({
 	},
 
 	render: function() {
+		var info = [];
+		if (this.props.selected) {
+			// 'key' property needed to make React happy
+			info.push(
+				<Results.Course.Info key="420" store={this.props.store} />
+			);
+		}
 		return (
 			<div className='results-course'>
 				<Results.Course.Lecture store={this.props.store} course={this.props.course} toggleDescription={this.toggleDescription} toggleVisual={this.toggleVisual} toggleSections={this.toggleSections} showReview={this.showReview} />
@@ -85,22 +121,30 @@ Results.Course = React.createClass({
 				<div className='review-container'>
 					<Reviews review={this.state.review} hideReview={this.hideReview} />
 				</div>
-				<Results.Info store={this.props.store} />
+				{info}
 			</div>
 		);
 	}
 });
 
+
+/**
+ * Info is a container for information associated with this Course. It can contain
+ * section information, reviews, or recommendations. Info is only displayed when its
+ * corresponding Course is 'selected'.
+ */
 Results.Course.Info = React.createClass({
 	getInitialState: function() {
 		return ({
-			contents: null,
+			contents: [],
 		});
 	},
 	render: function() {
-		<div className='results-course-info'>
-			{this.state.contents}
-		</div>
+		return(
+			<div className='results-course-info'>
+				{this.state.contents}
+			</div>
+		);
 	},
 });
 
@@ -108,6 +152,10 @@ Results.Course.Lecture = React.createClass({
 	add: function() {
 		var course = this.props.course;
 		this.props.store.addCourse(course);
+	},
+	sections: function() {
+		var course = this.props.course;
+		this.props.store.select(course);
 	},
 	reviews: function() {
 		var that = this;
@@ -140,7 +188,7 @@ Results.Course.Lecture = React.createClass({
 		t = t.days + " " + time.display(t.start) + " - " + time.display(t.end);
 		return (
 			<div className='results-course-lecture'>
-				<div className='results-course-lec-name' onClick={this.props.toggleSections}>{c.name}</div>
+				<div className='results-course-lec-name' onClick={this.sections}>{c.name}</div>
 				<div className='results-course-data-visualization' onClick={this.props.toggleVisual}>Recommended With</div>
 				<div className='results-course-lec-course-desc' onClick={this.props.toggleDescription}>Course Info</div>
 				<div className='results-course-lec-desc'>{c.desc}</div>

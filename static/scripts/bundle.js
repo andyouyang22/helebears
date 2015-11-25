@@ -22951,25 +22951,52 @@ var Results = React.createClass({
 
 	componentDidMount: function () {
 		var that = this;
-		var callback = function () {
+
+		// Respond appropriately when results change (e.g. new search)
+		var resultsCallback = function () {
 			that.setState({
 				results: that.props.store.results()
 			});
 		};
-		this.props.store.addResultsListener(callback);
+		this.props.store.addResultsListener(resultsCallback);
+
+		// Respond appropriately when a result is selected
+		var selectedCallback = function () {
+			var selected = that.props.store.selected();
+			var results = [selected];
+			if (selected == null) {
+				// If a result is unselected (loses focus), show all results again
+				results = that.props.store.results();
+			}
+			that.setState({
+				results: results,
+				selected: selected
+			});
+		};
+		this.props.store.addSelectedListener(selectedCallback);
 	},
 	getInitialState: function () {
 		return {
+			reviews: [],
 			results: [],
-			reviews: []
+			selected: null
 		};
 	},
 	render: function () {
 		var that = this;
 		var results = [];
-		this.state.results.forEach(function (c) {
-			results.push(React.createElement(Results.Course, { store: that.props.store, key: c.ccn, course: c }));
-		});
+		// If 'selected' is not null, something must be selected, and there will
+		// only be one result to show
+		if (this.state.selected != null) {
+			var s = this.state.selected;
+			results.push(React.createElement(Results.Course, { store: that.props.store, key: s.ccn, course: s, selected: true }));
+		}
+		// Otherwise, generate all Results immediately after a search
+		else {
+				this.state.results.forEach(function (c) {
+					results.push(React.createElement(Results.Course, { store: that.props.store, key: c.ccn, course: c }));
+				});
+			}
 		return React.createElement(
 			'div',
 			{ className: 'results' },
@@ -23014,6 +23041,12 @@ Results.Course = React.createClass({
 	},
 
 	render: function () {
+		var info = [];
+		if (true) {
+			debugger;
+			// 'key' property needed to make React happy
+			info.push(React.createElement(Results.Course.Info, { key: '420', store: this.props.store }));
+		}
 		return React.createElement(
 			'div',
 			{ className: 'results-course' },
@@ -23024,21 +23057,26 @@ Results.Course = React.createClass({
 				{ className: 'review-container' },
 				React.createElement(Reviews, { review: this.state.review, hideReview: this.hideReview })
 			),
-			React.createElement(Results.Info, { store: this.props.store })
+			info
 		);
 	}
 });
 
+/**
+ * Info is a container for information associated with this Course. It can contain
+ * section information, reviews, or recommendations. Info is only displayed when its
+ * corresponding Course is 'selected'.
+ */
 Results.Course.Info = React.createClass({
 	displayName: 'Info',
 
 	getInitialState: function () {
 		return {
-			contents: null
+			contents: []
 		};
 	},
 	render: function () {
-		React.createElement(
+		return React.createElement(
 			'div',
 			{ className: 'results-course-info' },
 			this.state.contents
@@ -23052,6 +23090,10 @@ Results.Course.Lecture = React.createClass({
 	add: function () {
 		var course = this.props.course;
 		this.props.store.addCourse(course);
+	},
+	sections: function () {
+		var course = this.props.course;
+		this.props.store.select(course);
 	},
 	reviews: function () {
 		var that = this;
@@ -23087,7 +23129,7 @@ Results.Course.Lecture = React.createClass({
 			{ className: 'results-course-lecture' },
 			React.createElement(
 				'div',
-				{ className: 'results-course-lec-name', onClick: this.props.toggleSections },
+				{ className: 'results-course-lec-name', onClick: this.sections },
 				c.name
 			),
 			React.createElement(
@@ -23614,6 +23656,8 @@ var Store = function () {
 	this._courses = [];
 	// Results currently displayed in the Results section
 	this._results = [];
+	// Course that is currently selected in the Result section
+	this._selected = null;
 	// Course currently causing a conflict during addCourse
 	this._conflict = null;
 };
@@ -23725,6 +23769,22 @@ Store.prototype.results = function () {
 	return this._results;
 };
 
+// ------------------------------- Selected ------------------------------- //
+
+Store.prototype.select = function (course) {
+	this._selected = course;
+	this.emit('selected');
+};
+
+Store.prototype.unselect = function () {
+	this._selected = null;
+	this.emit('selected');
+};
+
+Store.prototype.selected = function () {
+	return this._selected;
+};
+
 // ------------------------------- Conflict ------------------------------- //
 
 Store.prototype.conflictOn = function (course) {
@@ -23768,6 +23828,18 @@ Store.prototype.addCoursesListener = function (callback) {
  */
 Store.prototype.addResultsListener = function (callback) {
 	this.on('results', callback);
+};
+
+/**
+ * Add a listener for the selection event. This event is emitted whenever the user
+ * selects any clickable part of a result (except for "Add Course"). this._selected
+ * is assigned to this result. The event is also emitted when the result loses
+ * focus, and this._selected is set back to null.
+ * @param (function) callback: Whenever a selection event is emitted, this
+ *   callback is called.
+ */
+Store.prototype.addSelectedListener = function (callback) {
+	this.on('selected', callback);
 };
 
 /**
