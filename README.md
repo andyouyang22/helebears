@@ -34,13 +34,14 @@ First install `instanbul`.
 
 To view front end coverage, go to the `static/testing/` folder
 
-	istanbul cover ./node_modules/.bin/_mocha tests/unit_tests/
-	open coverage/lcov-report/index.html
-
 To view back end coverage, go to the `server/` folder
 
-	istanbul cover ./node_modules/.bin/_mocha tests/unit_tests/  ./node_modules/.bin/_mocha tests/functional_tests/
-	open coverage/lcov-report/index.html
+	> istanbul cover ./node_modules/.bin/_mocha tests/unit_tests/  ./node_modules/.bin/_mocha tests/functional_tests/
+	> open coverage/lcov-report/index.html
+	
+In order to view the times every line was covered, you can use coverage/models where every model file is reported in depth
+	
+NOTE: The results from our run are available in the coverage folder of the repository (no need to run the testing to view)
 
 ## Selenium Testing
 First, you must download and install the Selenium IDE for Firefox here:
