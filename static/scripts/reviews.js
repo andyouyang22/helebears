@@ -5,16 +5,20 @@
 var React    = require('react');
 var ReactDOM = require('react-dom');
 
+var ReviewForm = require('./review-form.js');
+
 var ajax = require('./util/ajax.js');
 var time = require('./util/time.js');
 
 var Reviews = React.createClass({
  	render: function() {
  		var reviews = this.props.reviews;
+ 		var inst = this.props.inst;
+ 		var store = this.props.store;
  		return (
  			<div className='reviews'>
- 				<Reviews.Overall reviews={reviews} inst={this.props.inst} />
- 				<Reviews.Entries reviews={reviews} />
+ 				<Reviews.Overall reviews={reviews} inst={inst} />
+ 				<Reviews.Entries reviews={reviews} inst={inst} store={store} />
  			</div>
  		);
  	}
@@ -81,7 +85,37 @@ Reviews.Overall.Table = React.createClass({
 });
 
 Reviews.Entries = React.createClass({
-	render: function() {
+	back: function() {
+		this.setState({
+			create : false,
+		});
+	},
+	create: function() {
+		this.setState({
+			create : true,
+		});
+	},
+	content: function() {
+		if (this.state.create) {
+			return (
+				<div>
+					<Reviews.Back back={this.back} />
+					<ReviewForm store={this.props.store} inst={this.props.inst} />
+				</div>
+			);
+		}
+		else {
+			return (
+				<div>
+					<Reviews.Create create={this.create} />
+					<div className='reviews-entries-container'>
+						{this.entries()}
+					</div>
+				</div>
+			);
+		}
+	},
+	entries: function() {
 		var entries = [];
 		for (i = 0; i < this.props.reviews.length; i++) {
 			r = this.props.reviews[i];
@@ -90,20 +124,61 @@ Reviews.Entries = React.createClass({
 			);
 		}
 		if (entries.length == 0) {
-			entries.push(
+			entries = (
 				<div className='reviews-entries-none'>
 					{"None"}
 				</div>
 			);
 		}
+		return entries;
+	},
+	componentDidMount: function() {
+		var that = this;
+		var callback = function() {
+			if (that.props.store.selected() == null) {
+				that.setState({
+					create : false,
+				});
+			}
+		};
+		this.props.store.addSelectedListener(callback);
+	},
+	getInitialState: function() {
+		return {
+			create : false,
+		};
+	},
+	render: function() {
+		var header = "Reviews";
+		if (this.state.create) {
+			header = "Write a review"
+		}
 		return (
 			<div className='reviews-entries'>
 				<div className='reviews-entries-header'>
-					Reviews
+					{header}
 				</div>
-				<div className='reviews-entries-container'>
-					{entries}
-				</div>
+				{this.content()}
+			</div>
+		);
+	}
+});
+
+Reviews.Create = React.createClass({
+	render: function() {
+		return (
+			<div className='reviews-create' onClick={this.props.create}>
+				{"+"}
+			</div>
+		);
+	},
+});
+
+Reviews.Back = React.createClass({
+	render: function() {
+		return (
+			<div className='reviews-back' onClick={this.props.back}>
+				{"Back"}
 			</div>
 		);
 	}

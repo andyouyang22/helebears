@@ -118,6 +118,7 @@
 /* Search */
 
 .search {
+	font-family: 'Roboto' sans-serif;
 	padding-bottom: 10px;
 }
 
@@ -127,11 +128,11 @@
 
 .search fieldset select {
 	margin-right: 5px;
-	font-size: 80%;
+	font-size: 85%;
 }
 
 .search-dept {
-	width: 160px;
+	width: 220px;
 }
 
 .search-course {
@@ -167,6 +168,7 @@
 }
 
 .results-course-lecture {
+	font-family: 'Roboto' sans-serif;
 	margin-top: 5px;
 	margin-bottom: 5px;
 	padding: 12px;
@@ -333,6 +335,7 @@
 .reviews-overall {
 	width: calc(50%);
 	position: absolute;
+	font-family: 'Roboto' sans-serif;
 }
 
 .reviews-overall-header {
@@ -347,7 +350,7 @@
 	position: relative;
 	margin-right: 15px;
 	top: 3px;
-	font-size: 150%;
+	font-size: 130%;
 	font-weight: bold;
 	color: #3399ff;
 }
@@ -365,10 +368,10 @@
 
 .reviews-overall-table {
 	float: right;
-    position: relative;
-    font-size: 110%;
-    right: 21px;
-    margin-top: 10px
+	position: relative;
+	font-size: 110%;
+	right: 21px;
+	margin-top: 10px
 }
 
 .reviews-overall-table-left {
@@ -401,6 +404,37 @@
 	font-family: 'Roboto Slab' serif;
 }
 
+.reviews-create {
+	position: absolute;
+	right: 8px;
+	top: 5px;
+	font-size: 120%;
+	color: #eeeeee;
+	padding-left: 5px;
+	padding-right: 5px;
+	padding-bottom: 1px;
+	border-radius: 10px;
+}
+
+.reviews-create:hover {
+	cursor: pointer;
+	background-color: #eeeeee;
+	color: #3399ff;
+}
+
+.reviews-back {
+	position: absolute;
+	right: 12px;
+	top: 8px;
+	font-size: 90%;
+	color: #eeeeee;
+}
+
+.reviews-back:hover {
+	cursor: pointer;
+	text-decoration: underline;
+}
+
 .reviews-entries-container {
 	margin-top: 2px;
 	height: 175px;
@@ -409,4 +443,60 @@
 .reviews-entries-none {
 	margin-left: 9px;
 	margin-top: 5px;
+}
+
+/* ReviewForm */
+
+.reviewform {
+	font-family: 'Roboto' sans-serif;
+	position: relative;
+	height: 175px;
+}
+
+.reviewform-rating {
+	text-align: right;
+	padding: 30px;
+	padding-top: 3px;
+	padding-bottom: 0px
+}
+
+.reviewform-rating label {
+	margin-right: 15px;
+}
+
+.reviewform-textarea {
+	position: relative;
+	left: -5px;
+	margin-top: 8px;
+	width: 100%;
+	height: 70px;
+	border: 1px solid #eeeeee;
+	padding: 5px;
+	font-size: 85%;
+	margin-bottom: 0px;
+}
+
+.reviewform-submit {
+	position: absolute;
+	padding: 10px;
+	padding-top: 6px;
+	padding-bottom: 6px;
+	border-radius: 3px;
+	right: 70px;
+	font-family: 'Roboto Slab' serif;
+	color: #eeeeee;
+	background-color: #3399ff;
+	font-size: 90%;
+}
+
+.reviewform-submit:hover {
+	cursor: pointer;
+	color: #444444;
+	background-color: #cccccc;
+	text-decoration: none;
+}
+
+fieldset {
+	border: none;
+	padding-bottom: 3px;
 }
