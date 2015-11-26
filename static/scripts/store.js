@@ -33,6 +33,8 @@ var Store = function() {
 	this._selected = null;
 	// Reviews for the course that is currently selected
 	this._reviews = null;
+	// True if the user currently has the review form open; false otherwise
+	this._reviewForm = false;
 	// Course currently causing a conflict during addCourse
 	this._conflict = null;
 };
@@ -164,6 +166,21 @@ Store.prototype.selected = function() {
 
 // ------------------------------- Reviews ------------------------------- //
 
+Store.prototype.openReviewForm = function() {
+	this._reviewForm = true;
+	this.emit('reviewForm');
+};
+
+Store.prototype.postReview = function(review) {
+	var callback = function(review) {
+		if (this._selected != null && this._selected.inst == review.inst) {
+			this._reviews.push(review);
+			this.emit('reviews');
+		}
+	}.bind(this);
+	ajax.postReview(review, callback);
+};
+
 /**
  * @param {string} inst The name of the professor
  */
@@ -243,6 +260,14 @@ Store.prototype.addSelectedListener = function(callback) {
  */
 Store.prototype.addReviewsListener = function(callback) {
 	this.on('reviews', callback);
+};
+
+/**
+ * Add a listener for the reviewForm event. This event is emitted when the user
+ * opens the Review form to post a new review.
+ */
+Store.prototype.addReviewFormListener = function(callback) {
+	this.on('reviewForm', callback);
 };
 
 /**

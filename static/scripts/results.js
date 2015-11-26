@@ -7,7 +7,7 @@ var React    = require('react');
 var ReactDOM = require('react-dom');
 var PieChart = require("react-chartjs").Pie;
 
-var Reviews = require('./reviews.js');
+var Reviews  = require('./reviews.js');
 
 var ajax = require('./util/ajax.js');
 var time = require('./util/time.js');
@@ -75,20 +75,24 @@ var Results = React.createClass({
 
 Results.Course = React.createClass({
 	componentDidMount: function() {
-		var that = this;
-		var reviewsCallback = function() {
-			var inst = that.props.course.inst;
-			var reviews = that.props.store.reviews();
-			that.setState({
-				infoContent : [<Reviews key="420" inst={inst} reviews={reviews} />],
-			});
-		}
-		this.props.store.addReviewsListener(reviewsCallback);
+		this.props.store.addReviewsListener(this.showReviews);
 	},
 	getInitialState: function() {
 		return {
 			infoContent : [],
 		};
+	},
+	showReviews: function() {
+		var store = this.props.store;
+		var course = this.props.course;
+		if (store.selected().ccn == course.ccn) {
+			var inst = course.inst;
+			var ccn = course.ccn;
+			var reviews = store.reviews();
+			this.setState({
+				infoContent : <Reviews store={store} inst={inst} reviews={reviews} />,
+			});
+		}
 	},
 	toggleSections: function() {
 		$(ReactDOM.findDOMNode(this)).find('.results-course-sections').slideToggle();
@@ -146,16 +150,14 @@ Results.Course.Lecture = React.createClass({
 		this.props.store.select(course);
 	},
 	reviews: function() {
+		this.select();
+
 		var inst = this.props.course.inst;
 		this.props.store.getReviews(inst);
-		this.select();
 	},
 	select: function() {
 		var course = this.props.course;
 		this.props.store.select(course);
-	},
-	unselect: function() {
-		return
 	},
 	render: function() {
 		var back = [];
