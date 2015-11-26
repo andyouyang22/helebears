@@ -42,14 +42,6 @@ module.exports = {
 		return Math.floor(dur / 100) * 60 + ((dur % 100 != 0) ? 30 : 0);
 	},
 	/**
-	 *
-	 */
-	convert: function(t) {
-		var t = this.parse(t);
-		// TODO: list all days for sections
-		return t.days[0] + " " + t.start.slice(0, 4) + " " + t.end.slice(0, 4);
-	},
-	/**
 	 * Return true if courses 'a' and 'b' conflict, including when 'a' and 'b' are
 	 * the same class (same CCN); return false otherwise.
 	 */

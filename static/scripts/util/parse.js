@@ -57,8 +57,8 @@ module.exports = {
 				desc  : lec.title,
 				inst  : lec.professor_name,
 				room  : lec.location,
-				time  : time.convert(lec.time),
-				ccn   : generateCCN(lec.ccn),
+				time  : lec.time,
+				ccn   : lec.ccn,
 				units : lec.units,
 				limit : lec.limit,
 				rec   : lec.recommendation,
@@ -77,4 +77,26 @@ module.exports = {
 		});
 		return results;
 	},
+	split: function(course) {
+		var split = [];
+		var t = time.parse(course.time);
+		for (i = 0; i < t.days.length; i++) {
+			var session_time = t.days[i] + " " + t.start + " " + t.end;
+			split.push({
+				ccn   : course.ccn,
+				desc  : course.desc,
+				info  : course.info,
+				limit : course.limit,
+				name  : course.name,
+				rec   : course.rec,
+				room  : course.room,
+				time  : session_time,
+				units : course.units,
+				enrolled : course.enrolled,
+				waitlist : course.waitlist,
+				sections : [],
+			});
+		}
+		return split;
+	}
 };

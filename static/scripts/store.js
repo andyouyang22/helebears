@@ -12,8 +12,9 @@
 
 var EventEmitter = require('events');
 
-var ajax = require('./util/ajax.js');
-var time = require('./util/time.js');
+var ajax  = require('./util/ajax.js');
+var time  = require('./util/time.js');
+var parse = require('./util/parse.js');
 
 /**
  * Note: course Objects should have the properties 'name', 'room', 'inst',
@@ -59,6 +60,7 @@ Store.prototype.setSchedule = function(schedule) {
 };
 
 Store.prototype.addCourse = function(course) {
+	debugger
 	// Turn conflict off in case it was previously on
 	this.conflictOff();
 	// Check for any conflicts
@@ -70,7 +72,9 @@ Store.prototype.addCourse = function(course) {
 			return;
 		}
 	}
-	this._schedule.push(course);
+	// Add one Calendar course for each day of lecture
+	var split = parse.split(course);
+	this._schedule = this._schedule.concat(split);
 	// Emit an event signaling the Calendar state has changed
 	this.emit('schedule');
 	ajax.postAddCourse(course);

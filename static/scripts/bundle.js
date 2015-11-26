@@ -23874,6 +23874,7 @@ var EventEmitter = require('events');
 
 var ajax = require('./util/ajax.js');
 var time = require('./util/time.js');
+var parse = require('./util/parse.js');
 
 /**
  * Note: course Objects should have the properties 'name', 'room', 'inst',
@@ -23919,6 +23920,7 @@ Store.prototype.setSchedule = function (schedule) {
 };
 
 Store.prototype.addCourse = function (course) {
+	debugger;
 	// Turn conflict off in case it was previously on
 	this.conflictOff();
 	// Check for any conflicts
@@ -23930,7 +23932,9 @@ Store.prototype.addCourse = function (course) {
 			return;
 		}
 	}
-	this._schedule.push(course);
+	// Add one Calendar course for each day of lecture
+	var split = parse.split(course);
+	this._schedule = this._schedule.concat(split);
 	// Emit an event signaling the Calendar state has changed
 	this.emit('schedule');
 	ajax.postAddCourse(course);
@@ -24146,7 +24150,7 @@ Store.prototype.addConflictListener = function (callback) {
 
 module.exports = Store;
 
-},{"./util/ajax.js":176,"./util/time.js":178,"events":179}],176:[function(require,module,exports){
+},{"./util/ajax.js":176,"./util/parse.js":177,"./util/time.js":178,"events":179}],176:[function(require,module,exports){
 var parse = require('./parse.js');
 var time = require('./time.js');
 
@@ -24424,8 +24428,8 @@ module.exports = {
 				desc: lec.title,
 				inst: lec.professor_name,
 				room: lec.location,
-				time: time.convert(lec.time),
-				ccn: generateCCN(lec.ccn),
+				time: lec.time,
+				ccn: lec.ccn,
 				units: lec.units,
 				limit: lec.limit,
 				rec: lec.recommendation,
@@ -24443,6 +24447,28 @@ module.exports = {
 			results.push(course);
 		});
 		return results;
+	},
+	split: function (course) {
+		var split = [];
+		var t = time.parse(course.time);
+		for (i = 0; i < t.days.length; i++) {
+			var session_time = t.days[i] + " " + t.start + " " + t.end;
+			split.push({
+				ccn: course.ccn,
+				desc: course.desc,
+				info: course.info,
+				limit: course.limit,
+				name: course.name,
+				rec: course.rec,
+				room: course.room,
+				time: session_time,
+				units: course.units,
+				enrolled: course.enrolled,
+				waitlist: course.waitlist,
+				sections: []
+			});
+		}
+		return split;
 	}
 };
 
@@ -24489,14 +24515,6 @@ module.exports = {
 	duration: function (start, end) {
 		var dur = parseInt(end) - parseInt(start);
 		return Math.floor(dur / 100) * 60 + (dur % 100 != 0 ? 30 : 0);
-	},
-	/**
-  *
-  */
-	convert: function (t) {
-		var t = this.parse(t);
-		// TODO: list all days for sections
-		return t.days[0] + " " + t.start.slice(0, 4) + " " + t.end.slice(0, 4);
 	},
 	/**
   * Return true if courses 'a' and 'b' conflict, including when 'a' and 'b' are
