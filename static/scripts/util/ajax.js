@@ -193,7 +193,7 @@ module.exports = {
 	 * Make a POST request to remove the course with the given info.
 	 * @param {Object} review The review ratings and text
 	 * @param {string} inst The instructor about which the review was written
-	 * @param {funciton} callback Function that takes in the newly-created
+	 * @param {function} callback Function that takes in the newly-created
 	 *   review and performs some action on it
 	 */
 	postReview: function(review, inst, callback) {
