@@ -16,16 +16,6 @@ var hours = [
 ];
 
 var Calendar = React.createClass({
-	ccn: function(a, b) {
-		// Hash to a CCN
-		var hashCode = function(s) {
-			return s.split("").reduce(function(a, b) {
-				a = ((a << 5) - a) + b.charCodeAt(0);
-				return a & a;
-			}, 0);
-		};
-		return ((hashCode(a) * 1373 + hashCode(b) * 11) + "").slice(0, 5);
-	},
 	componentDidMount: function() {
 		var that = this;
 		var callback = function() {
@@ -178,9 +168,11 @@ Calendar.Course = React.createClass({
 	componentDidMount: function() {
 		var that = this;
 		var callback = function() {
-			var conflict = (that.props.store.conflict() != null)
+			var course = that.props.course;
+			var conflict = that.props.store.conflict();
+			var conflicting = (conflict != null && conflict.ccn == course.ccn);
 			that.setState({
-				conflict : conflict,
+				conflict : conflicting,
 			});
 		};
 		this.props.store.addConflictListener(callback);
@@ -193,6 +185,9 @@ Calendar.Course = React.createClass({
 	remove: function(e) {
 		var c = this.props.course;
 		this.props.store.removeCourse(c);
+		if (c.ccn == this.props.store.conflict().ccn) {
+			this.props.store.conflictOff();
+		}
 	},
 	shorten: function(str) {
 		var tokens = str.split(" ");

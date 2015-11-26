@@ -22566,16 +22566,6 @@ var hours = ["0800", "0900", "1000", "1100", "1200", "1300", "1400", "1500", "16
 var Calendar = React.createClass({
 	displayName: 'Calendar',
 
-	ccn: function (a, b) {
-		// Hash to a CCN
-		var hashCode = function (s) {
-			return s.split("").reduce(function (a, b) {
-				a = (a << 5) - a + b.charCodeAt(0);
-				return a & a;
-			}, 0);
-		};
-		return (hashCode(a) * 1373 + hashCode(b) * 11 + "").slice(0, 5);
-	},
 	componentDidMount: function () {
 		var that = this;
 		var callback = function () {
@@ -22738,9 +22728,11 @@ Calendar.Course = React.createClass({
 	componentDidMount: function () {
 		var that = this;
 		var callback = function () {
-			var conflict = that.props.store.conflict() != null;
+			var course = that.props.course;
+			var conflict = that.props.store.conflict();
+			var conflicting = conflict != null && conflict.ccn == course.ccn;
 			that.setState({
-				conflict: conflict
+				conflict: conflicting
 			});
 		};
 		this.props.store.addConflictListener(callback);
@@ -22753,6 +22745,9 @@ Calendar.Course = React.createClass({
 	remove: function (e) {
 		var c = this.props.course;
 		this.props.store.removeCourse(c);
+		if (c.ccn == this.props.store.conflict().ccn) {
+			this.props.store.conflictOff();
+		}
 	},
 	shorten: function (str) {
 		var tokens = str.split(" ");
@@ -23009,31 +23004,24 @@ Results.Course = React.createClass({
 	displayName: 'Course',
 
 	componentDidMount: function () {
-		var that = this;
-		var reviewsCallback = function () {
-			var inst = that.props.course.inst;
-			var reviews = that.props.store.reviews();
-			that.setState({
-				infoContent: [React.createElement(Reviews, { key: '420', inst: inst, reviews: reviews })]
-			});
-		};
-		this.props.store.addReviewsListener(reviewsCallback);
+		this.props.store.addReviewsListener(this.showReviews);
 	},
 	getInitialState: function () {
 		return {
 			infoContent: []
 		};
 	},
-	showReview: function (name, ratings) {
-		var review = {
-			name: name,
-			ratings: ratings
-		};
+	openReviewForm: function () {
 		this.setState({
-			review: review
+			infoContent: [React.createElement(ReviewForm, { key: '419', inst: inst })]
 		});
-		var container = $(ReactDOM.findDOMNode(this)).find('.review-container');
-		container.slideDown();
+	},
+	showReviews: function () {
+		var inst = this.props.course.inst;
+		var reviews = this.props.store.reviews();
+		this.setState({
+			infoContent: [React.createElement(Reviews, { key: '420', inst: inst, reviews: reviews })]
+		});
 	},
 	toggleSections: function () {
 		$(ReactDOM.findDOMNode(this)).find('.results-course-sections').slideToggle();
@@ -23640,6 +23628,8 @@ var Search = React.createClass({
 
 		// Remove the conflict indicator on the Calendar after moving on to new course
 		this.props.store.conflictOff();
+		// Unselect after a search to display new search results
+		this.props.store.unselect();
 	},
 	render: function () {
 		return React.createElement(
@@ -23766,6 +23756,8 @@ var Store = function () {
 	this._selected = null;
 	// Reviews for the course that is currently selected
 	this._reviews = null;
+	// True if the user currently has the review form open; false otherwise
+	this._reviewForm = false;
 	// Course currently causing a conflict during addCourse
 	this._conflict = null;
 };
@@ -23790,6 +23782,8 @@ Store.prototype.setSchedule = function (schedule) {
 };
 
 Store.prototype.addCourse = function (course) {
+	// Turn conflict off in case it was previously on
+	this.conflictOff();
 	// Check for any conflicts
 	for (i = 0; i < this._schedule.length; i++) {
 		var c = this._schedule[i];
@@ -23895,6 +23889,21 @@ Store.prototype.selected = function () {
 
 // ------------------------------- Reviews ------------------------------- //
 
+Store.prototype.openReviewForm = function () {
+	this._reviewForm = true;
+	this.emit('reviewForm');
+};
+
+Store.prototype.postReview = function () {
+	var callback = (function (review) {
+		if (this._selected != null && this._selected.inst == review.inst) {
+			this._reviews.push(review);
+			this.emit('reviews');
+		}
+	}).bind(this);
+	ajax.postReview(callback);
+};
+
 /**
  * @param {string} inst The name of the professor
  */
@@ -23977,6 +23986,14 @@ Store.prototype.addReviewsListener = function (callback) {
 };
 
 /**
+ * Add a listener for the reviewForm event. This event is emitted when the user
+ * opens the Review form to post a new review.
+ */
+Store.prototype.addReviewFormListener = function (callback) {
+	this.on('reviewForm', callback);
+};
+
+/**
  * Add a listener for the conflict event. Whenever a conflict occurs, this event
  * will be emitted, and this._conflict will be set to the course in this_schedule
  * that causes the conflict. After the user submits a new search, this._conflict
@@ -23995,8 +24012,8 @@ module.exports = Store;
 var parse = require('./parse.js');
 var time = require('./time.js');
 
-//var apiUrl = 'https://protected-refuge-7067.herokuapp.com';
- var apiUrl = '';
+var apiUrl = 'https://protected-refuge-7067.herokuapp.com';
+// var apiUrl = '';
 
 var queryify = function (query) {
 	query = JSON.stringify(query);
@@ -24099,7 +24116,6 @@ module.exports = {
 	getResults: function (form, callback) {
 		var request = queryify(form);
 		var onSuccess = function (data) {
-			//console.log(JSON.stringify(data));
 			if (data.status == -1) {
 				console.log("Failed to load search results; status = -1");
 				console.log("Errors: " + data.errors);
@@ -24123,7 +24139,6 @@ module.exports = {
 	getReviews: function (inst, callback) {
 		var request = queryify(inst);
 		var onSuccess = function (data) {
-			//console.log(JSON.stringify(data));
 			if (data.status == -1) {
 				console.log("Failed to load professor reviews; status = -1");
 				console.log("Errors: " + data.errors);
@@ -24177,6 +24192,38 @@ module.exports = {
 			name_and_number: course.name
 		};
 		this.post('/api/schedules/remove', data, onSuccess, onFailure);
+	},
+
+	/**
+  * Make a POST request to remove the course with the given info.
+  * @param {Object} review The review ratings and text
+  * @param {string} inst The instructor about which the review was written
+  * @param {funciton} callback Function that takes in the newly-created
+  *   review and performs some action on it
+  */
+	postReview: function (review, inst, callback) {
+		var onSuccess = function (data) {
+			if (data == -1) {
+				console.log("Failed to record review in backend");
+				console.log("Errors: " + data.errors);
+			} else {
+				console.log("Successfully recorded review");
+			}
+		};
+		var onFailure = function () {
+			console.log("Failed to record review in backend");
+		};
+		var data = {
+			rating_1: review.rating_1,
+			rating_2: review.rating_2,
+			rating_3: review.rating_3,
+			review: review.desc,
+			professor_name: inst
+		};
+		this.post('/api/reviews/create', data, onSuccess, onFailure);
+
+		review.inst = inst;
+		callback(review);
 	}
 };
 
