@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <meta content="text/html; charset=UTF-8" http-equiv="content-type" />
+  <title>Test Suite</title>
+</head>
+<body>
+<table id="suiteTable" cellpadding="1" cellspacing="1" border="1" class="selenium"><tbody>
+<tr><td><b>Test Suite</b></td></tr>
+<tr><td><a href="test_log_in">test_log_in</a></td></tr>
+<tr><td><a href="log_in_with_wrong_password">log_in_with_wrong_password</a></td></tr>
+<tr><td><a href="log_in_wrong_username">log_in_wrong_username</a></td></tr>
+<tr><td><a href="create_account_with_already_used_name">create_account_with_already_used_name</a></td></tr>
+<tr><td><a href="query_courses_and_add_to_schedule">query_courses_and_add_to_schedule</a></td></tr>
+<tr><td><a href="delete_courses_loaded_from_previous_test_case">delete_courses_loaded_from_previous_test_case</a></td></tr>
+<tr><td><a href="add_courses_log_out_then_log_back_in">add_courses_log_out_then_log_back_in</a></td></tr>
+<tr><td><a href="query_all_courses">query_all_courses</a></td></tr>
+<tr><td><a href="open_professor_reviews">open_professor_reviews</a></td></tr>
+<tr><td><a href="make_new_search_with_reviews_tab_open">make_new_search_with_reviews_tab_open</a></td></tr>
+</tbody></table>
+</body>
+</html>
