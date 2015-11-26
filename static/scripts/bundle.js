@@ -23789,6 +23789,8 @@ Store.prototype.addCourse = function (course) {
 			return;
 		}
 	}
+	// Turn conflict off in case it was previously on
+	this.conflictOff();
 	this._schedule.push(course);
 	// Emit an event signaling the Calendar state has changed
 	this.emit('schedule');
