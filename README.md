@@ -42,6 +42,20 @@ To view back end coverage, go to the `server/` folder
 	istanbul cover ./node_modules/.bin/_mocha tests/unit_tests/  ./node_modules/.bin/_mocha tests/functional_tests/
 	open coverage/lcov-report/index.html
 
+## Selenium Testing
+First, you must download and install the Selenium IDE for Firefox here:
+http://www.seleniumhq.org/download/
+
+Allow Firefox to install the addons.
+Next, go into Tools -> Selenium IDE to start the IDE
+Load the test suite inside of the Selenium Tests folder called:
+'UI Tests with Selinium'
+
+The number of tests will then pop up into Selenium.
+Set the scroller to slowest to ensure ample time for the server to send data and for everything to render.
+
+Select play-all to run all of the tests
+
 ## ReactJS DOM Structure
 
 The following is the high-level class structure of `index.html`:
