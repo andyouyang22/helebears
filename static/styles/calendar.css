@@ -249,7 +249,11 @@
 }
 
 .results-course-title {
-	text-align: center;
+	background-color: #3399ff;
+    color: #eeeeee;
+    padding: 5px;
+    padding-left: 8px;
+    border-radius: 2px;
 	margin-bottom: 8px;
 	font-size: 125%;
 	font-family: 'Roboto Slab' serif;
@@ -263,20 +267,21 @@
 	height: 250px;
 }
 
-.ci-metadata{
-	font-family: 'Roboto Slab' serif;
-	margin-left: 4px;
-}
-#locationid{
-	font-family: 'Roboto Slab' serif;
-	margin-left: 4px;
-}
-
 .results-course-description {
 	width: 100%;
 	overflow-y: scroll;
 	height: 100%;
 	font-family: 'Roboto' sans-serif;
+}
+
+.data-visualization {
+	float: right;
+	margin-bottom: 10px;
+}
+
+.data-vis-label {
+	text-align: center;
+	margin-bottom: 10px;
 }
 
 .results-course-title {
@@ -288,7 +293,6 @@
 	text-decoration: underline;
 	cursor: pointer;
 }
-
 
 .results-course-lec-desc {
 	margin-bottom: 5px;

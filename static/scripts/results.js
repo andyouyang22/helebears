@@ -319,7 +319,12 @@ Results.Course.Description = React.createClass({
 		t = t.days + " " + time.display(t.start) + " - " + time.display(t.end);
 		return (
 			<div className='results-course-description'>
-				<div className='results-course-title ci-metadata'>{"Course Description"}</div>
+				<div className='results-course-title ci-metadata'>
+					{"Course Description"}
+				</div>
+				<div className='data-visualization'>
+					<Results.Course.Lecture.RecommendationChart recommendation={c.rec}/>
+				</div>
 				<div className='results-course-time ci-metadata'>{t}</div>
 				<div className='results-course-professor ci-metadata'>{c.inst}</div>
 				<div className='results-course-enrolled ci-metadata'>Enrolled: {c.enrolled}</div>
@@ -328,9 +333,6 @@ Results.Course.Description = React.createClass({
 				<div className='results-course-ccn ci-metadata'>CCN: {c.ccn}</div>
 				<div className='ci-metadata' id='locationid'> Location: {c.room}</div>
 				<p className='long-description ci-metadata'>{c.info}</p>
-				<div className='data-visualization'>
-					<Results.Course.Lecture.RecommendationChart recommendation={c.rec}/>
-				</div>
 			</div>
 		);
 	},

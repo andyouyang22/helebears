@@ -23316,6 +23316,11 @@ Results.Course.Description = React.createClass({
 			),
 			React.createElement(
 				'div',
+				{ className: 'data-visualization' },
+				React.createElement(Results.Course.Lecture.RecommendationChart, { recommendation: c.rec })
+			),
+			React.createElement(
+				'div',
 				{ className: 'results-course-time ci-metadata' },
 				t
 			),
@@ -23358,11 +23363,6 @@ Results.Course.Description = React.createClass({
 				'p',
 				{ className: 'long-description ci-metadata' },
 				c.info
-			),
-			React.createElement(
-				'div',
-				{ className: 'data-visualization' },
-				React.createElement(Results.Course.Lecture.RecommendationChart, { recommendation: c.rec })
 			)
 		);
 	}
