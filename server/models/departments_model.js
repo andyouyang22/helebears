@@ -21,7 +21,7 @@ var departmentModel = {
 
     },
     searchQuery: function(filter,res) {
-        Departments.findAll().then(
+        Departments.findAll({order: [['createdAt', 'ASC']]}).then(
             function(departments){
                 var results = []
                 for(var i = 0; i < departments.length; i++){
