@@ -12,8 +12,8 @@ var ReviewForm = React.createClass({
 			rating_1 : formDOM.find('.reviewform-rating-rating_1').val(),
 			rating_2 : formDOM.find('.reviewform-rating-rating_2').val(),
 			rating_3 : formDOM.find('.reviewform-rating-rating_3').val(),
-			review   : formDOM.find('.reviewform-textarea').val(),
-			professor_name : this.props.inst,
+			desc     : formDOM.find('.reviewform-textarea').val(),
+			inst     : this.props.inst,
 		};
 	},
 	submit: function() {
@@ -23,7 +23,7 @@ var ReviewForm = React.createClass({
 			that.props.back();
 			// insert this review in if necessary
 		};
-		this.props.store.postReview(review, this.props.inst, callback);
+		this.props.store.postReview(review, callback);
 	},
 	render: function() {
 		var placeholder = "Write a review, then tell your friends!";

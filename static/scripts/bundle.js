@@ -23356,8 +23356,8 @@ var ReviewForm = React.createClass({
 			rating_1: formDOM.find('.reviewform-rating-rating_1').val(),
 			rating_2: formDOM.find('.reviewform-rating-rating_2').val(),
 			rating_3: formDOM.find('.reviewform-rating-rating_3').val(),
-			review: formDOM.find('.reviewform-textarea').val(),
-			professor_name: this.props.inst
+			desc: formDOM.find('.reviewform-textarea').val(),
+			inst: this.props.inst
 		};
 	},
 	submit: function () {
@@ -23367,7 +23367,7 @@ var ReviewForm = React.createClass({
 			that.props.back();
 			// insert this review in if necessary
 		};
-		this.props.store.postReview(review, this.props.inst, callback);
+		this.props.store.postReview(review, callback);
 	},
 	render: function () {
 		var placeholder = "Write a review, then tell your friends!";
@@ -23477,9 +23477,9 @@ Reviews.Overall = React.createClass({
 		var reviews = this.props.reviews;
 		for (i = 0; i < reviews.length; i++) {
 			var r = reviews[i];
-			avgs[0] += r.rating_1 / review.length;
-			avgs[1] += r.rating_2 / review.length;
-			avgs[2] += r.rating_3 / review.length;
+			avgs[0] += r.rating_1 / reviews.length;
+			avgs[1] += r.rating_2 / reviews.length;
+			avgs[2] += r.rating_3 / reviews.length;
 		}
 		return avgs;
 	},
@@ -23679,56 +23679,7 @@ Reviews.Entry = React.createClass({
 		return React.createElement(
 			'div',
 			{ className: 'reviews-entry' },
-			React.createElement(
-				'table',
-				{ className: 'reviews-entry-table' },
-				React.createElement(
-					'tbody',
-					null,
-					React.createElement(
-						'tr',
-						null,
-						React.createElement(
-							'td',
-							{ className: 'reviews-entry-table-left' },
-							'Difficulty'
-						),
-						React.createElement(
-							'td',
-							{ className: 'reviews-entry-table-right' },
-							this.props.review.rating_1
-						)
-					),
-					React.createElement(
-						'tr',
-						null,
-						React.createElement(
-							'td',
-							{ className: 'reviews-entry-table-left' },
-							'Engagement'
-						),
-						React.createElement(
-							'td',
-							{ className: 'reviews-entry-table-right' },
-							this.props.review.rating_2
-						)
-					),
-					React.createElement(
-						'tr',
-						null,
-						React.createElement(
-							'td',
-							{ className: 'reviews-entry-table-left' },
-							'Content'
-						),
-						React.createElement(
-							'td',
-							{ className: 'reviews-entry-table-right' },
-							this.props.review.rating_3
-						)
-					)
-				)
-			)
+			this.props.review.review
 		);
 	}
 });
@@ -24375,7 +24326,7 @@ module.exports = {
   * Make a POST request to remove the course with the given info.
   * @param {Object} review The review ratings and text
   * @param {string} inst The instructor about which the review was written
-  * @param {funciton} callback Function that takes in the newly-created
+  * @param {function} callback Function that takes in the newly-created
   *   review and performs some action on it
   */
 	postReview: function (review, inst, callback) {

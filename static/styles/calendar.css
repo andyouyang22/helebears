@@ -371,7 +371,7 @@
 .reviews-overall-table {
 	float: right;
 	position: relative;
-	font-size: 110%;
+	font-size: 100%;
 	right: 21px;
 	margin-top: 10px
 }
@@ -439,12 +439,28 @@
 
 .reviews-entries-container {
 	margin-top: 2px;
-	height: 175px;
+	height: 170px;
+    padding-top: 5px;
+    overflow-y: scroll;
 }
 
 .reviews-entries-none {
 	margin-left: 9px;
 	margin-top: 5px;
+}
+
+.reviews-entry {
+	width: calc(100% - 22px);
+	padding-top: 5px;
+	padding-bottom: 5px;
+	padding: 10px;
+	border: 1px solid #eeeeee;
+	font-size: 90%;
+}
+
+.review-entry:hover {
+	cursor: pointer;
+	background-color: #eeeeee;
 }
 
 /* ReviewForm */

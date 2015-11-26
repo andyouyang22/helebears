@@ -30,9 +30,9 @@ Reviews.Overall = React.createClass({
 		var reviews = this.props.reviews;
 		for (i = 0; i < reviews.length; i++) {
 			var r = reviews[i];
-			avgs[0] += (r.rating_1 / review.length);
-			avgs[1] += (r.rating_2 / review.length);
-			avgs[2] += (r.rating_3 / review.length);
+			avgs[0] += (r.rating_1 / reviews.length);
+			avgs[1] += (r.rating_2 / reviews.length);
+			avgs[2] += (r.rating_3 / reviews.length);
 		}
 		return avgs;
 	},
@@ -188,28 +188,7 @@ Reviews.Entry = React.createClass({
 	render: function() {
 		return (
 			<div className='reviews-entry'>
-				<table className='reviews-entry-table'>
-					<tbody>
-						<tr>
-							<td className='reviews-entry-table-left'>Difficulty</td>
-							<td className='reviews-entry-table-right'>
-								{this.props.review.rating_1}
-							</td>
-						</tr>
-						<tr>
-							<td className='reviews-entry-table-left'>Engagement</td>
-							<td className='reviews-entry-table-right'>
-								{this.props.review.rating_2}
-							</td>
-						</tr>
-						<tr>
-							<td className='reviews-entry-table-left'>Content</td>
-							<td className='reviews-entry-table-right'>
-								{this.props.review.rating_3}
-							</td>
-						</tr>
-					</tbody>
-				</table>
+				{this.props.review.review}
 			</div>
 		);
 	},
