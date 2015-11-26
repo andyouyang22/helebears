@@ -196,7 +196,7 @@ module.exports = {
 	 * @param {function} callback Function that takes in the newly-created
 	 *   review and performs some action on it
 	 */
-	postReview: function(review, inst, callback) {
+	postReview: function(review, callback) {
 		var onSuccess = function(data) {
 			if (data == -1) {
 				console.log("Failed to record review in backend");
@@ -213,11 +213,10 @@ module.exports = {
 			rating_2 : review.rating_2,
 			rating_3 : review.rating_3,
 			review   : review.desc,
-			professor_name : inst,
+			professor_name : review.inst,
 		};
 		this.post('/api/reviews/create', data, onSuccess, onFailure);
 
-		review.inst = inst;
 		callback(review);
 	},
 };

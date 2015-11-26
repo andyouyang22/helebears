@@ -28,13 +28,22 @@ Reviews.Overall = React.createClass({
 	averages: function() {
 		var avgs = [0, 0, 0];
 		var reviews = this.props.reviews;
+		if (reviews.length == 0) {
+			return avgs;
+		}
 		for (i = 0; i < reviews.length; i++) {
 			var r = reviews[i];
-			avgs[0] += (r.rating_1 / reviews.length);
-			avgs[1] += (r.rating_2 / reviews.length);
-			avgs[2] += (r.rating_3 / reviews.length);
+			avgs[0] += r.rating_1;
+			avgs[1] += r.rating_2;
+			avgs[2] += r.rating_3;
 		}
+		avgs[0] = this.truncate(avgs[0] / reviews.length);
+		avgs[1] = this.truncate(avgs[1] / reviews.length);
+		avgs[2] = this.truncate(avgs[2] / reviews.length);
 		return avgs;
+	},
+	truncate: function(i) {
+		return Math.floor(i * 10) / 10;
 	},
 	render: function() {
 		var avgs = this.averages();
@@ -46,7 +55,7 @@ Reviews.Overall = React.createClass({
 	 					{this.props.inst}
 	 				</span>
 	 				<span className='reviews-overall-overall'>
-	 					{overall}
+	 					{this.truncate(overall)}
 	 				</span>
  				</div>
  				<Reviews.Overall.Table averages={avgs} />

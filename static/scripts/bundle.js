@@ -23475,13 +23475,22 @@ Reviews.Overall = React.createClass({
 	averages: function () {
 		var avgs = [0, 0, 0];
 		var reviews = this.props.reviews;
+		if (reviews.length == 0) {
+			return avgs;
+		}
 		for (i = 0; i < reviews.length; i++) {
 			var r = reviews[i];
-			avgs[0] += r.rating_1 / reviews.length;
-			avgs[1] += r.rating_2 / reviews.length;
-			avgs[2] += r.rating_3 / reviews.length;
+			avgs[0] += r.rating_1;
+			avgs[1] += r.rating_2;
+			avgs[2] += r.rating_3;
 		}
+		avgs[0] = this.truncate(avgs[0] / reviews.length);
+		avgs[1] = this.truncate(avgs[1] / reviews.length);
+		avgs[2] = this.truncate(avgs[2] / reviews.length);
 		return avgs;
+	},
+	truncate: function (i) {
+		return Math.floor(i * 10) / 10;
 	},
 	render: function () {
 		var avgs = this.averages();
@@ -23500,7 +23509,7 @@ Reviews.Overall = React.createClass({
 				React.createElement(
 					'span',
 					{ className: 'reviews-overall-overall' },
-					overall
+					this.truncate(overall)
 				)
 			),
 			React.createElement(Reviews.Overall.Table, { averages: avgs })
@@ -24025,7 +24034,8 @@ Store.prototype.openReviewForm = function () {
 Store.prototype.postReview = function (review) {
 	var callback = (function (review) {
 		if (this._selected != null && this._selected.inst == review.inst) {
-			this._reviews.push(review);
+			debugger;
+			this._reviews.unshift(review);
 			this.emit('reviews');
 		}
 	}).bind(this);
@@ -24329,7 +24339,7 @@ module.exports = {
   * @param {function} callback Function that takes in the newly-created
   *   review and performs some action on it
   */
-	postReview: function (review, inst, callback) {
+	postReview: function (review, callback) {
 		var onSuccess = function (data) {
 			if (data == -1) {
 				console.log("Failed to record review in backend");
@@ -24346,11 +24356,10 @@ module.exports = {
 			rating_2: review.rating_2,
 			rating_3: review.rating_3,
 			review: review.desc,
-			professor_name: inst
+			professor_name: review.inst
 		};
 		this.post('/api/reviews/create', data, onSuccess, onFailure);
 
-		review.inst = inst;
 		callback(review);
 	}
 };

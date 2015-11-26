@@ -174,7 +174,8 @@ Store.prototype.openReviewForm = function() {
 Store.prototype.postReview = function(review) {
 	var callback = function(review) {
 		if (this._selected != null && this._selected.inst == review.inst) {
-			this._reviews.push(review);
+			debugger
+			this._reviews.unshift(review);
 			this.emit('reviews');
 		}
 	}.bind(this);
