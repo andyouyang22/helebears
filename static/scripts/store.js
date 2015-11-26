@@ -57,6 +57,8 @@ Store.prototype.setSchedule = function(schedule) {
 };
 
 Store.prototype.addCourse = function(course) {
+	// Turn conflict off in case it was previously on
+	this.conflictOff();
 	// Check for any conflicts
 	for (i = 0; i < this._schedule.length; i++) {
 		var c = this._schedule[i];
@@ -66,8 +68,6 @@ Store.prototype.addCourse = function(course) {
 			return;
 		}
 	}
-	// Turn conflict off in case it was previously on
-	this.conflictOff();
 	this._schedule.push(course);
 	// Emit an event signaling the Calendar state has changed
 	this.emit('schedule');

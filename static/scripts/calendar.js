@@ -168,9 +168,11 @@ Calendar.Course = React.createClass({
 	componentDidMount: function() {
 		var that = this;
 		var callback = function() {
-			var conflict = (that.props.store.conflict() != null)
+			var course = that.props.course;
+			var conflict = that.props.store.conflict();
+			var conflicting = (conflict != null && conflict.ccn == course.ccn);
 			that.setState({
-				conflict : conflict,
+				conflict : conflicting,
 			});
 		};
 		this.props.store.addConflictListener(callback);
