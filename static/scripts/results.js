@@ -90,6 +90,11 @@ Results.Course = React.createClass({
 			infoContent : <Results.Course.Description course={course} />
 		});
 	},
+	showRecommendations: function() {
+		var store = this.props.store;
+		var course = this.props.course;
+
+	},
 	showReviews: function() {
 		var store = this.props.store;
 		var course = this.props.course;
@@ -124,7 +129,7 @@ Results.Course = React.createClass({
 		}
 		return (
 			<div className='results-course'>
-				<Results.Course.Lecture store={this.props.store} course={this.props.course} selected={this.props.selected} sections={this.showSections} desc={this.showDescription} toggleDescription={this.toggleDescription} toggleVisual={this.toggleVisual} />
+				<Results.Course.Lecture store={this.props.store} course={this.props.course} selected={this.props.selected} sections={this.showSections} desc={this.showDescription} toggleVisual={this.toggleVisual} />
 				{info}
 			</div>
 		);
@@ -198,15 +203,11 @@ Results.Course.Lecture = React.createClass({
 				{back}
 				<div className='results-course-lec-name' onClick={this.description}>{c.name}</div>
 				{showSections}
-				<div className='results-course-data-visualization' onClick={this.props.toggleVisual}>Recommended With</div>
 				<div className='results-course-lec-desc'>{c.desc}</div>
 				<div className='results-course-lec-inst' onClick={this.reviews}>{c.inst}</div>
 				<div className='results-course-lec-time'>{t}</div>
 				<div className='results-course-lecture-add' onClick={this.add}>
 					{"Add Course"}
-				</div>
-				<div className='data-visualization'>
-					<Results.Course.Lecture.RecommendationChart recommendation={this.props.recommendation}/>
 				</div>
 			</div>
 		);
@@ -215,30 +216,35 @@ Results.Course.Lecture = React.createClass({
 
 Results.Course.Lecture.RecommendationChart = React.createClass({
 	render: function() {
-		var temp = this.props.recommendation;
-		if (temp != null) {
-			var recc_courses = Object.keys(temp);
-			var chartData = [];
-			for (var i = 0; i < recc_courses.length; i++) {
-				tempDict = {};
-				tempDict['label'] = recc_courses[i];
-				tempDict['value'] = temp[recc_courses[i]];
-				var letters = '0123456789ABCDEF'.split('');
-	    		var color = '#';
-				for (var j = 0; j < 6; j++ ) {
-	        		color += letters[Math.floor(Math.random() * 16)];
-				}
-				tempDict['color'] = color;
-				chartData.push(tempDict);
-			}
+		var rec = this.props.recommendation;
+		if (rec == null) {
 			return (
-				<PieChart data={chartData} />
-			);
-		} else {
-			return (
-				<div>Be the first to take this course!</div>
+				<div>{"No one is currently enrolled in this course"}</div>
 			);
 		}
+
+		var recc_courses = Object.keys(rec);
+		var chartData = [];
+		for (var i = 0; i < recc_courses.length; i++) {
+			tempDict = {};
+			tempDict['label'] = recc_courses[i];
+			tempDict['value'] = rec[recc_courses[i]];
+			var letters = '0123456789ABCDEF'.split('');
+    		var color = '#';
+			for (var j = 0; j < 6; j++ ) {
+        		color += letters[Math.floor(Math.random() * 16)];
+			}
+			tempDict['color'] = color;
+			chartData.push(tempDict);
+		}
+		return (
+			<div className='data-vis'>
+				<div className='data-vis-label'>
+					{"Other people took..."}
+				</div>
+				<PieChart data={chartData} />
+			</div>
+		);
 	}
 });
 
@@ -313,7 +319,7 @@ Results.Course.Description = React.createClass({
 		t = t.days + " " + time.display(t.start) + " - " + time.display(t.end);
 		return (
 			<div className='results-course-description'>
-				<div className='results-course-title ci-metadata'>{c.name}</div>
+				<div className='results-course-title ci-metadata'>{"Course Description"}</div>
 				<div className='results-course-time ci-metadata'>{t}</div>
 				<div className='results-course-professor ci-metadata'>{c.inst}</div>
 				<div className='results-course-enrolled ci-metadata'>Enrolled: {c.enrolled}</div>
@@ -322,6 +328,9 @@ Results.Course.Description = React.createClass({
 				<div className='results-course-ccn ci-metadata'>CCN: {c.ccn}</div>
 				<div className='ci-metadata' id='locationid'> Location: {c.room}</div>
 				<p className='long-description ci-metadata'>{c.info}</p>
+				<div className='data-visualization'>
+					<Results.Course.Lecture.RecommendationChart recommendation={c.rec}/>
+				</div>
 			</div>
 		);
 	},

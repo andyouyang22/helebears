@@ -23019,6 +23019,10 @@ Results.Course = React.createClass({
 			infoContent: React.createElement(Results.Course.Description, { course: course })
 		});
 	},
+	showRecommendations: function () {
+		var store = this.props.store;
+		var course = this.props.course;
+	},
 	showReviews: function () {
 		var store = this.props.store;
 		var course = this.props.course;
@@ -23052,7 +23056,7 @@ Results.Course = React.createClass({
 		return React.createElement(
 			'div',
 			{ className: 'results-course' },
-			React.createElement(Results.Course.Lecture, { store: this.props.store, course: this.props.course, selected: this.props.selected, sections: this.showSections, desc: this.showDescription, toggleDescription: this.toggleDescription, toggleVisual: this.toggleVisual }),
+			React.createElement(Results.Course.Lecture, { store: this.props.store, course: this.props.course, selected: this.props.selected, sections: this.showSections, desc: this.showDescription, toggleVisual: this.toggleVisual }),
 			info
 		);
 	}
@@ -23135,11 +23139,6 @@ Results.Course.Lecture = React.createClass({
 			showSections,
 			React.createElement(
 				'div',
-				{ className: 'results-course-data-visualization', onClick: this.props.toggleVisual },
-				'Recommended With'
-			),
-			React.createElement(
-				'div',
 				{ className: 'results-course-lec-desc' },
 				c.desc
 			),
@@ -23157,11 +23156,6 @@ Results.Course.Lecture = React.createClass({
 				'div',
 				{ className: 'results-course-lecture-add', onClick: this.add },
 				"Add Course"
-			),
-			React.createElement(
-				'div',
-				{ className: 'data-visualization' },
-				React.createElement(Results.Course.Lecture.RecommendationChart, { recommendation: this.props.recommendation })
 			)
 		);
 	}
@@ -23171,30 +23165,39 @@ Results.Course.Lecture.RecommendationChart = React.createClass({
 	displayName: 'RecommendationChart',
 
 	render: function () {
-		var temp = this.props.recommendation;
-		if (temp != null) {
-			var recc_courses = Object.keys(temp);
-			var chartData = [];
-			for (var i = 0; i < recc_courses.length; i++) {
-				tempDict = {};
-				tempDict['label'] = recc_courses[i];
-				tempDict['value'] = temp[recc_courses[i]];
-				var letters = '0123456789ABCDEF'.split('');
-				var color = '#';
-				for (var j = 0; j < 6; j++) {
-					color += letters[Math.floor(Math.random() * 16)];
-				}
-				tempDict['color'] = color;
-				chartData.push(tempDict);
-			}
-			return React.createElement(PieChart, { data: chartData });
-		} else {
+		var rec = this.props.recommendation;
+		if (rec == null) {
 			return React.createElement(
 				'div',
 				null,
-				'Be the first to take this course!'
+				"No one is currently enrolled in this course"
 			);
 		}
+
+		var recc_courses = Object.keys(rec);
+		var chartData = [];
+		for (var i = 0; i < recc_courses.length; i++) {
+			tempDict = {};
+			tempDict['label'] = recc_courses[i];
+			tempDict['value'] = rec[recc_courses[i]];
+			var letters = '0123456789ABCDEF'.split('');
+			var color = '#';
+			for (var j = 0; j < 6; j++) {
+				color += letters[Math.floor(Math.random() * 16)];
+			}
+			tempDict['color'] = color;
+			chartData.push(tempDict);
+		}
+		return React.createElement(
+			'div',
+			{ className: 'data-vis' },
+			React.createElement(
+				'div',
+				{ className: 'data-vis-label' },
+				"Other people took..."
+			),
+			React.createElement(PieChart, { data: chartData })
+		);
 	}
 });
 
@@ -23309,7 +23312,7 @@ Results.Course.Description = React.createClass({
 			React.createElement(
 				'div',
 				{ className: 'results-course-title ci-metadata' },
-				c.name
+				"Course Description"
 			),
 			React.createElement(
 				'div',
@@ -23355,6 +23358,11 @@ Results.Course.Description = React.createClass({
 				'p',
 				{ className: 'long-description ci-metadata' },
 				c.info
+			),
+			React.createElement(
+				'div',
+				{ className: 'data-visualization' },
+				React.createElement(Results.Course.Lecture.RecommendationChart, { recommendation: c.rec })
 			)
 		);
 	}

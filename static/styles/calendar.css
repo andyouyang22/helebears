@@ -248,18 +248,6 @@
 	text-decoration: underline;
 }
 
-.results-course-data-visualization {
-	float: right;
-	position: relative;
-	top: 20px;
-}
-
-.results-course-data-visualization:hover {
-	color: #3399ff;
-	text-decoration: underline;
-	cursor: pointer;
-}
-
 .results-course-title {
 	text-align: center;
 	margin-bottom: 8px;
@@ -287,6 +275,7 @@
 .results-course-description {
 	width: 100%;
 	overflow-y: scroll;
+	height: 100%;
 	font-family: 'Roboto' sans-serif;
 }
 
