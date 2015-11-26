@@ -23023,8 +23023,13 @@ Results.Course = React.createClass({
 			});
 		}
 	},
-	toggleSections: function () {
-		$(ReactDOM.findDOMNode(this)).find('.results-course-sections').slideToggle();
+	showSections: function () {
+		var store = this.props.store;
+		var course = this.props.course;
+		store.select(course);
+		this.setState({
+			infoContent: React.createElement(Results.Course.Sections, { sections: course.sections })
+		});
 	},
 	toggleDescription: function () {
 		$(ReactDOM.findDOMNode(this)).find('.results-course-description').slideToggle();
@@ -23042,7 +23047,7 @@ Results.Course = React.createClass({
 		return React.createElement(
 			'div',
 			{ className: 'results-course' },
-			React.createElement(Results.Course.Lecture, { store: this.props.store, course: this.props.course, selected: this.props.selected, toggleDescription: this.toggleDescription, toggleVisual: this.toggleVisual, toggleSections: this.toggleSections }),
+			React.createElement(Results.Course.Lecture, { store: this.props.store, course: this.props.course, selected: this.props.selected, sections: this.showSections, toggleDescription: this.toggleDescription, toggleVisual: this.toggleVisual }),
 			info
 		);
 	}
@@ -23077,6 +23082,7 @@ Results.Course.Lecture = React.createClass({
 	},
 	sections: function () {
 		var course = this.props.course;
+		this.props.sections();
 		this.props.store.select(course);
 	},
 	reviews: function () {
@@ -23268,7 +23274,7 @@ Results.Course.Sections = React.createClass({
 		}
 		return React.createElement(
 			'div',
-			{ className: 'results-course-sections', style: { display: 'none' } },
+			{ className: 'results-course-sections' },
 			React.createElement(
 				'div',
 				{ className: 'results-course-sections-col' },
@@ -23894,6 +23900,8 @@ var Store = function () {
 	this._selected = null;
 	// Reviews for the course that is currently selected
 	this._reviews = null;
+	// Sections for the course that is currently selected
+	this._sections = null;
 	// True if the user currently has the review form open; false otherwise
 	this._reviewForm = false;
 	// Course currently causing a conflict during addCourse
@@ -23920,7 +23928,6 @@ Store.prototype.setSchedule = function (schedule) {
 };
 
 Store.prototype.addCourse = function (course) {
-	debugger;
 	// Turn conflict off in case it was previously on
 	this.conflictOff();
 	// Check for any conflicts
@@ -24038,7 +24045,6 @@ Store.prototype.openReviewForm = function () {
 Store.prototype.postReview = function (review) {
 	var callback = (function (review) {
 		if (this._selected != null && this._selected.inst == review.inst) {
-			debugger;
 			this._reviews.unshift(review);
 			this.emit('reviews');
 		}
@@ -24125,14 +24131,6 @@ Store.prototype.addSelectedListener = function (callback) {
  */
 Store.prototype.addReviewsListener = function (callback) {
 	this.on('reviews', callback);
-};
-
-/**
- * Add a listener for the reviewForm event. This event is emitted when the user
- * opens the Review form to post a new review.
- */
-Store.prototype.addReviewFormListener = function (callback) {
-	this.on('reviewForm', callback);
 };
 
 /**

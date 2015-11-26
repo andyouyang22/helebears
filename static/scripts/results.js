@@ -94,8 +94,13 @@ Results.Course = React.createClass({
 			});
 		}
 	},
-	toggleSections: function() {
-		$(ReactDOM.findDOMNode(this)).find('.results-course-sections').slideToggle();
+	showSections: function() {
+		var store = this.props.store;
+		var course = this.props.course;
+		store.select(course);
+		this.setState({
+			infoContent: <Results.Course.Sections sections={course.sections} />
+		});
 	},
 	toggleDescription: function () {
 		$(ReactDOM.findDOMNode(this)).find('.results-course-description').slideToggle();
@@ -114,7 +119,7 @@ Results.Course = React.createClass({
 		}
 		return (
 			<div className='results-course'>
-				<Results.Course.Lecture store={this.props.store} course={this.props.course} selected={this.props.selected} toggleDescription={this.toggleDescription} toggleVisual={this.toggleVisual} toggleSections={this.toggleSections} />
+				<Results.Course.Lecture store={this.props.store} course={this.props.course} selected={this.props.selected} sections={this.showSections} toggleDescription={this.toggleDescription} toggleVisual={this.toggleVisual} />
 				{info}
 			</div>
 		);
@@ -147,6 +152,7 @@ Results.Course.Lecture = React.createClass({
 	},
 	sections: function() {
 		var course = this.props.course;
+		this.props.sections();
 		this.props.store.select(course);
 	},
 	reviews: function() {
@@ -258,7 +264,7 @@ Results.Course.Sections = React.createClass({
 			}
 		}
 		return (
-			<div className='results-course-sections' style={{display: 'none'}}>
+			<div className='results-course-sections'>
 				<div className='results-course-sections-col'>
 					<div className='results-course-sections-col-header'>Mon</div>
 					{sections.mon}
