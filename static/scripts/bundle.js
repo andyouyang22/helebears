@@ -23011,6 +23011,14 @@ Results.Course = React.createClass({
 			infoContent: []
 		};
 	},
+	showDescription: function () {
+		var store = this.props.store;
+		var course = this.props.course;
+		store.select(course);
+		this.setState({
+			infoContent: React.createElement(Results.Course.Description, { course: course })
+		});
+	},
 	showReviews: function () {
 		var store = this.props.store;
 		var course = this.props.course;
@@ -23031,9 +23039,6 @@ Results.Course = React.createClass({
 			infoContent: React.createElement(Results.Course.Sections, { sections: course.sections })
 		});
 	},
-	toggleDescription: function () {
-		$(ReactDOM.findDOMNode(this)).find('.results-course-description').slideToggle();
-	},
 	toggleVisual: function () {
 		$(ReactDOM.findDOMNode(this)).find('.data-visualization').slideToggle();
 	},
@@ -23047,7 +23052,7 @@ Results.Course = React.createClass({
 		return React.createElement(
 			'div',
 			{ className: 'results-course' },
-			React.createElement(Results.Course.Lecture, { store: this.props.store, course: this.props.course, selected: this.props.selected, sections: this.showSections, toggleDescription: this.toggleDescription, toggleVisual: this.toggleVisual }),
+			React.createElement(Results.Course.Lecture, { store: this.props.store, course: this.props.course, selected: this.props.selected, sections: this.showSections, desc: this.showDescription, toggleDescription: this.toggleDescription, toggleVisual: this.toggleVisual }),
 			info
 		);
 	}
@@ -23080,14 +23085,17 @@ Results.Course.Lecture = React.createClass({
 	back: function () {
 		this.props.store.unselect();
 	},
+	description: function () {
+		this.select();
+		this.props.desc();
+	},
 	sections: function () {
-		var course = this.props.course;
+		this.select();
 		this.props.sections();
-		this.props.store.select(course);
+		var course = this.props.course;
 	},
 	reviews: function () {
 		this.select();
-
 		var inst = this.props.course.inst;
 		this.props.store.getReviews(inst);
 	},
@@ -23121,7 +23129,7 @@ Results.Course.Lecture = React.createClass({
 			back,
 			React.createElement(
 				'div',
-				{ className: 'results-course-lec-name' },
+				{ className: 'results-course-lec-name', onClick: this.description },
 				c.name
 			),
 			showSections,
@@ -23129,11 +23137,6 @@ Results.Course.Lecture = React.createClass({
 				'div',
 				{ className: 'results-course-data-visualization', onClick: this.props.toggleVisual },
 				'Recommended With'
-			),
-			React.createElement(
-				'div',
-				{ className: 'results-course-lec-course-desc', onClick: this.props.toggleDescription },
-				'Course Info'
 			),
 			React.createElement(
 				'div',
@@ -23152,67 +23155,8 @@ Results.Course.Lecture = React.createClass({
 			),
 			React.createElement(
 				'div',
-				{ className: 'results-course-description', style: { display: 'none' } },
-				React.createElement(
-					'div',
-					{ className: 'results-course-lecture-add', id: 'close-button', onClick: this.props.toggleDescription },
-					'Close'
-				),
-				React.createElement(
-					'div',
-					{ className: 'results-course-title ci-metadata' },
-					c.name
-				),
-				React.createElement(
-					'div',
-					{ className: 'results-course-time ci-metadata' },
-					t
-				),
-				React.createElement(
-					'div',
-					{ className: 'results-course-professor ci-metadata' },
-					c.inst
-				),
-				React.createElement(
-					'div',
-					{ className: 'results-course-enrolled ci-metadata' },
-					'Enrolled: ',
-					c.enrolled
-				),
-				React.createElement(
-					'div',
-					{ className: 'results-course-limit ci-metadata' },
-					'Limit: ',
-					c.limit
-				),
-				React.createElement(
-					'div',
-					{ className: 'results-course-waitlist ci-metadata' },
-					'Waitlist: ',
-					c.limit
-				),
-				React.createElement(
-					'div',
-					{ className: 'results-course-ccn ci-metadata' },
-					'CCN: ',
-					c.ccn
-				),
-				React.createElement(
-					'div',
-					{ className: 'ci-metadata', id: 'locationid' },
-					' Location: ',
-					c.room
-				),
-				React.createElement(
-					'p',
-					{ className: 'long-description ci-metadata' },
-					c.info
-				)
-			),
-			React.createElement(
-				'div',
 				{ className: 'results-course-lecture-add', onClick: this.add },
-				'Add Course'
+				"Add Course"
 			),
 			React.createElement(
 				'div',
@@ -23348,6 +23292,70 @@ Results.Course.Sections.Section = React.createClass({
 			'div',
 			{ className: 'results-course-sections-sec' },
 			t
+		);
+	}
+});
+
+Results.Course.Description = React.createClass({
+	displayName: 'Description',
+
+	render: function () {
+		var c = this.props.course;
+		var t = time.parse(c.time);
+		t = t.days + " " + time.display(t.start) + " - " + time.display(t.end);
+		return React.createElement(
+			'div',
+			{ className: 'results-course-description' },
+			React.createElement(
+				'div',
+				{ className: 'results-course-title ci-metadata' },
+				c.name
+			),
+			React.createElement(
+				'div',
+				{ className: 'results-course-time ci-metadata' },
+				t
+			),
+			React.createElement(
+				'div',
+				{ className: 'results-course-professor ci-metadata' },
+				c.inst
+			),
+			React.createElement(
+				'div',
+				{ className: 'results-course-enrolled ci-metadata' },
+				'Enrolled: ',
+				c.enrolled
+			),
+			React.createElement(
+				'div',
+				{ className: 'results-course-limit ci-metadata' },
+				'Limit: ',
+				c.limit
+			),
+			React.createElement(
+				'div',
+				{ className: 'results-course-waitlist ci-metadata' },
+				'Waitlist: ',
+				c.limit
+			),
+			React.createElement(
+				'div',
+				{ className: 'results-course-ccn ci-metadata' },
+				'CCN: ',
+				c.ccn
+			),
+			React.createElement(
+				'div',
+				{ className: 'ci-metadata', id: 'locationid' },
+				' Location: ',
+				c.room
+			),
+			React.createElement(
+				'p',
+				{ className: 'long-description ci-metadata' },
+				c.info
+			)
 		);
 	}
 });
