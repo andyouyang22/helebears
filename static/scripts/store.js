@@ -171,14 +171,14 @@ Store.prototype.openReviewForm = function() {
 	this.emit('reviewForm');
 };
 
-Store.prototype.postReview = function() {
+Store.prototype.postReview = function(review) {
 	var callback = function(review) {
 		if (this._selected != null && this._selected.inst == review.inst) {
 			this._reviews.push(review);
 			this.emit('reviews');
 		}
 	}.bind(this);
-	ajax.postReview(callback);
+	ajax.postReview(review, callback);
 };
 
 /**

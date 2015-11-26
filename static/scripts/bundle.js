@@ -23345,11 +23345,30 @@ module.exports = Results;
  */
 
 var React = require('react');
-var ReactDom = require('react-dom');
+var ReactDOM = require('react-dom');
 
 var ReviewForm = React.createClass({
 	displayName: 'ReviewForm',
 
+	formData: function () {
+		var formDOM = $(ReactDOM.findDOMNode(this));
+		return {
+			rating_1: formDOM.find('.reviewform-rating-rating_1').val(),
+			rating_2: formDOM.find('.reviewform-rating-rating_2').val(),
+			rating_3: formDOM.find('.reviewform-rating-rating_3').val(),
+			review: formDOM.find('.reviewform-textarea').val(),
+			professor_name: this.props.inst
+		};
+	},
+	submit: function () {
+		var that = this;
+		var review = this.formData();
+		var callback = function () {
+			that.props.back();
+			// insert this review in if necessary
+		};
+		this.props.store.postReview(review, this.props.inst, callback);
+	},
 	render: function () {
 		var placeholder = "Write a review, then tell your friends!";
 		return React.createElement(
@@ -23363,7 +23382,7 @@ var ReviewForm = React.createClass({
 				React.createElement(ReviewForm.Rating, { 'for': 'rating_3', attr: "Content" }),
 				React.createElement('textarea', { className: 'reviewform-textarea', placeholder: placeholder })
 			),
-			React.createElement(ReviewForm.Submit, null)
+			React.createElement(ReviewForm.Submit, { submit: this.submit })
 		);
 	}
 });
@@ -23372,7 +23391,7 @@ ReviewForm.Rating = React.createClass({
 	displayName: 'Rating',
 
 	render: function () {
-		var className = 'reviewform-rating' + this.props.for;
+		var className = 'reviewform-rating-' + this.props.for;
 		var options = [];
 		for (i = 1; i <= 10; i++) {
 			options.push(React.createElement(
@@ -23391,7 +23410,7 @@ ReviewForm.Rating = React.createClass({
 			),
 			React.createElement(
 				'select',
-				{ defaultValue: 'disabled' },
+				{ className: className, defaultValue: 'disabled' },
 				React.createElement(
 					'option',
 					{ className: 'default-option', value: 'disabled', disabled: true },
@@ -23406,8 +23425,9 @@ ReviewForm.Rating = React.createClass({
 ReviewForm.Submit = React.createClass({
 	displayName: 'Submit',
 
-	submit: function () {
-		alert("back");
+	submit: function (e) {
+		e.preventDefault();
+		this.props.submit();
 	},
 	render: function () {
 		return React.createElement(
@@ -23564,7 +23584,7 @@ Reviews.Entries = React.createClass({
 				'div',
 				null,
 				React.createElement(Reviews.Back, { back: this.back }),
-				React.createElement(ReviewForm, { store: this.props.store, inst: this.props.inst })
+				React.createElement(ReviewForm, { store: this.props.store, inst: this.props.inst, back: this.back })
 			);
 		} else {
 			return React.createElement(
@@ -23771,7 +23791,7 @@ var Search = React.createClass({
 		var dept = e.target.value;
 		this.props.store.setDepartment(dept);
 	},
-	handleSubmission: function (e) {
+	submit: function (e) {
 		e.preventDefault();
 		var that = this;
 		var formDOM = $(ReactDOM.findDOMNode(this));
@@ -23804,7 +23824,7 @@ var Search = React.createClass({
 				React.createElement(Search.Course, { courses: [], courses: this.state.courses }),
 				React.createElement(
 					'a',
-					{ className: 'pure-button search-submit', href: 'query.html', onClick: this.handleSubmission },
+					{ className: 'pure-button search-submit', href: 'query.html', onClick: this.submit },
 					'Search'
 				)
 			)
@@ -24051,14 +24071,14 @@ Store.prototype.openReviewForm = function () {
 	this.emit('reviewForm');
 };
 
-Store.prototype.postReview = function () {
+Store.prototype.postReview = function (review) {
 	var callback = (function (review) {
 		if (this._selected != null && this._selected.inst == review.inst) {
 			this._reviews.push(review);
 			this.emit('reviews');
 		}
 	}).bind(this);
-	ajax.postReview(callback);
+	ajax.postReview(review, callback);
 };
 
 /**

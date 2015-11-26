@@ -3,9 +3,28 @@
  */
 
 var React    = require('react');
-var ReactDom = require('react-dom');
+var ReactDOM = require('react-dom');
 
 var ReviewForm = React.createClass({
+	formData: function() {
+		var formDOM = $(ReactDOM.findDOMNode(this));
+		return {
+			rating_1 : formDOM.find('.reviewform-rating-rating_1').val(),
+			rating_2 : formDOM.find('.reviewform-rating-rating_2').val(),
+			rating_3 : formDOM.find('.reviewform-rating-rating_3').val(),
+			review   : formDOM.find('.reviewform-textarea').val(),
+			professor_name : this.props.inst,
+		};
+	},
+	submit: function() {
+		var that = this;
+		var review = this.formData();
+		var callback = function() {
+			that.props.back();
+			// insert this review in if necessary
+		};
+		this.props.store.postReview(review, this.props.inst, callback);
+	},
 	render: function() {
 		var placeholder = "Write a review, then tell your friends!";
 		return (
@@ -16,7 +35,7 @@ var ReviewForm = React.createClass({
 					<ReviewForm.Rating for={'rating_3'} attr={"Content"} />
 					<textarea className='reviewform-textarea' placeholder={placeholder}></textarea>
 				</fieldset>
-				<ReviewForm.Submit />
+				<ReviewForm.Submit submit={this.submit} />
 			</div>
 		);
 	},
@@ -24,7 +43,7 @@ var ReviewForm = React.createClass({
 
 ReviewForm.Rating = React.createClass({
 	render: function() {
-		var className = 'reviewform-rating' + this.props.for;
+		var className = 'reviewform-rating-' + this.props.for;
 		var options = [];
 		for (i = 1; i <= 10; i++) {
 			options.push(
@@ -38,7 +57,7 @@ ReviewForm.Rating = React.createClass({
 				<label htmlFor={this.props.for}>
 					{this.props.attr}
 				</label>
-				<select defaultValue='disabled'>
+				<select className={className} defaultValue='disabled'>
 					<option className='default-option' value='disabled' disabled>
 						{"0"}
 					</option>
@@ -50,8 +69,9 @@ ReviewForm.Rating = React.createClass({
 });
 
 ReviewForm.Submit = React.createClass({
-	submit: function() {
-		alert("back");
+	submit: function(e) {
+		e.preventDefault();
+		this.props.submit();
 	},
 	render: function() {
 		return (

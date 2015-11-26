@@ -100,7 +100,7 @@ Reviews.Entries = React.createClass({
 			return (
 				<div>
 					<Reviews.Back back={this.back} />
-					<ReviewForm store={this.props.store} inst={this.props.inst} />
+					<ReviewForm store={this.props.store} inst={this.props.inst} back={this.back} />
 				</div>
 			);
 		}
