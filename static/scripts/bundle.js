@@ -23167,11 +23167,7 @@ Results.Course.Lecture.RecommendationChart = React.createClass({
 	render: function () {
 		var rec = this.props.recommendation;
 		if (rec == null) {
-			return React.createElement(
-				'div',
-				null,
-				"No one is currently enrolled in this course"
-			);
+			return React.createElement('div', null);
 		}
 
 		var recc_courses = Object.keys(rec);
