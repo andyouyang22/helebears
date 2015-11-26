@@ -120,57 +120,15 @@ describe('======= Asynchronous Schedule + (Course, Department and Professor) Tes
                 });
         });
 
+            it('Testing Aggregation Functionality',function(done) {
+              courseModel.aggregateRecommendations({unique_id: 'TEST_ID', name_and_number: '100 1', ccn:1 },null);
+                assert(true);
+                done();
+            })
+
 
 
     })
     });
-
-    describe('Aggregation Testing', function() {
-        it('Should not allow to add existing email', function(done) {
-            Users.create({ username: 'TestUser', email: 'test2@email.com', password: 'password' })
-                .then(function(user){
-                    done(err,'Allowed storing two user with same primary key email.')
-                }).catch(function(error) {
-                done();
-            })
-        });
-
-        it('Should not allow to add existing email', function(done) {
-            Users.create({ username: 'TestUser', email: 'test2@email.com', password: 'password' })
-                .then(function(user){
-                    done(err,'Allowed storing two user with same primary key email.')
-                }).catch(function(error) {
-                done();
-            })
-        });
-
-        it('Should not allow to add existing email', function(done) {
-            Users.create({ username: 'TestUser', email: 'test2@email.com', password: 'password' })
-                .then(function(user){
-                    done(err,'Allowed storing two user with same primary key email.')
-                }).catch(function(error) {
-                done();
-            })
-        });
-
-        it('Should not allow to add existing email', function(done) {
-            Users.create({ username: 'TestUser', email: 'test2@email.com', password: 'password' })
-                .then(function(user){
-                    done(err,'Allowed storing two user with same primary key email.')
-                }).catch(function(error) {
-                done();
-            })
-        });
-
-    });
-
-
-    //
-    //describe('UserMethods validPassword works ', function() {
-    //    it('It should reflect equlity', function(done) {
-    //        assert.equal(UsersMethods.validPassword('password',UsersMethods.generateHash('password')),true);
-    //        done();
-    //    });
-    //});
 
 });

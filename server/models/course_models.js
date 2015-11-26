@@ -136,7 +136,6 @@ var courseModel = {
                 next(null, courseToAdd)
             })
             .then(function (next, err, courseToAdd) {
-                //console.log("two");
                 Schedules.findAll({where: {"unique_id": courseToAdd.unique_id}}).then(
                     function (results) {
                         stripped_results = []
@@ -148,7 +147,6 @@ var courseModel = {
 
             })
             .then(function (next, err, courseCCNsToUpdate, courseToIncrement) {
-                //console.log("three");
                 Courses.findAll({
                     where: {
                         ccn: {
@@ -161,7 +159,6 @@ var courseModel = {
 
             })
             .then(function (next, err, courses, courseToIncrement) {
-                //console.log("four");
 
                 for (var i = 0; i < courses.length; i++) {
                     var course = courses[i];
