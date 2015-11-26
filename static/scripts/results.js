@@ -54,7 +54,7 @@ var Results = React.createClass({
 		if (this.state.selected != null) {
 			var s = this.state.selected;
 			results.push(
-				<Results.Course store={that.props.store} key={s.ccn} course={s} selected />
+				<Results.Course store={that.props.store} key={s.ccn} course={s} selected={this.state.selected} />
 			);
 		}
 		// Otherwise, generate all Results immediately after a search
@@ -170,7 +170,15 @@ Results.Course.Lecture = React.createClass({
 		if (this.props.selected) {
 			back.push(
 				<div className='results-course-lecture-back' key="420" onClick={this.back}>
-					Return to results
+					{"Return to results"}
+				</div>
+			);
+		}
+		var showSections = [];
+		if (!this.props.selected) {
+			showSections = (
+				<div className='results-course-show-sections' onClick={this.sections}>
+					{"Show sections"}
 				</div>
 			);
 		}
@@ -180,7 +188,8 @@ Results.Course.Lecture = React.createClass({
 		return (
 			<div className='results-course-lecture'>
 				{back}
-				<div className='results-course-lec-name' onClick={this.sections}>{c.name}</div>
+				<div className='results-course-lec-name'>{c.name}</div>
+				{showSections}
 				<div className='results-course-data-visualization' onClick={this.props.toggleVisual}>Recommended With</div>
 				<div className='results-course-lec-course-desc' onClick={this.props.toggleDescription}>Course Info</div>
 				<div className='results-course-lec-desc'>{c.desc}</div>

@@ -175,7 +175,7 @@
 	margin-bottom: 5px;
 	padding: 12px;
 	border: 1px solid #eeeeee;
-	border-radius: 8px;
+	border-radius: 4px;
 	padding-top: 6px;
 	background-image: linear-gradient(#3399ff 30px, white 30px);
 	background-image: -o-linear-gradient(#3399ff 30px, white 30px);
@@ -189,6 +189,7 @@
 	right: 12px;
 	padding-top: 2px;
 	color: #eeeeee;
+	font-size: 90%;
 }
 
 .results-course-lecture-back:hover {
@@ -230,11 +231,27 @@
 
 .results-course-lec-name:hover {
 	cursor: pointer;
-	color: white;
+	text-decoration: underline;
+}
+
+.results-course-show-sections {
+	position: relative;
+	float: right;
+	top: -24px;
+	right: 5px;
+	color: #eeeeee;
+	font-size: 90%;
+}
+
+.results-course-show-sections:hover {
+	cursor: pointer;
+	text-decoration: underline;
 }
 
 .results-course-data-visualization {
 	float: right;
+	position: relative;
+	top: 20px;
 }
 
 .results-course-data-visualization:hover {
@@ -440,8 +457,8 @@
 .reviews-entries-container {
 	margin-top: 2px;
 	height: 170px;
-    padding-top: 5px;
-    overflow-y: scroll;
+	padding-top: 5px;
+	overflow-y: scroll;
 }
 
 .reviews-entries-none {

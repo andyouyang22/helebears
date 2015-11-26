@@ -22984,7 +22984,7 @@ var Results = React.createClass({
 		// only be one result to show
 		if (this.state.selected != null) {
 			var s = this.state.selected;
-			results.push(React.createElement(Results.Course, { store: that.props.store, key: s.ccn, course: s, selected: true }));
+			results.push(React.createElement(Results.Course, { store: that.props.store, key: s.ccn, course: s, selected: this.state.selected }));
 		}
 		// Otherwise, generate all Results immediately after a search
 		else {
@@ -23101,8 +23101,16 @@ Results.Course.Lecture = React.createClass({
 			back.push(React.createElement(
 				'div',
 				{ className: 'results-course-lecture-back', key: '420', onClick: this.back },
-				'Return to results'
+				"Return to results"
 			));
+		}
+		var showSections = [];
+		if (!this.props.selected) {
+			showSections = React.createElement(
+				'div',
+				{ className: 'results-course-show-sections', onClick: this.sections },
+				"Show sections"
+			);
 		}
 		var c = this.props.course;
 		var t = time.parse(c.time);
@@ -23113,9 +23121,10 @@ Results.Course.Lecture = React.createClass({
 			back,
 			React.createElement(
 				'div',
-				{ className: 'results-course-lec-name', onClick: this.sections },
+				{ className: 'results-course-lec-name' },
 				c.name
 			),
+			showSections,
 			React.createElement(
 				'div',
 				{ className: 'results-course-data-visualization', onClick: this.props.toggleVisual },
