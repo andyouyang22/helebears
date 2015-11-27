@@ -22745,9 +22745,6 @@ Calendar.Course = React.createClass({
 	remove: function (e) {
 		var c = this.props.course;
 		this.props.store.removeCourse(c);
-		if (c.ccn == this.props.store.conflict().ccn) {
-			this.props.store.conflictOff();
-		}
 	},
 	shorten: function (str) {
 		var tokens = str.split(" ");
@@ -23167,11 +23164,7 @@ Results.Course.Lecture.RecommendationChart = React.createClass({
 	render: function () {
 		var rec = this.props.recommendation;
 		if (rec == null) {
-			return React.createElement(
-				'div',
-				null,
-				"No one is currently enrolled in this course"
-			);
+			return React.createElement('div', null);
 		}
 
 		var recc_courses = Object.keys(rec);
@@ -23978,10 +23971,14 @@ Store.prototype.removeCourse = function (course) {
 	for (i = 0; i < this._schedule.length; i++) {
 		if (this._schedule[i].ccn == course.ccn) {
 			this._schedule.splice(i, 1);
+			i--;
 			removed = true;
 		}
 	}
 	if (removed) {
+		if (this._conflict != null && course.ccn == this._conflict.ccn) {
+			this.conflictOff();
+		}
 		// Emit an event signaling the Calendar state has changed
 		this.emit('schedule');
 		ajax.postRemoveCourse(course);
@@ -24399,34 +24396,12 @@ module.exports = {
 
 var time = require('./time.js');
 
-var generateCCN = function (ccn) {
-	ccn = ccn + "";
-	for (var i = ccn.length; i < 5; i++) {
-		ccn = "0" + ccn;
-	}
-	return ccn;
-};
-
 module.exports = {
-	schedule: function (data) {
-		if (data.status == -1) {
-			console.log("Failed to load user's schedule");
-			console.log("Errors: " + data.errors);
-			return;
-		}
+	courses: function (data) {
 		var courses = [];
-		data.results.forEach(function (result) {
-			var course = {
-				name: result.name_and_number,
-				time: result.course_time,
-				room: result.location,
-				ccn: result.ccn
-			};
-			if (course.ccn == undefined) {
-				course.ccn = that.ccn(course.name, course.time);
-			}
-			courses.push(course);
-		});
+		for (var i = 0; i < data.results.length; i++) {
+			courses.push(data.results[i].name);
+		}
 		return courses;
 	},
 	departments: function (data) {
@@ -24435,13 +24410,6 @@ module.exports = {
 			depts.push(data.results[i].department_name);
 		}
 		return depts;
-	},
-	courses: function (data) {
-		var courses = [];
-		for (var i = 0; i < data.results.length; i++) {
-			courses.push(data.results[i].name);
-		}
-		return courses;
 	},
 	results: function (data) {
 		var results = [];
@@ -24464,12 +24432,33 @@ module.exports = {
 			lec.sections.forEach(function (sec) {
 				course.sections.push({
 					time: time.convert(sec.time),
-					ccn: generateCCN(sec.ccn)
+					ccn: sec.ccn
 				});
 			});
 			results.push(course);
 		});
 		return results;
+	},
+	schedule: function (data) {
+		if (data.status == -1) {
+			console.log("Failed to load user's schedule");
+			console.log("Errors: " + data.errors);
+			return;
+		}
+		var courses = [];
+		data.results.forEach(function (result) {
+			var course = {
+				name: result.name_and_number,
+				time: result.course_time,
+				room: result.location,
+				ccn: result.ccn
+			};
+			if (course.ccn == undefined) {
+				course.ccn = that.ccn(course.name, course.time);
+			}
+			courses.push(course);
+		});
+		return courses;
 	},
 	split: function (course) {
 		var split = [];

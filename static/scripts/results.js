@@ -219,7 +219,7 @@ Results.Course.Lecture.RecommendationChart = React.createClass({
 		var rec = this.props.recommendation;
 		if (rec == null) {
 			return (
-				<div>{"No one is currently enrolled in this course"}</div>
+				<div></div>
 			);
 		}
 

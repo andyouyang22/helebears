@@ -87,10 +87,14 @@ Store.prototype.removeCourse = function(course) {
 	for (i = 0; i < this._schedule.length; i++) {
 		if (this._schedule[i].ccn == course.ccn) {
 			this._schedule.splice(i, 1);
+			i--;
 			removed = true;
 		}
 	}
 	if (removed) {
+		if (this._conflict != null && course.ccn == this._conflict.ccn) {
+			this.conflictOff();
+		}
 		// Emit an event signaling the Calendar state has changed
 		this.emit('schedule');
 		ajax.postRemoveCourse(course);
