@@ -23977,7 +23977,7 @@ Store.prototype.removeCourse = function (course) {
 	}
 	if (removed) {
 		if (this._conflict != null && course.ccn == this._conflict.ccn) {
-			this.props.store.conflictOff();
+			this.conflictOff();
 		}
 		// Emit an event signaling the Calendar state has changed
 		this.emit('schedule');
