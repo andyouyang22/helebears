@@ -20,13 +20,28 @@ module.exports = {
 		}
 		return depts;
 	},
+	normalCase: function(name) {
+		var tokens = name.split(" ");
+		for (i = 0; i < tokens.length; i++) {
+			var t = tokens[i];
+			if (t.length > 1) {
+				t = t[0].toUpperCase() + t.slice(1).toLowerCase();
+			}
+			else {
+				t = t.toUpperCase() + "."
+			}
+			tokens[i] = t;
+		}
+		return tokens.join(" ");
+	},
 	results: function(data) {
+		var that = this;
 		var results = [];
 		data.results.forEach(function(lec) {
 			var course = {
 				name  : lec.department_name + " " + lec.name,
 				desc  : lec.title,
-				inst  : lec.professor_name,
+				inst  : that.normalCase(lec.professor_name),
 				room  : lec.location,
 				time  : lec.time,
 				ccn   : lec.ccn,
