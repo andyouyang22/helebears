@@ -185,9 +185,6 @@ Calendar.Course = React.createClass({
 	remove: function(e) {
 		var c = this.props.course;
 		this.props.store.removeCourse(c);
-		if (c.ccn == this.props.store.conflict().ccn) {
-			this.props.store.conflictOff();
-		}
 	},
 	shorten: function(str) {
 		var tokens = str.split(" ");

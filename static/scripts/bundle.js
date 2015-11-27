@@ -22745,9 +22745,6 @@ Calendar.Course = React.createClass({
 	remove: function (e) {
 		var c = this.props.course;
 		this.props.store.removeCourse(c);
-		if (c.ccn == this.props.store.conflict().ccn) {
-			this.props.store.conflictOff();
-		}
 	},
 	shorten: function (str) {
 		var tokens = str.split(" ");
@@ -23974,10 +23971,14 @@ Store.prototype.removeCourse = function (course) {
 	for (i = 0; i < this._schedule.length; i++) {
 		if (this._schedule[i].ccn == course.ccn) {
 			this._schedule.splice(i, 1);
+			i--;
 			removed = true;
 		}
 	}
 	if (removed) {
+		if (this._conflict != null && course.ccn == this._conflict.ccn) {
+			this.props.store.conflictOff();
+		}
 		// Emit an event signaling the Calendar state has changed
 		this.emit('schedule');
 		ajax.postRemoveCourse(course);
