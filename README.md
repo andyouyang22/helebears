@@ -38,9 +38,9 @@ To view back end coverage, go to the `server/` folder
 
 	> istanbul cover ./node_modules/.bin/_mocha tests/unit_tests/  ./node_modules/.bin/_mocha tests/functional_tests/
 	> open coverage/lcov-report/index.html
-	
+
 In order to view the times every line was covered, you can use coverage/models where every model file is reported in depth
-	
+
 NOTE: The results from our run are available in the coverage folder of the repository (no need to run the testing to view)
 
 ## Selenium Testing
@@ -81,7 +81,9 @@ The following is the high-level class structure of `index.html`:
 
 The `scripts/bundle.js` file is the result of compiling the React JSX code in `scripts/main.js`. This code is linked using `browserify` and compiled using Babel. `browserify` allows us to use Node-like `require` syntax to link JavaScript modules in the front end. Babel compiles the JSX code down to JavaScript. Running the `bundle.sh` script will compile `scripts/main.js` and link its dependencies:
 
-	npm install -g browserify
+	npm install
+	npm install -g browserify  # May need 'sudo'
+
 	cd static/
 	chmod +x bundle.sh  # Make bundle.sh an executable
 	./bundle.sh         # Link and compile ReactJS files
