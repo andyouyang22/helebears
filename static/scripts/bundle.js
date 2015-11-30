@@ -24222,7 +24222,7 @@ module.exports = Store;
 var parse = require('./parse.js');
 var time = require('./time.js');
 
-//var apiUrl = 'https://protected-refuge-7067.herokuapp.com';
+// var apiUrl = 'https://protected-refuge-7067.herokuapp.com';
 var apiUrl = '';
 
 var queryify = function (query) {
@@ -24378,6 +24378,7 @@ module.exports = {
 			course_time: course.time,
 			section_time: course.time,
 			lab_time: course.time,
+			location: course.room,
 			ccn: course.ccn
 		};
 		this.post('/api/schedules/add', data, onSuccess, onFailure);
