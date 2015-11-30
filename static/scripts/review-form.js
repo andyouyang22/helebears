@@ -42,7 +42,7 @@ ReviewForm.Rating = React.createClass({
 	render: function() {
 		var className = 'reviewform-rating-' + this.props.for;
 		var options = [];
-		for (i = 1; i <= 10; i++) {
+		for (i = 0; i <= 10; i++) {
 			options.push(
 				<option key={i} value={i}>
 					{i}
@@ -55,9 +55,6 @@ ReviewForm.Rating = React.createClass({
 					{this.props.attr}
 				</label>
 				<select className={className} defaultValue='disabled'>
-					<option className='default-option' value='disabled' disabled>
-						{"0"}
-					</option>
 					{options}
 				</select>
 			</div>
