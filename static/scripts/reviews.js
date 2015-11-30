@@ -133,9 +133,11 @@ Reviews.Entries = React.createClass({
 		var entries = [];
 		for (i = 0; i < this.props.reviews.length; i++) {
 			r = this.props.reviews[i];
-			entries.push(
-				<Reviews.Entry key={i} review={r} />
-			);
+			if (r.review.length > 0) {
+				entries.push(
+					<Reviews.Entry key={i} review={r} />
+				);
+			}
 		}
 		if (entries.length == 0) {
 			entries = (

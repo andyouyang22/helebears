@@ -318,7 +318,15 @@
 }
 
 .results-course-sections-col-header {
+	font-weight: bold;
+	text-decoration: underline;
 	margin-bottom: 5px;
+}
+
+.results-course-sections-none {
+	font-size: 80%;
+	font-family: 'Roboto' sans-serif;
+	text-align: center;
 }
 
 .results-course-sections-sec {

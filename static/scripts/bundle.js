@@ -23218,6 +23218,15 @@ Results.Course.Sections = React.createClass({
 					sections.fri.push(React.createElement(Results.Course.Sections.Section, { key: sec.ccn, time: sec.time }));break;
 			}
 		}
+		for (d in sections) {
+			if (sections[d].length == 0) {
+				sections[d] = React.createElement(
+					'div',
+					{ className: 'sections-none' },
+					"None"
+				);
+			}
+		}
 		return React.createElement(
 			'div',
 			{ className: 'results-course-sections' },
@@ -23635,7 +23644,9 @@ Reviews.Entries = React.createClass({
 		var entries = [];
 		for (i = 0; i < this.props.reviews.length; i++) {
 			r = this.props.reviews[i];
-			entries.push(React.createElement(Reviews.Entry, { key: i, review: r }));
+			if (r.review.length > 0) {
+				entries.push(React.createElement(Reviews.Entry, { key: i, review: r }));
+			}
 		}
 		if (entries.length == 0) {
 			entries = React.createElement(

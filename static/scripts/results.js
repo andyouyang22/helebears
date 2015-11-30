@@ -269,6 +269,15 @@ Results.Course.Sections = React.createClass({
 					sections.fri.push(<Results.Course.Sections.Section key={sec.ccn} time={sec.time}/>); break;
 			}
 		}
+		for (d in sections) {
+			if (sections[d].length == 0) {
+				sections[d] = (
+					<div className='results-course-sections-none'>
+						{"None"}
+					</div>
+				);
+			}
+		}
 		return (
 			<div className='results-course-sections'>
 				<div className='results-course-sections-col'>
