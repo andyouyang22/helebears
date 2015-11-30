@@ -20,7 +20,8 @@ var Schedules = sequelize.define("Schedules", {
   course_time: Sequelize.STRING,
   section_time: Sequelize.STRING,
   lab_time: Sequelize.STRING,
-    ccn: Sequelize.INTEGER
+    ccn: Sequelize.INTEGER,
+    location:Sequelize.STRING
 })
 Schedules.sync();
 
