@@ -24431,7 +24431,7 @@ module.exports = {
 			var course = {
 				name: lec.department_name + " " + lec.name,
 				desc: lec.title,
-				inst: that.normalCase(lec.professor_name),
+				inst: lec.professor_name,
 				room: lec.location,
 				time: lec.time,
 				ccn: lec.ccn,
