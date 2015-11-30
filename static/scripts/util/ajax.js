@@ -212,7 +212,7 @@ module.exports = {
 			rating_1 : review.rating_1,
 			rating_2 : review.rating_2,
 			rating_3 : review.rating_3,
-			review   : review.desc,
+			review   : review.review,
 			professor_name : review.inst,
 		};
 		this.post('/api/reviews/create', data, onSuccess, onFailure);

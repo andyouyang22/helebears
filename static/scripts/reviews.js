@@ -7,10 +7,25 @@ var ReactDOM = require('react-dom');
 
 var ReviewForm = require('./review-form.js');
 
-var ajax = require('./util/ajax.js');
-var time = require('./util/time.js');
+var ajax  = require('./util/ajax.js');
+var parse = require('./util/parse.js');
+var time  = require('./util/time.js');
 
 var Reviews = React.createClass({
+	componentDidMount: function() {
+		var that = this;
+		var callback = function() {
+			that.setState({
+				create : that.props.store.formOpen(),
+			});
+		};
+		this.props.store.addReviewFormListener(callback);
+	},
+	getInitialState: function() {
+		return {
+			create : false,
+		};
+	},
  	render: function() {
  		var reviews = this.props.reviews;
  		var inst = this.props.inst;
@@ -18,7 +33,7 @@ var Reviews = React.createClass({
  		return (
  			<div className='reviews'>
  				<Reviews.Overall reviews={reviews} inst={inst} />
- 				<Reviews.Entries reviews={reviews} inst={inst} store={store} />
+ 				<Reviews.Entries reviews={reviews} inst={inst} store={store} create={this.state.create} />
  			</div>
  		);
  	}
@@ -52,7 +67,7 @@ Reviews.Overall = React.createClass({
 			<div className='reviews-overall'>
 				<div className='reviews-overall-header'>
 					<span className='reviews-overall-inst'>
-	 					{this.props.inst}
+	 					{parse.normalCase(this.props.inst)}
 	 				</span>
 	 				<span className='reviews-overall-overall'>
 	 					{this.truncate(overall)}
@@ -94,29 +109,19 @@ Reviews.Overall.Table = React.createClass({
 });
 
 Reviews.Entries = React.createClass({
-	back: function() {
-		this.setState({
-			create : false,
-		});
-	},
-	create: function() {
-		this.setState({
-			create : true,
-		});
-	},
 	content: function() {
-		if (this.state.create) {
+		if (this.props.create) {
 			return (
 				<div>
-					<Reviews.Back back={this.back} />
-					<ReviewForm store={this.props.store} inst={this.props.inst} back={this.back} />
+					<Reviews.Back store={this.props.store} />
+					<ReviewForm store={this.props.store} inst={this.props.inst} />
 				</div>
 			);
 		}
 		else {
 			return (
 				<div>
-					<Reviews.Create create={this.create} />
+					<Reviews.Create store={this.props.store} />
 					<div className='reviews-entries-container'>
 						{this.entries()}
 					</div>
@@ -152,14 +157,9 @@ Reviews.Entries = React.createClass({
 		};
 		this.props.store.addSelectedListener(callback);
 	},
-	getInitialState: function() {
-		return {
-			create : false,
-		};
-	},
 	render: function() {
 		var header = "Reviews";
-		if (this.state.create) {
+		if (this.props.create) {
 			header = "Write a review"
 		}
 		return (
@@ -174,9 +174,13 @@ Reviews.Entries = React.createClass({
 });
 
 Reviews.Create = React.createClass({
+	create: function(e) {
+		e.preventDefault();
+		this.props.store.openReviewForm();
+	},
 	render: function() {
 		return (
-			<div className='reviews-create' onClick={this.props.create}>
+			<div className='reviews-create' onClick={this.create}>
 				{"+"}
 			</div>
 		);
@@ -184,9 +188,13 @@ Reviews.Create = React.createClass({
 });
 
 Reviews.Back = React.createClass({
+	back: function(e) {
+		e.preventDefault();
+		this.props.store.closeReviewForm();
+	},
 	render: function() {
 		return (
-			<div className='reviews-back' onClick={this.props.back}>
+			<div className='reviews-back' onClick={this.back}>
 				{"Back"}
 			</div>
 		);

@@ -175,21 +175,6 @@ Store.prototype.selected = function() {
 
 // ------------------------------- Reviews ------------------------------- //
 
-Store.prototype.openReviewForm = function() {
-	this._reviewForm = true;
-	this.emit('reviewForm');
-};
-
-Store.prototype.postReview = function(review) {
-	var callback = function(review) {
-		if (this._selected != null && this._selected.inst == review.inst) {
-			this._reviews.unshift(review);
-			this.emit('reviews');
-		}
-	}.bind(this);
-	ajax.postReview(review, callback);
-};
-
 /**
  * @param {string} inst The name of the professor
  */
@@ -204,6 +189,32 @@ Store.prototype.setReviews = function(reviews) {
 
 Store.prototype.reviews = function() {
 	return this._reviews;
+};
+
+// ------------------------------- ReviewForm ------------------------------- //
+
+Store.prototype.openReviewForm = function() {
+	this._reviewForm = true;
+	this.emit('reviewform');
+};
+
+Store.prototype.closeReviewForm = function() {
+	this._reviewForm = false;
+	this.emit('reviewform');
+};
+
+Store.prototype.postReview = function(review) {
+	var callback = function(review) {
+		if (this._selected != null && this._selected.inst == review.inst) {
+			this._reviews.unshift(review);
+			this.emit('reviews');
+		}
+	}.bind(this);
+	ajax.postReview(review, callback);
+};
+
+Store.prototype.formOpen = function() {
+	return this._reviewForm;
 };
 
 // ------------------------------- Conflict ------------------------------- //
@@ -269,6 +280,14 @@ Store.prototype.addSelectedListener = function(callback) {
  */
 Store.prototype.addReviewsListener = function(callback) {
 	this.on('reviews', callback);
+};
+
+/**
+ * Add a listener for the review-form-change event. This event is emitted when the
+ * ReviewForm is either opened or closed, and when the result becomes unselected.
+ */
+Store.prototype.addReviewFormListener = function(callback) {
+	this.on('reviewform', callback);
 };
 
 /**

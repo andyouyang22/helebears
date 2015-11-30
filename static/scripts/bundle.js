@@ -22936,6 +22936,7 @@ var PieChart = require("react-chartjs").Pie;
 var Reviews = require('./reviews.js');
 
 var ajax = require('./util/ajax.js');
+var parse = require('./util/parse.js');
 var time = require('./util/time.js');
 
 var Results = React.createClass({
@@ -23015,10 +23016,6 @@ Results.Course = React.createClass({
 		this.setState({
 			infoContent: React.createElement(Results.Course.Description, { course: course })
 		});
-	},
-	showRecommendations: function () {
-		var store = this.props.store;
-		var course = this.props.course;
 	},
 	showReviews: function () {
 		var store = this.props.store;
@@ -23142,7 +23139,7 @@ Results.Course.Lecture = React.createClass({
 			React.createElement(
 				'div',
 				{ className: 'results-course-lec-inst', onClick: this.reviews },
-				c.inst
+				parse.normalCase(c.inst)
 			),
 			React.createElement(
 				'div',
@@ -23363,7 +23360,7 @@ Results.Course.Description = React.createClass({
 
 module.exports = Results;
 
-},{"./reviews.js":173,"./util/ajax.js":176,"./util/time.js":178,"react":166,"react-chartjs":29,"react-dom":37}],172:[function(require,module,exports){
+},{"./reviews.js":173,"./util/ajax.js":176,"./util/parse.js":177,"./util/time.js":178,"react":166,"react-chartjs":29,"react-dom":37}],172:[function(require,module,exports){
 /**
  * The ReviewForm class. This is the form the user uses to submit a new review.
  */
@@ -23380,18 +23377,15 @@ var ReviewForm = React.createClass({
 			rating_1: formDOM.find('.reviewform-rating-rating_1').val(),
 			rating_2: formDOM.find('.reviewform-rating-rating_2').val(),
 			rating_3: formDOM.find('.reviewform-rating-rating_3').val(),
-			desc: formDOM.find('.reviewform-textarea').val(),
+			review: formDOM.find('.reviewform-textarea').val(),
 			inst: this.props.inst
 		};
 	},
 	submit: function () {
 		var that = this;
 		var review = this.formData();
-		var callback = function () {
-			that.props.back();
-			// insert this review in if necessary
-		};
-		this.props.store.postReview(review, callback);
+		this.props.store.postReview(review);
+		this.props.store.closeReviewForm();
 	},
 	render: function () {
 		var placeholder = "Write a review, then tell your friends!";
@@ -23475,11 +23469,26 @@ var ReactDOM = require('react-dom');
 var ReviewForm = require('./review-form.js');
 
 var ajax = require('./util/ajax.js');
+var parse = require('./util/parse.js');
 var time = require('./util/time.js');
 
 var Reviews = React.createClass({
 	displayName: 'Reviews',
 
+	componentDidMount: function () {
+		var that = this;
+		var callback = function () {
+			that.setState({
+				create: that.props.store.formOpen()
+			});
+		};
+		this.props.store.addReviewFormListener(callback);
+	},
+	getInitialState: function () {
+		return {
+			create: false
+		};
+	},
 	render: function () {
 		var reviews = this.props.reviews;
 		var inst = this.props.inst;
@@ -23488,7 +23497,7 @@ var Reviews = React.createClass({
 			'div',
 			{ className: 'reviews' },
 			React.createElement(Reviews.Overall, { reviews: reviews, inst: inst }),
-			React.createElement(Reviews.Entries, { reviews: reviews, inst: inst, store: store })
+			React.createElement(Reviews.Entries, { reviews: reviews, inst: inst, store: store, create: this.state.create })
 		);
 	}
 });
@@ -23528,7 +23537,7 @@ Reviews.Overall = React.createClass({
 				React.createElement(
 					'span',
 					{ className: 'reviews-overall-inst' },
-					this.props.inst
+					parse.normalCase(this.props.inst)
 				),
 				React.createElement(
 					'span',
@@ -23601,29 +23610,19 @@ Reviews.Overall.Table = React.createClass({
 Reviews.Entries = React.createClass({
 	displayName: 'Entries',
 
-	back: function () {
-		this.setState({
-			create: false
-		});
-	},
-	create: function () {
-		this.setState({
-			create: true
-		});
-	},
 	content: function () {
-		if (this.state.create) {
+		if (this.props.create) {
 			return React.createElement(
 				'div',
 				null,
-				React.createElement(Reviews.Back, { back: this.back }),
-				React.createElement(ReviewForm, { store: this.props.store, inst: this.props.inst, back: this.back })
+				React.createElement(Reviews.Back, { store: this.props.store }),
+				React.createElement(ReviewForm, { store: this.props.store, inst: this.props.inst })
 			);
 		} else {
 			return React.createElement(
 				'div',
 				null,
-				React.createElement(Reviews.Create, { create: this.create }),
+				React.createElement(Reviews.Create, { store: this.props.store }),
 				React.createElement(
 					'div',
 					{ className: 'reviews-entries-container' },
@@ -23658,14 +23657,9 @@ Reviews.Entries = React.createClass({
 		};
 		this.props.store.addSelectedListener(callback);
 	},
-	getInitialState: function () {
-		return {
-			create: false
-		};
-	},
 	render: function () {
 		var header = "Reviews";
-		if (this.state.create) {
+		if (this.props.create) {
 			header = "Write a review";
 		}
 		return React.createElement(
@@ -23684,10 +23678,14 @@ Reviews.Entries = React.createClass({
 Reviews.Create = React.createClass({
 	displayName: 'Create',
 
+	create: function (e) {
+		e.preventDefault();
+		this.props.store.openReviewForm();
+	},
 	render: function () {
 		return React.createElement(
 			'div',
-			{ className: 'reviews-create', onClick: this.props.create },
+			{ className: 'reviews-create', onClick: this.create },
 			"+"
 		);
 	}
@@ -23696,10 +23694,14 @@ Reviews.Create = React.createClass({
 Reviews.Back = React.createClass({
 	displayName: 'Back',
 
+	back: function (e) {
+		e.preventDefault();
+		this.props.store.closeReviewForm();
+	},
 	render: function () {
 		return React.createElement(
 			'div',
-			{ className: 'reviews-back', onClick: this.props.back },
+			{ className: 'reviews-back', onClick: this.back },
 			"Back"
 		);
 	}
@@ -23719,7 +23721,7 @@ Reviews.Entry = React.createClass({
 
 module.exports = Reviews;
 
-},{"./review-form.js":172,"./util/ajax.js":176,"./util/time.js":178,"react":166,"react-dom":37}],174:[function(require,module,exports){
+},{"./review-form.js":172,"./util/ajax.js":176,"./util/parse.js":177,"./util/time.js":178,"react":166,"react-dom":37}],174:[function(require,module,exports){
 /**
  * The Search section of the page. The user inputs search criteria into this
  * section, which sends the query to the backend server.
@@ -24059,21 +24061,6 @@ Store.prototype.selected = function () {
 
 // ------------------------------- Reviews ------------------------------- //
 
-Store.prototype.openReviewForm = function () {
-	this._reviewForm = true;
-	this.emit('reviewForm');
-};
-
-Store.prototype.postReview = function (review) {
-	var callback = (function (review) {
-		if (this._selected != null && this._selected.inst == review.inst) {
-			this._reviews.unshift(review);
-			this.emit('reviews');
-		}
-	}).bind(this);
-	ajax.postReview(review, callback);
-};
-
 /**
  * @param {string} inst The name of the professor
  */
@@ -24088,6 +24075,32 @@ Store.prototype.setReviews = function (reviews) {
 
 Store.prototype.reviews = function () {
 	return this._reviews;
+};
+
+// ------------------------------- ReviewForm ------------------------------- //
+
+Store.prototype.openReviewForm = function () {
+	this._reviewForm = true;
+	this.emit('reviewform');
+};
+
+Store.prototype.closeReviewForm = function () {
+	this._reviewForm = false;
+	this.emit('reviewform');
+};
+
+Store.prototype.postReview = function (review) {
+	var callback = (function (review) {
+		if (this._selected != null && this._selected.inst == review.inst) {
+			this._reviews.unshift(review);
+			this.emit('reviews');
+		}
+	}).bind(this);
+	ajax.postReview(review, callback);
+};
+
+Store.prototype.formOpen = function () {
+	return this._reviewForm;
 };
 
 // ------------------------------- Conflict ------------------------------- //
@@ -24153,6 +24166,14 @@ Store.prototype.addSelectedListener = function (callback) {
  */
 Store.prototype.addReviewsListener = function (callback) {
 	this.on('reviews', callback);
+};
+
+/**
+ * Add a listener for the review-form-change event. This event is emitted when the
+ * ReviewForm is either opened or closed, and when the result becomes unselected.
+ */
+Store.prototype.addReviewFormListener = function (callback) {
+	this.on('reviewform', callback);
 };
 
 /**
@@ -24379,7 +24400,7 @@ module.exports = {
 			rating_1: review.rating_1,
 			rating_2: review.rating_2,
 			rating_3: review.rating_3,
-			review: review.desc,
+			review: review.review,
 			professor_name: review.inst
 		};
 		this.post('/api/reviews/create', data, onSuccess, onFailure);

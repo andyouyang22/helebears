@@ -9,8 +9,9 @@ var PieChart = require("react-chartjs").Pie;
 
 var Reviews  = require('./reviews.js');
 
-var ajax = require('./util/ajax.js');
-var time = require('./util/time.js');
+var ajax  = require('./util/ajax.js');
+var parse = require('./util/parse.js');
+var time  = require('./util/time.js');
 
 var Results = React.createClass({
 	componentDidMount: function() {
@@ -89,11 +90,6 @@ Results.Course = React.createClass({
 		this.setState({
 			infoContent : <Results.Course.Description course={course} />
 		});
-	},
-	showRecommendations: function() {
-		var store = this.props.store;
-		var course = this.props.course;
-
 	},
 	showReviews: function() {
 		var store = this.props.store;
@@ -204,7 +200,7 @@ Results.Course.Lecture = React.createClass({
 				<div className='results-course-lec-name' onClick={this.description}>{c.name}</div>
 				{showSections}
 				<div className='results-course-lec-desc'>{c.desc}</div>
-				<div className='results-course-lec-inst' onClick={this.reviews}>{c.inst}</div>
+				<div className='results-course-lec-inst' onClick={this.reviews}>{parse.normalCase(c.inst)}</div>
 				<div className='results-course-lec-time'>{t}</div>
 				<div className='results-course-lecture-add' onClick={this.add}>
 					{"Add Course"}
