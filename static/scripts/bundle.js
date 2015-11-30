@@ -24047,12 +24047,27 @@ Store.prototype.getResults = function (form) {
 
 Store.prototype.setResults = function (results) {
 	this._results = results;
+	// Solve the 'MTWTF' problem (two Tuesdays)
+	this.tmp_solution();
 	// Emit an event signaling the Results state has changed
 	this.emit('results');
 };
 
 Store.prototype.results = function () {
 	return this._results;
+};
+
+// If a course is scheduled for all five days, automatically change the second
+// 'T' to an 'R' to distinguish Tues and Thurs. This problem should be resolved
+// lated in the backend.
+Store.prototype.tmp_solution = function () {
+	for (i = 0; i < this._results.length; i++) {
+		var c = this._results[i];
+		var t = time.parse(c.time);
+		if (t.days.length == 5) {
+			this._results[i].time = ["MTWRF", t.start, t.end].join(" ");
+		}
+	}
 };
 
 // ------------------------------- Selected ------------------------------- //
@@ -24585,6 +24600,7 @@ module.exports = {
 		}
 		at = this.parse(a.time);
 		bt = this.parse(b.time);
+		// 'days' should only have length 1 for both 'at' and 'bt'
 		if (at.days != bt.days) {
 			return false;
 		}
