@@ -64,17 +64,18 @@ Store.prototype.setSchedule = function(schedule) {
 Store.prototype.addCourse = function(course) {
 	// Turn conflict off in case it was previously on
 	this.conflictOff();
+	// Add one Calendar course for each day of lecture
+	var split = parse.split(course);
 	// Check for any conflicts
 	for (i = 0; i < this._schedule.length; i++) {
 		var c = this._schedule[i];
-		if (time.conflict(c, course)) {
-			console.log("These courses conflict " + c + ", " + course);
-			this.conflictOn(c);
-			return;
+		for (j = 0; j < split.length; j++) {
+			if (time.conflict(c, split[j])) {
+				this.conflictOn(c);
+				return;
+			}
 		}
 	}
-	// Add one Calendar course for each day of lecture
-	var split = parse.split(course);
 	this._schedule = this._schedule.concat(split);
 	// Emit an event signaling the Calendar state has changed
 	this.emit('schedule');
