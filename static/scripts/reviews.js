@@ -48,9 +48,9 @@ Reviews.Overall = React.createClass({
 		}
 		for (i = 0; i < reviews.length; i++) {
 			var r = reviews[i];
-			avgs[0] += r.rating_1;
-			avgs[1] += r.rating_2;
-			avgs[2] += r.rating_3;
+			avgs[0] += parseInt(r.rating_1);
+			avgs[1] += parseInt(r.rating_2);
+			avgs[2] += parseInt(r.rating_3);
 		}
 		avgs[0] = this.truncate(avgs[0] / reviews.length);
 		avgs[1] = this.truncate(avgs[1] / reviews.length);
