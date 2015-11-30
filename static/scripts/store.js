@@ -40,6 +40,8 @@ var Store = function() {
 	this._reviewForm = false;
 	// Course currently causing a conflict during addCourse
 	this._conflict = null;
+	// Course that is currently highlighted
+	this._highlight = null;
 };
 
 // Inherit from the EventEmitter class
@@ -249,6 +251,22 @@ Store.prototype.conflict = function() {
 	return this._conflict;
 };
 
+// ------------------------------- Conflict ------------------------------- //
+
+Store.prototype.highlight = function(course) {
+	this._highlight = course;
+	this.emit('highlight');
+};
+
+Store.prototype.unhighlight = function() {
+	this._highlight = null;
+	this.emit('highlight');
+};
+
+Store.prototype.highlighted = function() {
+	return this._highlight;
+};
+
 // ------------------------------- Listeners ------------------------------- //
 
 /**
@@ -317,6 +335,14 @@ Store.prototype.addReviewFormListener = function(callback) {
  */
 Store.prototype.addConflictListener = function(callback) {
 	this.on('conflict', callback);
+};
+
+/**
+ * Add a listener for the highlight event. When a user is hovering over a course,
+ * all related lectures (same CCN) should be highlighted.
+ */
+Store.prototype.addHighlightListener = function(callback) {
+	this.on('highlight', callback);
 };
 
 module.exports = Store;

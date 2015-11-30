@@ -35,7 +35,7 @@ var Calendar = React.createClass({
 	},
 	getInitialState: function() {
 		return {
-			conflict : null,
+			conflict  : null,
 		};
 	},
 	render: function() {
@@ -167,19 +167,31 @@ Calendar.Grid.Column.Courses = React.createClass({
 Calendar.Course = React.createClass({
 	componentDidMount: function() {
 		var that = this;
-		var callback = function() {
+
+		var conflictCallback = function() {
 			var course = that.props.course;
 			var conflict = that.props.store.conflict();
 			var conflicting = (conflict != null && conflict.ccn == course.ccn);
 			that.setState({
-				conflict : conflicting,
+				conflicting : conflicting,
 			});
 		};
-		this.props.store.addConflictListener(callback);
+		this.props.store.addConflictListener(conflictCallback);
+
+		var highlightCallback = function() {
+			var course = that.props.course;
+			var highlight = that.props.store.highlighted();
+			var highlighted = (highlight != null && highlight.ccn == course.ccn);
+			that.setState({
+				highlighted : highlighted,
+			});
+		}
+		this.props.store.addHighlightListener(highlightCallback);
 	},
 	getInitialState: function() {
 		return {
-			conflict : false,
+			conflicting : false,
+			highlighted : false,
 		};
 	},
 	remove: function(e) {
@@ -205,17 +217,23 @@ Calendar.Course = React.createClass({
 	},
 	style: function() {
 		var css = this.position();
-		if (this.state.conflict) {
+		if (this.state.conflicting) {
 			css['border'] = "2px solid red";
 			css['left'] = "calc(4% - 1px)";
 			css['top'] -= 1;
+		}
+		if (!this.state.highlighted && this.props.store.highlighted() != null) {
+			css['opacity'] = 0.5
 		}
 		return css;
 	},
 	render: function() {
 		var c = this.props.course;
+		var store = this.props.store;
+		var over = store.highlight.bind(store, c);
+		var out = store.unhighlight.bind(store)
 		return (
-			<div className='calendar-course' style={this.style()}>
+			<div className='calendar-course' style={this.style()} onMouseOver={over} onMouseOut={out}>
 				<div className='calendar-course-name'>{this.shorten(c.name)}</div>
 				<div className='calendar-course-type' hidden>{c.type}</div>
 				<div className='calendar-course-room'>{c.room}</div>

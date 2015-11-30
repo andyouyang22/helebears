@@ -22727,19 +22727,31 @@ Calendar.Course = React.createClass({
 
 	componentDidMount: function () {
 		var that = this;
-		var callback = function () {
+
+		var conflictCallback = function () {
 			var course = that.props.course;
 			var conflict = that.props.store.conflict();
 			var conflicting = conflict != null && conflict.ccn == course.ccn;
 			that.setState({
-				conflict: conflicting
+				conflicting: conflicting
 			});
 		};
-		this.props.store.addConflictListener(callback);
+		this.props.store.addConflictListener(conflictCallback);
+
+		var highlightCallback = function () {
+			var course = that.props.course;
+			var highlight = that.props.store.highlighted();
+			var highlighted = highlight != null && highlight.ccn == course.ccn;
+			that.setState({
+				highlighted: highlighted
+			});
+		};
+		this.props.store.addHighlightListener(highlightCallback);
 	},
 	getInitialState: function () {
 		return {
-			conflict: false
+			conflicting: false,
+			highlighted: false
 		};
 	},
 	remove: function (e) {
@@ -22765,18 +22777,24 @@ Calendar.Course = React.createClass({
 	},
 	style: function () {
 		var css = this.position();
-		if (this.state.conflict) {
+		if (this.state.conflicting) {
 			css['border'] = "2px solid red";
 			css['left'] = "calc(4% - 1px)";
 			css['top'] -= 1;
+		}
+		if (!this.state.highlighted && this.props.store.highlighted() != null) {
+			css['opacity'] = 0.5;
 		}
 		return css;
 	},
 	render: function () {
 		var c = this.props.course;
+		var store = this.props.store;
+		var over = store.highlight.bind(store, c);
+		var out = store.unhighlight.bind(store);
 		return React.createElement(
 			'div',
-			{ className: 'calendar-course', style: this.style() },
+			{ className: 'calendar-course', style: this.style(), onMouseOver: over, onMouseOut: out },
 			React.createElement(
 				'div',
 				{ className: 'calendar-course-name' },
@@ -23937,6 +23955,8 @@ var Store = function () {
 	this._reviewForm = false;
 	// Course currently causing a conflict during addCourse
 	this._conflict = null;
+	// Course that is currently highlighted
+	this._highlight = null;
 };
 
 // Inherit from the EventEmitter class
@@ -24146,6 +24166,22 @@ Store.prototype.conflict = function () {
 	return this._conflict;
 };
 
+// ------------------------------- Conflict ------------------------------- //
+
+Store.prototype.highlight = function (course) {
+	this._highlight = course;
+	this.emit('highlight');
+};
+
+Store.prototype.unhighlight = function () {
+	this._highlight = null;
+	this.emit('highlight');
+};
+
+Store.prototype.highlighted = function () {
+	return this._highlight;
+};
+
 // ------------------------------- Listeners ------------------------------- //
 
 /**
@@ -24214,6 +24250,14 @@ Store.prototype.addReviewFormListener = function (callback) {
  */
 Store.prototype.addConflictListener = function (callback) {
 	this.on('conflict', callback);
+};
+
+/**
+ * Add a listener for the highlight event. When a user is hovering over a course,
+ * all related lectures (same CCN) should be highlighted.
+ */
+Store.prototype.addHighlightListener = function (callback) {
+	this.on('highlight', callback);
 };
 
 module.exports = Store;

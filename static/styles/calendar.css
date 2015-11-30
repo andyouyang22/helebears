@@ -86,6 +86,10 @@
 	font-size: 65%;
 }
 
+.calendar-course-name:hover {
+	cursor: pointer;
+}
+
 .calendar-course-room {
 	margin-top: 1px;
 	margin-bottom: 2px;
