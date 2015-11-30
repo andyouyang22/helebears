@@ -379,7 +379,7 @@
 	float: right;
 	position: relative;
 	font-size: 100%;
-	right: 21px;
+	right: 18px;
 	margin-top: 10px
 }
 
@@ -391,9 +391,11 @@
 }
 
 .reviews-overall-table-right {
-	padding: 10px;
-	padding-left: 15px;
-	text-align: left;
+	padding-top: 10px;
+    padding-bottom: 10px;
+    padding-left: 5px;
+    width: 34px;
+    text-align: center;
 }
 
 .reviews-entries {
