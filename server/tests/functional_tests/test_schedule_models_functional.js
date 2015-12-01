@@ -39,18 +39,19 @@ describe('======= Asynchronous Schedule + (Course, Department and Professor) Tes
 
     after(function() {
         // runs after all tests in this block
-        Departments.destroy({
-            where: {department_name: 'TESTING'}
-        });
-        Professors.destroy({
-            where: {professor_name: 'TESTING, TEST'}
-        });
         Courses.destroy({
             where: {department_name: 'TESTING'}
         });
         Schedules.destroy({
             where: {unique_id:'TEST_ID'}
         });
+        Departments.destroy({
+            where: {department_name: 'TESTING'}
+        });
+        Professors.destroy({
+            where: {professor_name: 'TESTING, TEST'}
+        });
+
     });
 
     beforeEach(function(done) {
