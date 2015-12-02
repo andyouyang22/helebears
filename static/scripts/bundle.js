@@ -23810,6 +23810,9 @@ var Search = React.createClass({
 			department_name: formDOM.find('.search-dept').val(),
 			name: formDOM.find('.search-course').val()
 		};
+		if (form.name == 'disabled') {
+			form.name = null;
+		}
 		clear_dict_key(null, form);
 		clear_dict_key('', form);
 		this.props.store.getResults(form);
@@ -23887,10 +23890,10 @@ Search.Course = React.createClass({
 		});
 		return React.createElement(
 			'select',
-			{ className: 'search-course' },
+			{ className: 'search-course', defaultValue: 'disabled' },
 			React.createElement(
 				'option',
-				{ className: 'default-option', defaultValue: 'disabled', disabled: true },
+				{ className: 'default-option', value: 'disabled' },
 				'Course'
 			),
 			courses
