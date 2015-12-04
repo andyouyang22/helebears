@@ -2,7 +2,7 @@
  * Created by nirshtern on 10/31/15.
  */
 
-
+var kickbox = require('kickbox').client('604455ed1e1afa7e76631c71e1151f114de11d62f255295543042ff8bf3a3d70').kickbox();
 // load all the things we need
 var LocalStrategy   = require('passport-local').Strategy;
 var GoogleStrategy = require('passport-google-oauth').OAuth2Strategy;
@@ -75,9 +75,19 @@ module.exports = function(passport) {
                         // if there is no user with that email
                         // create the new user and add to the database
 
-                        var newUser = Users.build({email:email,password: UserMethods.generateHash(password)});
-                        newUser.save();
-                        return done(null,newUser);
+                        kickbox.verify(email, function (err, response) {
+                            // Let's see some results
+                            console.log(response.body);
+                            if(response.body.result === 'deliverable'){
+                                var newUser = Users.build({email:response.body.email,password: UserMethods.generateHash(password)});
+                                newUser.save();
+                                return done(null,newUser);
+                            } else {
+                                return done(null, false, req.flash('signupMessage', response.body.reason));
+                            }
+
+                        });
+
                     }
 
                 });
