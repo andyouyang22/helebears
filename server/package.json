@@ -17,6 +17,8 @@
     "ejs": "^2.3.4",
     "express": "~4.13.1",
     "express-session": "^1.12.1",
+    "google-auth-library": "^0.9.7",
+    "googleapis": "^2.1.6",
     "istanbul": "^0.4.0",
     "jade": "~1.11.0",
     "mocha": "^2.3.3",
