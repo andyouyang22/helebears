@@ -121,4 +121,43 @@ module.exports = function(passport) {
 
         }));
 
+    // =========================================================================
+    // GOOGLE ==================================================================
+    // =========================================================================
+    passport.use(new GoogleStrategy({
+
+            clientID        : configAuth.googleAuth.clientID,
+            clientSecret    : configAuth.googleAuth.clientSecret,
+            callbackURL     : configAuth.googleAuth.callbackURL
+
+        },
+        function(token, refreshToken, profile, done) {
+
+            // make the code asynchronous
+            // User.findOne won't fire until we have all our data back from Google
+
+            process.nextTick(function() {
+
+                // try to find the user based on their google id
+
+                Users.findOne({ where:{googleid : profile.id }
+                }).then(function(user) {
+
+                    // if no user is found, return the message
+                    if (user) {
+                        return done(null, user); // loging user
+                    } else {
+                        var newUser = Users.build({googleid: profile.id,
+                            googletoken: token,
+                            googlename: profile.displayName,
+                            email: profile.emails[0].value});
+                        newUser.save();
+                        return done(null,newUser);
+                    }
+
+                });
+            });
+
+        }));
 };
+

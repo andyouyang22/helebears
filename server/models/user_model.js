@@ -12,6 +12,9 @@ var Users = sequelize.define("Users", {
     password: Sequelize.STRING,
     email: { type: Sequelize.STRING, primaryKey: true},
     id: { type: Sequelize.UUID, primaryKey: true, defaultValue: Sequelize.UUIDV4, allowNull: false },
+    googleid: {type: Sequelize.STRING},
+    googletoken:{type: Sequelize.STRING},
+    googlename:{type:Sequelize.STRING},
     major: {type: Sequelize.STRING, defaultValue:'Undeclared'},
     college: {type: Sequelize.STRING, defaultValue:'L&S'}
 });
