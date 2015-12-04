@@ -128,34 +128,57 @@ module.exports = function(passport) {
 
             clientID        : configAuth.googleAuth.clientID,
             clientSecret    : configAuth.googleAuth.clientSecret,
-            callbackURL     : configAuth.googleAuth.callbackURL
+            callbackURL     : configAuth.googleAuth.callbackURL,
+            passReqToCallback : true
 
         },
-        function(token, refreshToken, profile, done) {
+        function(req, token, refreshToken, profile, done) {
 
             // make the code asynchronous
             // User.findOne won't fire until we have all our data back from Google
 
             process.nextTick(function() {
 
-                // try to find the user based on their google id
+                if(!req.user) {
 
-                Users.findOne({ where:{googleid : profile.id }
-                }).then(function(user) {
+                    // try to find the user based on their google id
 
-                    // if no user is found, return the message
-                    if (user) {
-                        return done(null, user); // loging user
-                    } else {
-                        var newUser = Users.build({googleid: profile.id,
-                            googletoken: token,
-                            googlename: profile.displayName,
-                            email: profile.emails[0].value});
-                        newUser.save();
-                        return done(null,newUser);
-                    }
+                    Users.findOne({
+                        where: {googleid: profile.id}
+                    }).then(function (user) {
 
-                });
+                        // if no user is found, return the message
+                        if (user) {
+                            return done(null, user); // loging user
+                        } else {
+                            var newUser = Users.build({
+                                googleid: profile.id,
+                                googletoken: token,
+                                googlename: profile.displayName,
+                                googleemail: profile.emails[0].value,
+                                email:''
+                            });
+                            newUser.save();
+                            return done(null, newUser);
+                        }
+
+                    });
+
+                } else {
+                    var user = req.user;
+
+                    user.googleid = profile.id;
+                    user.googletoken = token;
+                    user.googlename = profile.displayName;
+                    user.googleemail = profile.emails[0].value;
+
+                    user.save().then(function() {
+                        //if (err)
+                        //    throw err;
+                        return done(null,user);
+                    })
+                }
+
             });
 
         }));
