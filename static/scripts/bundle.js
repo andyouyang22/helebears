@@ -22908,7 +22908,7 @@ Menu.Buttons = React.createClass({
 			{ className: 'pure-menu-list' },
 			React.createElement(
 				'a',
-				{ className: 'pure-menu-link menu-logout', href: 'http://protected-refuge-7067.herokuapp.com/logout' },
+				{ className: 'pure-menu-link menu-logout', href: '/logout' },
 				'Log Out'
 			)
 		);
@@ -24422,7 +24422,8 @@ module.exports = {
 			section_time: course.time,
 			lab_time: course.time,
 			location: course.room,
-			ccn: course.ccn
+			ccn: course.ccn,
+			id: course.id
 		};
 		this.post('/api/schedules/add', data, onSuccess, onFailure);
 	},
@@ -24533,6 +24534,7 @@ module.exports = {
 				info: lec.course_description,
 				enrolled: lec.enrolled,
 				waitlist: lec.waitlist,
+				id: lec.id,
 				sections: []
 			};
 			lec.sections.forEach(function (sec) {
@@ -24583,6 +24585,7 @@ module.exports = {
 				units: course.units,
 				enrolled: course.enrolled,
 				waitlist: course.waitlist,
+				id: course.id,
 				sections: []
 			});
 		}

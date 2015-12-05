@@ -2,8 +2,8 @@
  * Created by nirshtern on 10/31/15.
  */
 
-var kickbox = require('kickbox').client('604455ed1e1afa7e76631c71e1151f114de11d62f255295543042ff8bf3a3d70').kickbox();
 // load all the things we need
+var kickbox = require('kickbox').client('604455ed1e1afa7e76631c71e1151f114de11d62f255295543042ff8bf3a3d70').kickbox();
 var LocalStrategy   = require('passport-local').Strategy;
 var GoogleStrategy = require('passport-google-oauth').OAuth2Strategy;
 
@@ -65,12 +65,25 @@ module.exports = function(passport) {
                 // find a user whose email is the same as the forms email
                 // we are checking to see if the user trying to login already exists
                 Users.findOne({ where:{email :  email }
-                             }).then(function(user) {
+                             }).then(function(localuser) {
 
                     // check to see if theres already a user with that email
-                    if (user) {
+                    if (localuser) {
                         return done(null, false, req.flash('signupMessage', 'That email is already taken.'));
                     } else {
+
+
+                        //  If we're logged in, we're connecting a new local account.
+                        if(req.user) {
+                            var user = req.user;
+                            user.email    = email;
+                            user.password = UserMethods.generateHash(password);
+                            user.save().then(function() {
+                                //if (err)
+                                //    throw err;
+                                return done(null, user);
+                            });
+                        }
 
                         // if there is no user with that email
                         // create the new user and add to the database

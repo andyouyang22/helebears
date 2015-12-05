@@ -9,7 +9,7 @@ var courseModel = course_models.courseModel;
 /* GET users listing. */
 router.get('/', function(req, res, next) {
     if ("user" in req) {
-        scheduleModel.controller(req.user.dataValues.email, 'get', res);
+        scheduleModel.controller(req.user.dataValues.id, 'get', res);
     }
     else {
         res.json({
@@ -34,7 +34,8 @@ router.post('/add',function(req, res, next) {
         });
     }
     else {
-        req.body.unique_id = req.user.dataValues.email;
+        //req.body.unique_id = req.user.dataValues.email;
+        req.body.unique_id = req.user.id;
         courseModel.aggregateRecommendations(req.body, res)
     }
 });
@@ -54,7 +55,8 @@ router.post('/remove',function(req, res, next) {
         });
     }
     else {
-        req.body.unique_id = req.user.dataValues.email
+        //req.body.unique_id = req.user.dataValues.email;
+        req.body.unique_id = req.user.id;
         scheduleModel.removeQuery(req.body, res)
     }
 });

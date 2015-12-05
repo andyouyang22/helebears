@@ -45,7 +45,7 @@ Menu.Buttons = React.createClass({
 	render: function() {
 		return (
 			<ul className='pure-menu-list'>
-				<a className='pure-menu-link menu-logout' href='http://protected-refuge-7067.herokuapp.com/logout'>Log Out</a>
+				<a className='pure-menu-link menu-logout' href='/logout'>Log Out</a>
 			</ul>
 		);
 	}

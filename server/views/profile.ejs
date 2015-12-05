@@ -1,0 +1,71 @@
+<!-- views/profile.ejs -->
+<!doctype html>
+<html>
+<head>
+    <title>Helebears - User Profile</title>
+    <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
+    <link rel="stylesheet" href="//netdna.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
+    <style>
+        body        { padding-top:80px; word-wrap:break-word; }
+    </style>
+</head>
+<body>
+<div class="container">
+
+    <div class="page-header text-center">
+        <h1><span class="fa fa-anchor"></span> Profile Page</h1>
+        <a href="/logout" class="btn btn-default btn-sm">Logout</a>
+    </div>
+
+    <div class="row">
+
+        <!-- LOCAL INFORMATION -->
+        <div class="col-sm-6">
+            <div class="well">
+                <h3><span class="fa fa-user"></span> Local</h3>
+
+                <% if (user.email) { %>
+                <p>
+                    <strong>id</strong>: <%= user.id %><br>
+                    <strong>email</strong>: <%= user.email %><br>
+                    <strong>password</strong>: <%= user.password %>
+                </p>
+
+                <a href="/unlink/local" class="btn btn-default">Unlink</a>
+                <% } else { %>
+                <a href="/connect/local" class="btn btn-default">Connect Local</a>
+                <% } %>
+
+            </div>
+        </div>
+
+    </div>
+
+    <div class="row">
+
+        <!-- GOOGLE INFORMATION -->
+        <div class="col-sm-6">
+            <div class="well">
+                <h3 class="text-danger"><span class="fa fa-google-plus"></span> Google+</h3>
+
+                <!-- check if the user has this token (is the user authenticated with this social account) -->
+                <% if (user.googletoken) { %>
+                <p>
+                    <strong>id</strong>: <%= user.googleid %><br>
+                    <strong>token</strong>: <%= user.googletoken %><br>
+                    <strong>email</strong>: <%= user.googleemail %><br>
+                    <strong>name</strong>: <%= user.googlename %>
+                </p>
+
+                <a href="/unlink/google" class="btn btn-danger">Unlink</a>
+                <% } else { %>
+                <a href="/connect/google" class="btn btn-danger">Connect Google</a>
+                <% } %>
+
+            </div>
+        </div>
+    </div>
+
+</div>
+</body>
+</html>

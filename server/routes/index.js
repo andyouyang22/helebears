@@ -8,6 +8,13 @@ module.exports = function(app, passport) {
         res.render('index.ejs');
     });
 
+    // PROFILE SECTION =========================
+    app.get('/profile', isLoggedIn, function(req, res) {
+        res.render('profile.ejs', {
+            user : req.user
+        });
+    });
+
     app.get('/login', function(req, res) {
         // Render the page and pass in any flash data if it exists
         res.render('login.ejs', { message: req.flash('loginMessage') });
@@ -81,15 +88,34 @@ module.exports = function(app, passport) {
             failureRedirect : '/'
         }));
 
+    // =============================================================================
+// UNLINK ACCOUNTS =============================================================
+// =============================================================================
+// used to unlink accounts. for social accounts, just remove the token
+// for local account, remove email and password
+// user account will stay active in case they want to reconnect in the future
 
-    //==============================
-    //==============================
-
-    app.get('/profile', isLoggedIn, function(req, res) {
-        res.render('profile.ejs', {
-            user : req.user // Get the user out of session and pass to template
+    // local -----------------------------------
+    app.get('/unlink/local', function(req, res) {
+        var user            = req.user;
+        user.email    = undefined;
+        user.password = undefined;
+        user.save().then(function() {
+            res.redirect('/homepage');
         });
     });
+
+    app.get('/unlink/google', function(req, res) {
+        var user          = req.user;
+        user.googletoken = undefined;
+        user.save().then(function() {
+            res.redirect('/homepage');
+        });
+    });
+
+
+    //==============================
+    //==============================
 
     app.get('/homepage', isLoggedIn, function(req, res, next) {
         next();
