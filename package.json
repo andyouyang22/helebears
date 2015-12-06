@@ -18,6 +18,7 @@
     "react": "^0.14.3",
     "react-chartjs": "^0.6.0",
     "sequelize": "^3.12.2",
+    "kickbox": "^2.0.0",
     "serve-favicon": "~2.3.0",
     "sequence": "^3.0.0",
     "ejs": "^2.3.4",
