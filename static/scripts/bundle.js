@@ -22906,11 +22906,17 @@ Menu.Buttons = React.createClass({
 		return React.createElement(
 			'ul',
 			{ className: 'pure-menu-list' },
+            React.createElement(
+                'a',
+                { className: 'pure-menu-link pure-menu-item menu-logout', href: '/profile' },
+                'Profile'
+            ),
 			React.createElement(
 				'a',
-				{ className: 'pure-menu-link menu-logout', href: '/logout' },
+				{ className: 'pure-menu-link pure-menu-item menu-logout', href: '/logout' },
 				'Log Out'
 			)
+
 		);
 	}
 });

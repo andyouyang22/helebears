@@ -46,6 +46,7 @@ Menu.Buttons = React.createClass({
 		return (
 			<ul className='pure-menu-list'>
 				<a className='pure-menu-link menu-logout' href='/logout'>Log Out</a>
+				<a className='pure-menu-link menu-logout' href='/profile'>Profile</a>
 			</ul>
 		);
 	}
