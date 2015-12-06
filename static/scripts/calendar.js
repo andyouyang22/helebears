@@ -35,7 +35,7 @@ var Calendar = React.createClass({
 	},
 	getInitialState: function() {
 		return {
-			conflict  : null,
+			conflict  : null
 		};
 	},
 	render: function() {
