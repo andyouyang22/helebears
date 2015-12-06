@@ -29,7 +29,7 @@ describe('============== Users ==============', function() {
         })
     });
     it('Attempt to create a course with an invalid key', function (done) {
-        Users.create({useron: "PleaseError"}).then(function (result) {
+        Users.create({id: "PleaseError"}).then(function (result) {
             throw "Users did not properly error out"
             done()
         }).error(function (err) {
