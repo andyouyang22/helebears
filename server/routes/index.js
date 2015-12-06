@@ -98,31 +98,22 @@ module.exports = function(app, passport) {
     // local -----------------------------------
     app.get('/unlink/local', function(req, res) {
         var user            = req.user;
-        //user.email    = undefined;
-        //user.password = undefined;
         user.update({
             email: null,
             password: null
         }).then(function(){
             res.redirect('/homepage');
         });
-
-        //user.save().then(function() {
-        //    res.redirect('/homepage');
-        //});
     });
 
     app.get('/unlink/google', function(req, res) {
         var user          = req.user;
-        //user.googletoken = null;
+
         user.update({
             googletoken: null
         }).then(function(){
             res.redirect('/homepage');
         });
-        //user.save().then(function() {
-        //    res.redirect('/homepage');
-        //});
     });
 
 

@@ -59,6 +59,10 @@ module.exports = function(passport) {
             // User.findOne wont fire unless data is sent back
             process.nextTick(function() {
 
+                if(password.length < 1){
+                    return done(null, false, req.flash('signupMessage', 'Invalid Password.'));
+                }
+
                 if(email.indexOf("@berkeley.edu") < 0){
                     return done(null, false, req.flash('signupMessage', 'Must be a @berkeley.edu email account'));
                 }
@@ -78,12 +82,18 @@ module.exports = function(passport) {
 
                             Users.findOne({ where:{id : req.user.dataValues.id }
                             }).then(function(user) {
-                                user.email    = email;
-                                user.password = UserMethods.generateHash(password);
-                                user.save().then(function() {
-                                    //if (err)
-                                    //    throw err;
-                                    return done(null, user);
+                                kickbox.verify(email, function (err, response) {
+                                    if (response.body.result === 'deliverable') {
+                                        user.email = response.body.email;
+                                        user.password = UserMethods.generateHash(password);
+                                        user.save().then(function () {
+                                            //if (err)
+                                            //    throw err;
+                                            return done(null, user);
+                                        });
+                                    } else {
+                                        return done(null, false, req.flash('signupMessage', response.body.reason));
+                                    }
                                 });
                             });
 
