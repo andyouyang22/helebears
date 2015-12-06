@@ -75,31 +75,41 @@ module.exports = function(passport) {
 
                         //  If we're logged in, we're connecting a new local account.
                         if(req.user) {
-                            var user = req.user;
-                            user.email    = email;
-                            user.password = UserMethods.generateHash(password);
-                            user.save().then(function() {
-                                //if (err)
-                                //    throw err;
-                                return done(null, user);
+
+                            Users.findOne({ where:{id : req.user.dataValues.id }
+                            }).then(function(user) {
+                                user.email    = email;
+                                user.password = UserMethods.generateHash(password);
+                                user.save().then(function() {
+                                    //if (err)
+                                    //    throw err;
+                                    return done(null, user);
+                                });
                             });
+
+                        } else {
+
+                            // if there is no user with that email
+                            // create the new user and add to the database
+
+                            kickbox.verify(email, function (err, response) {
+                                // Let's see some results
+                                console.log(response.body);
+                                if (response.body.result === 'deliverable') {
+                                    var newUser = Users.build({
+                                        email: response.body.email,
+                                        password: UserMethods.generateHash(password)
+                                    });
+                                    newUser.save();
+                                    return done(null, newUser);
+                                } else {
+                                    return done(null, false, req.flash('signupMessage', response.body.reason));
+                                }
+
+                            });
+
+
                         }
-
-                        // if there is no user with that email
-                        // create the new user and add to the database
-
-                        kickbox.verify(email, function (err, response) {
-                            // Let's see some results
-                            console.log(response.body);
-                            if(response.body.result === 'deliverable'){
-                                var newUser = Users.build({email:response.body.email,password: UserMethods.generateHash(password)});
-                                newUser.save();
-                                return done(null,newUser);
-                            } else {
-                                return done(null, false, req.flash('signupMessage', response.body.reason));
-                            }
-
-                        });
 
                     }
 
@@ -178,8 +188,8 @@ module.exports = function(passport) {
                                 googleid: profile.id,
                                 googletoken: token,
                                 googlename: profile.displayName,
-                                googleemail: profile.emails[0].value,
-                                email:''
+                                googleemail: profile.emails[0].value
+                                //email:''
                             });
                             newUser.save();
                             return done(null, newUser);
