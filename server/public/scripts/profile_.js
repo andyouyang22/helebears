@@ -5,18 +5,24 @@
 
 var React    = require('react');
 var ReactDOM = require('react-dom');
-var ajax = require('./util/ajax.js');
+
+var ajax = {
+	get: function(url, onSuccess, onFailure) {
+		$.ajax({
+			type: 'GET',
+			url: apiUrl + url,
+			dataType: "json",
+			success: onSuccess,
+			error: onFailure
+		});
+	},
+}
 
 var Menu = React.createClass({
-	slogan: function() {
-		menuDOM = $(ReactDOM.findDOMNode(this));
-		menuDOM.find('.menu-slogan').animate({width:'toggle'}, "100%");
-	},
 	render: function() {
 		return (
 			<header>
-				<Menu.Logo slogan={this.slogan} />
-				<Menu.Slogan />
+				<Menu.Logo />
 				<Menu.Buttons />
 			</header>
 		);
@@ -26,17 +32,9 @@ var Menu = React.createClass({
 Menu.Logo = React.createClass({
 	render: function() {
 		return (
-			<a className='pure-menu-heading pure-menu-link' onClick={this.props.slogan}>HeleBears</a>
+			<a className='pure-menu-heading pure-menu-link' href='/homepage'>HeleBears</a>
 		);
 	}
-});
-
-Menu.Slogan = React.createClass({
-	render: function() {
-		return (
-			<div className='menu-slogan' style={{display:'none'}}>Tell your friends</div>
-		);
-	},
 });
 
 Menu.Buttons = React.createClass({
@@ -58,11 +56,13 @@ Menu.Buttons = React.createClass({
 	render: function() {
 		return (
 			<ul className='pure-menu-list'>
-				<a className='pure-menu-link pure-menu-item menu-logout' href='/profile'>Profile</a>
 				<a className='pure-menu-link pure-menu-item menu-logout' href='/logout'>Log Out</a>
 			</ul>
 		);
 	}
 });
 
-module.exports = Menu;
+ReactDOM.render(
+	<Menu />,
+	document.getElementById('container-top')
+);

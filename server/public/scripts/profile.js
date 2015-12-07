@@ -1,3482 +1,4 @@
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
-/*!
- * Chart.js
- * http://chartjs.org/
- * Version: 1.0.2
- *
- * Copyright 2015 Nick Downie
- * Released under the MIT license
- * https://github.com/nnnick/Chart.js/blob/master/LICENSE.md
- */
-
-
-(function(){
-
-	"use strict";
-
-	//Declare root variable - window in the browser, global on the server
-	var root = this,
-		previous = root.Chart;
-
-	//Occupy the global variable of Chart, and create a simple base class
-	var Chart = function(context){
-		var chart = this;
-		this.canvas = context.canvas;
-
-		this.ctx = context;
-
-		//Variables global to the chart
-		var computeDimension = function(element,dimension)
-		{
-			if (element['offset'+dimension])
-			{
-				return element['offset'+dimension];
-			}
-			else
-			{
-				return document.defaultView.getComputedStyle(element).getPropertyValue(dimension);
-			}
-		}
-
-		var width = this.width = computeDimension(context.canvas,'Width');
-		var height = this.height = computeDimension(context.canvas,'Height');
-
-		// Firefox requires this to work correctly
-		context.canvas.width  = width;
-		context.canvas.height = height;
-
-		var width = this.width = context.canvas.width;
-		var height = this.height = context.canvas.height;
-		this.aspectRatio = this.width / this.height;
-		//High pixel density displays - multiply the size of the canvas height/width by the device pixel ratio, then scale.
-		helpers.retinaScale(this);
-
-		return this;
-	};
-	//Globally expose the defaults to allow for user updating/changing
-	Chart.defaults = {
-		global: {
-			// Boolean - Whether to animate the chart
-			animation: true,
-
-			// Number - Number of animation steps
-			animationSteps: 60,
-
-			// String - Animation easing effect
-			animationEasing: "easeOutQuart",
-
-			// Boolean - If we should show the scale at all
-			showScale: true,
-
-			// Boolean - If we want to override with a hard coded scale
-			scaleOverride: false,
-
-			// ** Required if scaleOverride is true **
-			// Number - The number of steps in a hard coded scale
-			scaleSteps: null,
-			// Number - The value jump in the hard coded scale
-			scaleStepWidth: null,
-			// Number - The scale starting value
-			scaleStartValue: null,
-
-			// String - Colour of the scale line
-			scaleLineColor: "rgba(0,0,0,.1)",
-
-			// Number - Pixel width of the scale line
-			scaleLineWidth: 1,
-
-			// Boolean - Whether to show labels on the scale
-			scaleShowLabels: true,
-
-			// Interpolated JS string - can access value
-			scaleLabel: "<%=value%>",
-
-			// Boolean - Whether the scale should stick to integers, and not show any floats even if drawing space is there
-			scaleIntegersOnly: true,
-
-			// Boolean - Whether the scale should start at zero, or an order of magnitude down from the lowest value
-			scaleBeginAtZero: false,
-
-			// String - Scale label font declaration for the scale label
-			scaleFontFamily: "'Helvetica Neue', 'Helvetica', 'Arial', sans-serif",
-
-			// Number - Scale label font size in pixels
-			scaleFontSize: 12,
-
-			// String - Scale label font weight style
-			scaleFontStyle: "normal",
-
-			// String - Scale label font colour
-			scaleFontColor: "#666",
-
-			// Boolean - whether or not the chart should be responsive and resize when the browser does.
-			responsive: false,
-
-			// Boolean - whether to maintain the starting aspect ratio or not when responsive, if set to false, will take up entire container
-			maintainAspectRatio: true,
-
-			// Boolean - Determines whether to draw tooltips on the canvas or not - attaches events to touchmove & mousemove
-			showTooltips: true,
-
-			// Boolean - Determines whether to draw built-in tooltip or call custom tooltip function
-			customTooltips: false,
-
-			// Array - Array of string names to attach tooltip events
-			tooltipEvents: ["mousemove", "touchstart", "touchmove", "mouseout"],
-
-			// String - Tooltip background colour
-			tooltipFillColor: "rgba(0,0,0,0.8)",
-
-			// String - Tooltip label font declaration for the scale label
-			tooltipFontFamily: "'Helvetica Neue', 'Helvetica', 'Arial', sans-serif",
-
-			// Number - Tooltip label font size in pixels
-			tooltipFontSize: 14,
-
-			// String - Tooltip font weight style
-			tooltipFontStyle: "normal",
-
-			// String - Tooltip label font colour
-			tooltipFontColor: "#fff",
-
-			// String - Tooltip title font declaration for the scale label
-			tooltipTitleFontFamily: "'Helvetica Neue', 'Helvetica', 'Arial', sans-serif",
-
-			// Number - Tooltip title font size in pixels
-			tooltipTitleFontSize: 14,
-
-			// String - Tooltip title font weight style
-			tooltipTitleFontStyle: "bold",
-
-			// String - Tooltip title font colour
-			tooltipTitleFontColor: "#fff",
-
-			// Number - pixel width of padding around tooltip text
-			tooltipYPadding: 6,
-
-			// Number - pixel width of padding around tooltip text
-			tooltipXPadding: 6,
-
-			// Number - Size of the caret on the tooltip
-			tooltipCaretSize: 8,
-
-			// Number - Pixel radius of the tooltip border
-			tooltipCornerRadius: 6,
-
-			// Number - Pixel offset from point x to tooltip edge
-			tooltipXOffset: 10,
-
-			// String - Template string for single tooltips
-			tooltipTemplate: "<%if (label){%><%=label%>: <%}%><%= value %>",
-
-			// String - Template string for single tooltips
-			multiTooltipTemplate: "<%= value %>",
-
-			// String - Colour behind the legend colour block
-			multiTooltipKeyBackground: '#fff',
-
-			// Function - Will fire on animation progression.
-			onAnimationProgress: function(){},
-
-			// Function - Will fire on animation completion.
-			onAnimationComplete: function(){}
-
-		}
-	};
-
-	//Create a dictionary of chart types, to allow for extension of existing types
-	Chart.types = {};
-
-	//Global Chart helpers object for utility methods and classes
-	var helpers = Chart.helpers = {};
-
-		//-- Basic js utility methods
-	var each = helpers.each = function(loopable,callback,self){
-			var additionalArgs = Array.prototype.slice.call(arguments, 3);
-			// Check to see if null or undefined firstly.
-			if (loopable){
-				if (loopable.length === +loopable.length){
-					var i;
-					for (i=0; i<loopable.length; i++){
-						callback.apply(self,[loopable[i], i].concat(additionalArgs));
-					}
-				}
-				else{
-					for (var item in loopable){
-						callback.apply(self,[loopable[item],item].concat(additionalArgs));
-					}
-				}
-			}
-		},
-		clone = helpers.clone = function(obj){
-			var objClone = {};
-			each(obj,function(value,key){
-				if (obj.hasOwnProperty(key)) objClone[key] = value;
-			});
-			return objClone;
-		},
-		extend = helpers.extend = function(base){
-			each(Array.prototype.slice.call(arguments,1), function(extensionObject) {
-				each(extensionObject,function(value,key){
-					if (extensionObject.hasOwnProperty(key)) base[key] = value;
-				});
-			});
-			return base;
-		},
-		merge = helpers.merge = function(base,master){
-			//Merge properties in left object over to a shallow clone of object right.
-			var args = Array.prototype.slice.call(arguments,0);
-			args.unshift({});
-			return extend.apply(null, args);
-		},
-		indexOf = helpers.indexOf = function(arrayToSearch, item){
-			if (Array.prototype.indexOf) {
-				return arrayToSearch.indexOf(item);
-			}
-			else{
-				for (var i = 0; i < arrayToSearch.length; i++) {
-					if (arrayToSearch[i] === item) return i;
-				}
-				return -1;
-			}
-		},
-		where = helpers.where = function(collection, filterCallback){
-			var filtered = [];
-
-			helpers.each(collection, function(item){
-				if (filterCallback(item)){
-					filtered.push(item);
-				}
-			});
-
-			return filtered;
-		},
-		findNextWhere = helpers.findNextWhere = function(arrayToSearch, filterCallback, startIndex){
-			// Default to start of the array
-			if (!startIndex){
-				startIndex = -1;
-			}
-			for (var i = startIndex + 1; i < arrayToSearch.length; i++) {
-				var currentItem = arrayToSearch[i];
-				if (filterCallback(currentItem)){
-					return currentItem;
-				}
-			}
-		},
-		findPreviousWhere = helpers.findPreviousWhere = function(arrayToSearch, filterCallback, startIndex){
-			// Default to end of the array
-			if (!startIndex){
-				startIndex = arrayToSearch.length;
-			}
-			for (var i = startIndex - 1; i >= 0; i--) {
-				var currentItem = arrayToSearch[i];
-				if (filterCallback(currentItem)){
-					return currentItem;
-				}
-			}
-		},
-		inherits = helpers.inherits = function(extensions){
-			//Basic javascript inheritance based on the model created in Backbone.js
-			var parent = this;
-			var ChartElement = (extensions && extensions.hasOwnProperty("constructor")) ? extensions.constructor : function(){ return parent.apply(this, arguments); };
-
-			var Surrogate = function(){ this.constructor = ChartElement;};
-			Surrogate.prototype = parent.prototype;
-			ChartElement.prototype = new Surrogate();
-
-			ChartElement.extend = inherits;
-
-			if (extensions) extend(ChartElement.prototype, extensions);
-
-			ChartElement.__super__ = parent.prototype;
-
-			return ChartElement;
-		},
-		noop = helpers.noop = function(){},
-		uid = helpers.uid = (function(){
-			var id=0;
-			return function(){
-				return "chart-" + id++;
-			};
-		})(),
-		warn = helpers.warn = function(str){
-			//Method for warning of errors
-			if (window.console && typeof window.console.warn == "function") console.warn(str);
-		},
-		amd = helpers.amd = (typeof define == 'function' && define.amd),
-		//-- Math methods
-		isNumber = helpers.isNumber = function(n){
-			return !isNaN(parseFloat(n)) && isFinite(n);
-		},
-		max = helpers.max = function(array){
-			return Math.max.apply( Math, array );
-		},
-		min = helpers.min = function(array){
-			return Math.min.apply( Math, array );
-		},
-		cap = helpers.cap = function(valueToCap,maxValue,minValue){
-			if(isNumber(maxValue)) {
-				if( valueToCap > maxValue ) {
-					return maxValue;
-				}
-			}
-			else if(isNumber(minValue)){
-				if ( valueToCap < minValue ){
-					return minValue;
-				}
-			}
-			return valueToCap;
-		},
-		getDecimalPlaces = helpers.getDecimalPlaces = function(num){
-			if (num%1!==0 && isNumber(num)){
-				return num.toString().split(".")[1].length;
-			}
-			else {
-				return 0;
-			}
-		},
-		toRadians = helpers.radians = function(degrees){
-			return degrees * (Math.PI/180);
-		},
-		// Gets the angle from vertical upright to the point about a centre.
-		getAngleFromPoint = helpers.getAngleFromPoint = function(centrePoint, anglePoint){
-			var distanceFromXCenter = anglePoint.x - centrePoint.x,
-				distanceFromYCenter = anglePoint.y - centrePoint.y,
-				radialDistanceFromCenter = Math.sqrt( distanceFromXCenter * distanceFromXCenter + distanceFromYCenter * distanceFromYCenter);
-
-
-			var angle = Math.PI * 2 + Math.atan2(distanceFromYCenter, distanceFromXCenter);
-
-			//If the segment is in the top left quadrant, we need to add another rotation to the angle
-			if (distanceFromXCenter < 0 && distanceFromYCenter < 0){
-				angle += Math.PI*2;
-			}
-
-			return {
-				angle: angle,
-				distance: radialDistanceFromCenter
-			};
-		},
-		aliasPixel = helpers.aliasPixel = function(pixelWidth){
-			return (pixelWidth % 2 === 0) ? 0 : 0.5;
-		},
-		splineCurve = helpers.splineCurve = function(FirstPoint,MiddlePoint,AfterPoint,t){
-			//Props to Rob Spencer at scaled innovation for his post on splining between points
-			//http://scaledinnovation.com/analytics/splines/aboutSplines.html
-			var d01=Math.sqrt(Math.pow(MiddlePoint.x-FirstPoint.x,2)+Math.pow(MiddlePoint.y-FirstPoint.y,2)),
-				d12=Math.sqrt(Math.pow(AfterPoint.x-MiddlePoint.x,2)+Math.pow(AfterPoint.y-MiddlePoint.y,2)),
-				fa=t*d01/(d01+d12),// scaling factor for triangle Ta
-				fb=t*d12/(d01+d12);
-			return {
-				inner : {
-					x : MiddlePoint.x-fa*(AfterPoint.x-FirstPoint.x),
-					y : MiddlePoint.y-fa*(AfterPoint.y-FirstPoint.y)
-				},
-				outer : {
-					x: MiddlePoint.x+fb*(AfterPoint.x-FirstPoint.x),
-					y : MiddlePoint.y+fb*(AfterPoint.y-FirstPoint.y)
-				}
-			};
-		},
-		calculateOrderOfMagnitude = helpers.calculateOrderOfMagnitude = function(val){
-			return Math.floor(Math.log(val) / Math.LN10);
-		},
-		calculateScaleRange = helpers.calculateScaleRange = function(valuesArray, drawingSize, textSize, startFromZero, integersOnly){
-
-			//Set a minimum step of two - a point at the top of the graph, and a point at the base
-			var minSteps = 2,
-				maxSteps = Math.floor(drawingSize/(textSize * 1.5)),
-				skipFitting = (minSteps >= maxSteps);
-
-			var maxValue = max(valuesArray),
-				minValue = min(valuesArray);
-
-			// We need some degree of seperation here to calculate the scales if all the values are the same
-			// Adding/minusing 0.5 will give us a range of 1.
-			if (maxValue === minValue){
-				maxValue += 0.5;
-				// So we don't end up with a graph with a negative start value if we've said always start from zero
-				if (minValue >= 0.5 && !startFromZero){
-					minValue -= 0.5;
-				}
-				else{
-					// Make up a whole number above the values
-					maxValue += 0.5;
-				}
-			}
-
-			var	valueRange = Math.abs(maxValue - minValue),
-				rangeOrderOfMagnitude = calculateOrderOfMagnitude(valueRange),
-				graphMax = Math.ceil(maxValue / (1 * Math.pow(10, rangeOrderOfMagnitude))) * Math.pow(10, rangeOrderOfMagnitude),
-				graphMin = (startFromZero) ? 0 : Math.floor(minValue / (1 * Math.pow(10, rangeOrderOfMagnitude))) * Math.pow(10, rangeOrderOfMagnitude),
-				graphRange = graphMax - graphMin,
-				stepValue = Math.pow(10, rangeOrderOfMagnitude),
-				numberOfSteps = Math.round(graphRange / stepValue);
-
-			//If we have more space on the graph we'll use it to give more definition to the data
-			while((numberOfSteps > maxSteps || (numberOfSteps * 2) < maxSteps) && !skipFitting) {
-				if(numberOfSteps > maxSteps){
-					stepValue *=2;
-					numberOfSteps = Math.round(graphRange/stepValue);
-					// Don't ever deal with a decimal number of steps - cancel fitting and just use the minimum number of steps.
-					if (numberOfSteps % 1 !== 0){
-						skipFitting = true;
-					}
-				}
-				//We can fit in double the amount of scale points on the scale
-				else{
-					//If user has declared ints only, and the step value isn't a decimal
-					if (integersOnly && rangeOrderOfMagnitude >= 0){
-						//If the user has said integers only, we need to check that making the scale more granular wouldn't make it a float
-						if(stepValue/2 % 1 === 0){
-							stepValue /=2;
-							numberOfSteps = Math.round(graphRange/stepValue);
-						}
-						//If it would make it a float break out of the loop
-						else{
-							break;
-						}
-					}
-					//If the scale doesn't have to be an int, make the scale more granular anyway.
-					else{
-						stepValue /=2;
-						numberOfSteps = Math.round(graphRange/stepValue);
-					}
-
-				}
-			}
-
-			if (skipFitting){
-				numberOfSteps = minSteps;
-				stepValue = graphRange / numberOfSteps;
-			}
-
-			return {
-				steps : numberOfSteps,
-				stepValue : stepValue,
-				min : graphMin,
-				max	: graphMin + (numberOfSteps * stepValue)
-			};
-
-		},
-		/* jshint ignore:start */
-		// Blows up jshint errors based on the new Function constructor
-		//Templating methods
-		//Javascript micro templating by John Resig - source at http://ejohn.org/blog/javascript-micro-templating/
-		template = helpers.template = function(templateString, valuesObject){
-
-			// If templateString is function rather than string-template - call the function for valuesObject
-
-			if(templateString instanceof Function){
-			 	return templateString(valuesObject);
-		 	}
-
-			var cache = {};
-			function tmpl(str, data){
-				// Figure out if we're getting a template, or if we need to
-				// load the template - and be sure to cache the result.
-				var fn = !/\W/.test(str) ?
-				cache[str] = cache[str] :
-
-				// Generate a reusable function that will serve as a template
-				// generator (and which will be cached).
-				new Function("obj",
-					"var p=[],print=function(){p.push.apply(p,arguments);};" +
-
-					// Introduce the data as local variables using with(){}
-					"with(obj){p.push('" +
-
-					// Convert the template into pure JavaScript
-					str
-						.replace(/[\r\t\n]/g, " ")
-						.split("<%").join("\t")
-						.replace(/((^|%>)[^\t]*)'/g, "$1\r")
-						.replace(/\t=(.*?)%>/g, "',$1,'")
-						.split("\t").join("');")
-						.split("%>").join("p.push('")
-						.split("\r").join("\\'") +
-					"');}return p.join('');"
-				);
-
-				// Provide some basic currying to the user
-				return data ? fn( data ) : fn;
-			}
-			return tmpl(templateString,valuesObject);
-		},
-		/* jshint ignore:end */
-		generateLabels = helpers.generateLabels = function(templateString,numberOfSteps,graphMin,stepValue){
-			var labelsArray = new Array(numberOfSteps);
-			if (labelTemplateString){
-				each(labelsArray,function(val,index){
-					labelsArray[index] = template(templateString,{value: (graphMin + (stepValue*(index+1)))});
-				});
-			}
-			return labelsArray;
-		},
-		//--Animation methods
-		//Easing functions adapted from Robert Penner's easing equations
-		//http://www.robertpenner.com/easing/
-		easingEffects = helpers.easingEffects = {
-			linear: function (t) {
-				return t;
-			},
-			easeInQuad: function (t) {
-				return t * t;
-			},
-			easeOutQuad: function (t) {
-				return -1 * t * (t - 2);
-			},
-			easeInOutQuad: function (t) {
-				if ((t /= 1 / 2) < 1) return 1 / 2 * t * t;
-				return -1 / 2 * ((--t) * (t - 2) - 1);
-			},
-			easeInCubic: function (t) {
-				return t * t * t;
-			},
-			easeOutCubic: function (t) {
-				return 1 * ((t = t / 1 - 1) * t * t + 1);
-			},
-			easeInOutCubic: function (t) {
-				if ((t /= 1 / 2) < 1) return 1 / 2 * t * t * t;
-				return 1 / 2 * ((t -= 2) * t * t + 2);
-			},
-			easeInQuart: function (t) {
-				return t * t * t * t;
-			},
-			easeOutQuart: function (t) {
-				return -1 * ((t = t / 1 - 1) * t * t * t - 1);
-			},
-			easeInOutQuart: function (t) {
-				if ((t /= 1 / 2) < 1) return 1 / 2 * t * t * t * t;
-				return -1 / 2 * ((t -= 2) * t * t * t - 2);
-			},
-			easeInQuint: function (t) {
-				return 1 * (t /= 1) * t * t * t * t;
-			},
-			easeOutQuint: function (t) {
-				return 1 * ((t = t / 1 - 1) * t * t * t * t + 1);
-			},
-			easeInOutQuint: function (t) {
-				if ((t /= 1 / 2) < 1) return 1 / 2 * t * t * t * t * t;
-				return 1 / 2 * ((t -= 2) * t * t * t * t + 2);
-			},
-			easeInSine: function (t) {
-				return -1 * Math.cos(t / 1 * (Math.PI / 2)) + 1;
-			},
-			easeOutSine: function (t) {
-				return 1 * Math.sin(t / 1 * (Math.PI / 2));
-			},
-			easeInOutSine: function (t) {
-				return -1 / 2 * (Math.cos(Math.PI * t / 1) - 1);
-			},
-			easeInExpo: function (t) {
-				return (t === 0) ? 1 : 1 * Math.pow(2, 10 * (t / 1 - 1));
-			},
-			easeOutExpo: function (t) {
-				return (t === 1) ? 1 : 1 * (-Math.pow(2, -10 * t / 1) + 1);
-			},
-			easeInOutExpo: function (t) {
-				if (t === 0) return 0;
-				if (t === 1) return 1;
-				if ((t /= 1 / 2) < 1) return 1 / 2 * Math.pow(2, 10 * (t - 1));
-				return 1 / 2 * (-Math.pow(2, -10 * --t) + 2);
-			},
-			easeInCirc: function (t) {
-				if (t >= 1) return t;
-				return -1 * (Math.sqrt(1 - (t /= 1) * t) - 1);
-			},
-			easeOutCirc: function (t) {
-				return 1 * Math.sqrt(1 - (t = t / 1 - 1) * t);
-			},
-			easeInOutCirc: function (t) {
-				if ((t /= 1 / 2) < 1) return -1 / 2 * (Math.sqrt(1 - t * t) - 1);
-				return 1 / 2 * (Math.sqrt(1 - (t -= 2) * t) + 1);
-			},
-			easeInElastic: function (t) {
-				var s = 1.70158;
-				var p = 0;
-				var a = 1;
-				if (t === 0) return 0;
-				if ((t /= 1) == 1) return 1;
-				if (!p) p = 1 * 0.3;
-				if (a < Math.abs(1)) {
-					a = 1;
-					s = p / 4;
-				} else s = p / (2 * Math.PI) * Math.asin(1 / a);
-				return -(a * Math.pow(2, 10 * (t -= 1)) * Math.sin((t * 1 - s) * (2 * Math.PI) / p));
-			},
-			easeOutElastic: function (t) {
-				var s = 1.70158;
-				var p = 0;
-				var a = 1;
-				if (t === 0) return 0;
-				if ((t /= 1) == 1) return 1;
-				if (!p) p = 1 * 0.3;
-				if (a < Math.abs(1)) {
-					a = 1;
-					s = p / 4;
-				} else s = p / (2 * Math.PI) * Math.asin(1 / a);
-				return a * Math.pow(2, -10 * t) * Math.sin((t * 1 - s) * (2 * Math.PI) / p) + 1;
-			},
-			easeInOutElastic: function (t) {
-				var s = 1.70158;
-				var p = 0;
-				var a = 1;
-				if (t === 0) return 0;
-				if ((t /= 1 / 2) == 2) return 1;
-				if (!p) p = 1 * (0.3 * 1.5);
-				if (a < Math.abs(1)) {
-					a = 1;
-					s = p / 4;
-				} else s = p / (2 * Math.PI) * Math.asin(1 / a);
-				if (t < 1) return -0.5 * (a * Math.pow(2, 10 * (t -= 1)) * Math.sin((t * 1 - s) * (2 * Math.PI) / p));
-				return a * Math.pow(2, -10 * (t -= 1)) * Math.sin((t * 1 - s) * (2 * Math.PI) / p) * 0.5 + 1;
-			},
-			easeInBack: function (t) {
-				var s = 1.70158;
-				return 1 * (t /= 1) * t * ((s + 1) * t - s);
-			},
-			easeOutBack: function (t) {
-				var s = 1.70158;
-				return 1 * ((t = t / 1 - 1) * t * ((s + 1) * t + s) + 1);
-			},
-			easeInOutBack: function (t) {
-				var s = 1.70158;
-				if ((t /= 1 / 2) < 1) return 1 / 2 * (t * t * (((s *= (1.525)) + 1) * t - s));
-				return 1 / 2 * ((t -= 2) * t * (((s *= (1.525)) + 1) * t + s) + 2);
-			},
-			easeInBounce: function (t) {
-				return 1 - easingEffects.easeOutBounce(1 - t);
-			},
-			easeOutBounce: function (t) {
-				if ((t /= 1) < (1 / 2.75)) {
-					return 1 * (7.5625 * t * t);
-				} else if (t < (2 / 2.75)) {
-					return 1 * (7.5625 * (t -= (1.5 / 2.75)) * t + 0.75);
-				} else if (t < (2.5 / 2.75)) {
-					return 1 * (7.5625 * (t -= (2.25 / 2.75)) * t + 0.9375);
-				} else {
-					return 1 * (7.5625 * (t -= (2.625 / 2.75)) * t + 0.984375);
-				}
-			},
-			easeInOutBounce: function (t) {
-				if (t < 1 / 2) return easingEffects.easeInBounce(t * 2) * 0.5;
-				return easingEffects.easeOutBounce(t * 2 - 1) * 0.5 + 1 * 0.5;
-			}
-		},
-		//Request animation polyfill - http://www.paulirish.com/2011/requestanimationframe-for-smart-animating/
-		requestAnimFrame = helpers.requestAnimFrame = (function(){
-			return window.requestAnimationFrame ||
-				window.webkitRequestAnimationFrame ||
-				window.mozRequestAnimationFrame ||
-				window.oRequestAnimationFrame ||
-				window.msRequestAnimationFrame ||
-				function(callback) {
-					return window.setTimeout(callback, 1000 / 60);
-				};
-		})(),
-		cancelAnimFrame = helpers.cancelAnimFrame = (function(){
-			return window.cancelAnimationFrame ||
-				window.webkitCancelAnimationFrame ||
-				window.mozCancelAnimationFrame ||
-				window.oCancelAnimationFrame ||
-				window.msCancelAnimationFrame ||
-				function(callback) {
-					return window.clearTimeout(callback, 1000 / 60);
-				};
-		})(),
-		animationLoop = helpers.animationLoop = function(callback,totalSteps,easingString,onProgress,onComplete,chartInstance){
-
-			var currentStep = 0,
-				easingFunction = easingEffects[easingString] || easingEffects.linear;
-
-			var animationFrame = function(){
-				currentStep++;
-				var stepDecimal = currentStep/totalSteps;
-				var easeDecimal = easingFunction(stepDecimal);
-
-				callback.call(chartInstance,easeDecimal,stepDecimal, currentStep);
-				onProgress.call(chartInstance,easeDecimal,stepDecimal);
-				if (currentStep < totalSteps){
-					chartInstance.animationFrame = requestAnimFrame(animationFrame);
-				} else{
-					onComplete.apply(chartInstance);
-				}
-			};
-			requestAnimFrame(animationFrame);
-		},
-		//-- DOM methods
-		getRelativePosition = helpers.getRelativePosition = function(evt){
-			var mouseX, mouseY;
-			var e = evt.originalEvent || evt,
-				canvas = evt.currentTarget || evt.srcElement,
-				boundingRect = canvas.getBoundingClientRect();
-
-			if (e.touches){
-				mouseX = e.touches[0].clientX - boundingRect.left;
-				mouseY = e.touches[0].clientY - boundingRect.top;
-
-			}
-			else{
-				mouseX = e.clientX - boundingRect.left;
-				mouseY = e.clientY - boundingRect.top;
-			}
-
-			return {
-				x : mouseX,
-				y : mouseY
-			};
-
-		},
-		addEvent = helpers.addEvent = function(node,eventType,method){
-			if (node.addEventListener){
-				node.addEventListener(eventType,method);
-			} else if (node.attachEvent){
-				node.attachEvent("on"+eventType, method);
-			} else {
-				node["on"+eventType] = method;
-			}
-		},
-		removeEvent = helpers.removeEvent = function(node, eventType, handler){
-			if (node.removeEventListener){
-				node.removeEventListener(eventType, handler, false);
-			} else if (node.detachEvent){
-				node.detachEvent("on"+eventType,handler);
-			} else{
-				node["on" + eventType] = noop;
-			}
-		},
-		bindEvents = helpers.bindEvents = function(chartInstance, arrayOfEvents, handler){
-			// Create the events object if it's not already present
-			if (!chartInstance.events) chartInstance.events = {};
-
-			each(arrayOfEvents,function(eventName){
-				chartInstance.events[eventName] = function(){
-					handler.apply(chartInstance, arguments);
-				};
-				addEvent(chartInstance.chart.canvas,eventName,chartInstance.events[eventName]);
-			});
-		},
-		unbindEvents = helpers.unbindEvents = function (chartInstance, arrayOfEvents) {
-			each(arrayOfEvents, function(handler,eventName){
-				removeEvent(chartInstance.chart.canvas, eventName, handler);
-			});
-		},
-		getMaximumWidth = helpers.getMaximumWidth = function(domNode){
-			var container = domNode.parentNode;
-			// TODO = check cross browser stuff with this.
-			return container.clientWidth;
-		},
-		getMaximumHeight = helpers.getMaximumHeight = function(domNode){
-			var container = domNode.parentNode;
-			// TODO = check cross browser stuff with this.
-			return container.clientHeight;
-		},
-		getMaximumSize = helpers.getMaximumSize = helpers.getMaximumWidth, // legacy support
-		retinaScale = helpers.retinaScale = function(chart){
-			var ctx = chart.ctx,
-				width = chart.canvas.width,
-				height = chart.canvas.height;
-
-			if (window.devicePixelRatio) {
-				ctx.canvas.style.width = width + "px";
-				ctx.canvas.style.height = height + "px";
-				ctx.canvas.height = height * window.devicePixelRatio;
-				ctx.canvas.width = width * window.devicePixelRatio;
-				ctx.scale(window.devicePixelRatio, window.devicePixelRatio);
-			}
-		},
-		//-- Canvas methods
-		clear = helpers.clear = function(chart){
-			chart.ctx.clearRect(0,0,chart.width,chart.height);
-		},
-		fontString = helpers.fontString = function(pixelSize,fontStyle,fontFamily){
-			return fontStyle + " " + pixelSize+"px " + fontFamily;
-		},
-		longestText = helpers.longestText = function(ctx,font,arrayOfStrings){
-			ctx.font = font;
-			var longest = 0;
-			each(arrayOfStrings,function(string){
-				var textWidth = ctx.measureText(string).width;
-				longest = (textWidth > longest) ? textWidth : longest;
-			});
-			return longest;
-		},
-		drawRoundedRectangle = helpers.drawRoundedRectangle = function(ctx,x,y,width,height,radius){
-			ctx.beginPath();
-			ctx.moveTo(x + radius, y);
-			ctx.lineTo(x + width - radius, y);
-			ctx.quadraticCurveTo(x + width, y, x + width, y + radius);
-			ctx.lineTo(x + width, y + height - radius);
-			ctx.quadraticCurveTo(x + width, y + height, x + width - radius, y + height);
-			ctx.lineTo(x + radius, y + height);
-			ctx.quadraticCurveTo(x, y + height, x, y + height - radius);
-			ctx.lineTo(x, y + radius);
-			ctx.quadraticCurveTo(x, y, x + radius, y);
-			ctx.closePath();
-		};
-
-
-	//Store a reference to each instance - allowing us to globally resize chart instances on window resize.
-	//Destroy method on the chart will remove the instance of the chart from this reference.
-	Chart.instances = {};
-
-	Chart.Type = function(data,options,chart){
-		this.options = options;
-		this.chart = chart;
-		this.id = uid();
-		//Add the chart instance to the global namespace
-		Chart.instances[this.id] = this;
-
-		// Initialize is always called when a chart type is created
-		// By default it is a no op, but it should be extended
-		if (options.responsive){
-			this.resize();
-		}
-		this.initialize.call(this,data);
-	};
-
-	//Core methods that'll be a part of every chart type
-	extend(Chart.Type.prototype,{
-		initialize : function(){return this;},
-		clear : function(){
-			clear(this.chart);
-			return this;
-		},
-		stop : function(){
-			// Stops any current animation loop occuring
-			cancelAnimFrame(this.animationFrame);
-			return this;
-		},
-		resize : function(callback){
-			this.stop();
-			var canvas = this.chart.canvas,
-				newWidth = getMaximumWidth(this.chart.canvas),
-				newHeight = this.options.maintainAspectRatio ? newWidth / this.chart.aspectRatio : getMaximumHeight(this.chart.canvas);
-
-			canvas.width = this.chart.width = newWidth;
-			canvas.height = this.chart.height = newHeight;
-
-			retinaScale(this.chart);
-
-			if (typeof callback === "function"){
-				callback.apply(this, Array.prototype.slice.call(arguments, 1));
-			}
-			return this;
-		},
-		reflow : noop,
-		render : function(reflow){
-			if (reflow){
-				this.reflow();
-			}
-			if (this.options.animation && !reflow){
-				helpers.animationLoop(
-					this.draw,
-					this.options.animationSteps,
-					this.options.animationEasing,
-					this.options.onAnimationProgress,
-					this.options.onAnimationComplete,
-					this
-				);
-			}
-			else{
-				this.draw();
-				this.options.onAnimationComplete.call(this);
-			}
-			return this;
-		},
-		generateLegend : function(){
-			return template(this.options.legendTemplate,this);
-		},
-		destroy : function(){
-			this.clear();
-			unbindEvents(this, this.events);
-			var canvas = this.chart.canvas;
-
-			// Reset canvas height/width attributes starts a fresh with the canvas context
-			canvas.width = this.chart.width;
-			canvas.height = this.chart.height;
-
-			// < IE9 doesn't support removeProperty
-			if (canvas.style.removeProperty) {
-				canvas.style.removeProperty('width');
-				canvas.style.removeProperty('height');
-			} else {
-				canvas.style.removeAttribute('width');
-				canvas.style.removeAttribute('height');
-			}
-
-			delete Chart.instances[this.id];
-		},
-		showTooltip : function(ChartElements, forceRedraw){
-			// Only redraw the chart if we've actually changed what we're hovering on.
-			if (typeof this.activeElements === 'undefined') this.activeElements = [];
-
-			var isChanged = (function(Elements){
-				var changed = false;
-
-				if (Elements.length !== this.activeElements.length){
-					changed = true;
-					return changed;
-				}
-
-				each(Elements, function(element, index){
-					if (element !== this.activeElements[index]){
-						changed = true;
-					}
-				}, this);
-				return changed;
-			}).call(this, ChartElements);
-
-			if (!isChanged && !forceRedraw){
-				return;
-			}
-			else{
-				this.activeElements = ChartElements;
-			}
-			this.draw();
-			if(this.options.customTooltips){
-				this.options.customTooltips(false);
-			}
-			if (ChartElements.length > 0){
-				// If we have multiple datasets, show a MultiTooltip for all of the data points at that index
-				if (this.datasets && this.datasets.length > 1) {
-					var dataArray,
-						dataIndex;
-
-					for (var i = this.datasets.length - 1; i >= 0; i--) {
-						dataArray = this.datasets[i].points || this.datasets[i].bars || this.datasets[i].segments;
-						dataIndex = indexOf(dataArray, ChartElements[0]);
-						if (dataIndex !== -1){
-							break;
-						}
-					}
-					var tooltipLabels = [],
-						tooltipColors = [],
-						medianPosition = (function(index) {
-
-							// Get all the points at that particular index
-							var Elements = [],
-								dataCollection,
-								xPositions = [],
-								yPositions = [],
-								xMax,
-								yMax,
-								xMin,
-								yMin;
-							helpers.each(this.datasets, function(dataset){
-								dataCollection = dataset.points || dataset.bars || dataset.segments;
-								if (dataCollection[dataIndex] && dataCollection[dataIndex].hasValue()){
-									Elements.push(dataCollection[dataIndex]);
-								}
-							});
-
-							helpers.each(Elements, function(element) {
-								xPositions.push(element.x);
-								yPositions.push(element.y);
-
-
-								//Include any colour information about the element
-								tooltipLabels.push(helpers.template(this.options.multiTooltipTemplate, element));
-								tooltipColors.push({
-									fill: element._saved.fillColor || element.fillColor,
-									stroke: element._saved.strokeColor || element.strokeColor
-								});
-
-							}, this);
-
-							yMin = min(yPositions);
-							yMax = max(yPositions);
-
-							xMin = min(xPositions);
-							xMax = max(xPositions);
-
-							return {
-								x: (xMin > this.chart.width/2) ? xMin : xMax,
-								y: (yMin + yMax)/2
-							};
-						}).call(this, dataIndex);
-
-					new Chart.MultiTooltip({
-						x: medianPosition.x,
-						y: medianPosition.y,
-						xPadding: this.options.tooltipXPadding,
-						yPadding: this.options.tooltipYPadding,
-						xOffset: this.options.tooltipXOffset,
-						fillColor: this.options.tooltipFillColor,
-						textColor: this.options.tooltipFontColor,
-						fontFamily: this.options.tooltipFontFamily,
-						fontStyle: this.options.tooltipFontStyle,
-						fontSize: this.options.tooltipFontSize,
-						titleTextColor: this.options.tooltipTitleFontColor,
-						titleFontFamily: this.options.tooltipTitleFontFamily,
-						titleFontStyle: this.options.tooltipTitleFontStyle,
-						titleFontSize: this.options.tooltipTitleFontSize,
-						cornerRadius: this.options.tooltipCornerRadius,
-						labels: tooltipLabels,
-						legendColors: tooltipColors,
-						legendColorBackground : this.options.multiTooltipKeyBackground,
-						title: ChartElements[0].label,
-						chart: this.chart,
-						ctx: this.chart.ctx,
-						custom: this.options.customTooltips
-					}).draw();
-
-				} else {
-					each(ChartElements, function(Element) {
-						var tooltipPosition = Element.tooltipPosition();
-						new Chart.Tooltip({
-							x: Math.round(tooltipPosition.x),
-							y: Math.round(tooltipPosition.y),
-							xPadding: this.options.tooltipXPadding,
-							yPadding: this.options.tooltipYPadding,
-							fillColor: this.options.tooltipFillColor,
-							textColor: this.options.tooltipFontColor,
-							fontFamily: this.options.tooltipFontFamily,
-							fontStyle: this.options.tooltipFontStyle,
-							fontSize: this.options.tooltipFontSize,
-							caretHeight: this.options.tooltipCaretSize,
-							cornerRadius: this.options.tooltipCornerRadius,
-							text: template(this.options.tooltipTemplate, Element),
-							chart: this.chart,
-							custom: this.options.customTooltips
-						}).draw();
-					}, this);
-				}
-			}
-			return this;
-		},
-		toBase64Image : function(){
-			return this.chart.canvas.toDataURL.apply(this.chart.canvas, arguments);
-		}
-	});
-
-	Chart.Type.extend = function(extensions){
-
-		var parent = this;
-
-		var ChartType = function(){
-			return parent.apply(this,arguments);
-		};
-
-		//Copy the prototype object of the this class
-		ChartType.prototype = clone(parent.prototype);
-		//Now overwrite some of the properties in the base class with the new extensions
-		extend(ChartType.prototype, extensions);
-
-		ChartType.extend = Chart.Type.extend;
-
-		if (extensions.name || parent.prototype.name){
-
-			var chartName = extensions.name || parent.prototype.name;
-			//Assign any potential default values of the new chart type
-
-			//If none are defined, we'll use a clone of the chart type this is being extended from.
-			//I.e. if we extend a line chart, we'll use the defaults from the line chart if our new chart
-			//doesn't define some defaults of their own.
-
-			var baseDefaults = (Chart.defaults[parent.prototype.name]) ? clone(Chart.defaults[parent.prototype.name]) : {};
-
-			Chart.defaults[chartName] = extend(baseDefaults,extensions.defaults);
-
-			Chart.types[chartName] = ChartType;
-
-			//Register this new chart type in the Chart prototype
-			Chart.prototype[chartName] = function(data,options){
-				var config = merge(Chart.defaults.global, Chart.defaults[chartName], options || {});
-				return new ChartType(data,config,this);
-			};
-		} else{
-			warn("Name not provided for this chart, so it hasn't been registered");
-		}
-		return parent;
-	};
-
-	Chart.Element = function(configuration){
-		extend(this,configuration);
-		this.initialize.apply(this,arguments);
-		this.save();
-	};
-	extend(Chart.Element.prototype,{
-		initialize : function(){},
-		restore : function(props){
-			if (!props){
-				extend(this,this._saved);
-			} else {
-				each(props,function(key){
-					this[key] = this._saved[key];
-				},this);
-			}
-			return this;
-		},
-		save : function(){
-			this._saved = clone(this);
-			delete this._saved._saved;
-			return this;
-		},
-		update : function(newProps){
-			each(newProps,function(value,key){
-				this._saved[key] = this[key];
-				this[key] = value;
-			},this);
-			return this;
-		},
-		transition : function(props,ease){
-			each(props,function(value,key){
-				this[key] = ((value - this._saved[key]) * ease) + this._saved[key];
-			},this);
-			return this;
-		},
-		tooltipPosition : function(){
-			return {
-				x : this.x,
-				y : this.y
-			};
-		},
-		hasValue: function(){
-			return isNumber(this.value);
-		}
-	});
-
-	Chart.Element.extend = inherits;
-
-
-	Chart.Point = Chart.Element.extend({
-		display: true,
-		inRange: function(chartX,chartY){
-			var hitDetectionRange = this.hitDetectionRadius + this.radius;
-			return ((Math.pow(chartX-this.x, 2)+Math.pow(chartY-this.y, 2)) < Math.pow(hitDetectionRange,2));
-		},
-		draw : function(){
-			if (this.display){
-				var ctx = this.ctx;
-				ctx.beginPath();
-
-				ctx.arc(this.x, this.y, this.radius, 0, Math.PI*2);
-				ctx.closePath();
-
-				ctx.strokeStyle = this.strokeColor;
-				ctx.lineWidth = this.strokeWidth;
-
-				ctx.fillStyle = this.fillColor;
-
-				ctx.fill();
-				ctx.stroke();
-			}
-
-
-			//Quick debug for bezier curve splining
-			//Highlights control points and the line between them.
-			//Handy for dev - stripped in the min version.
-
-			// ctx.save();
-			// ctx.fillStyle = "black";
-			// ctx.strokeStyle = "black"
-			// ctx.beginPath();
-			// ctx.arc(this.controlPoints.inner.x,this.controlPoints.inner.y, 2, 0, Math.PI*2);
-			// ctx.fill();
-
-			// ctx.beginPath();
-			// ctx.arc(this.controlPoints.outer.x,this.controlPoints.outer.y, 2, 0, Math.PI*2);
-			// ctx.fill();
-
-			// ctx.moveTo(this.controlPoints.inner.x,this.controlPoints.inner.y);
-			// ctx.lineTo(this.x, this.y);
-			// ctx.lineTo(this.controlPoints.outer.x,this.controlPoints.outer.y);
-			// ctx.stroke();
-
-			// ctx.restore();
-
-
-
-		}
-	});
-
-	Chart.Arc = Chart.Element.extend({
-		inRange : function(chartX,chartY){
-
-			var pointRelativePosition = helpers.getAngleFromPoint(this, {
-				x: chartX,
-				y: chartY
-			});
-
-			//Check if within the range of the open/close angle
-			var betweenAngles = (pointRelativePosition.angle >= this.startAngle && pointRelativePosition.angle <= this.endAngle),
-				withinRadius = (pointRelativePosition.distance >= this.innerRadius && pointRelativePosition.distance <= this.outerRadius);
-
-			return (betweenAngles && withinRadius);
-			//Ensure within the outside of the arc centre, but inside arc outer
-		},
-		tooltipPosition : function(){
-			var centreAngle = this.startAngle + ((this.endAngle - this.startAngle) / 2),
-				rangeFromCentre = (this.outerRadius - this.innerRadius) / 2 + this.innerRadius;
-			return {
-				x : this.x + (Math.cos(centreAngle) * rangeFromCentre),
-				y : this.y + (Math.sin(centreAngle) * rangeFromCentre)
-			};
-		},
-		draw : function(animationPercent){
-
-			var easingDecimal = animationPercent || 1;
-
-			var ctx = this.ctx;
-
-			ctx.beginPath();
-
-			ctx.arc(this.x, this.y, this.outerRadius, this.startAngle, this.endAngle);
-
-			ctx.arc(this.x, this.y, this.innerRadius, this.endAngle, this.startAngle, true);
-
-			ctx.closePath();
-			ctx.strokeStyle = this.strokeColor;
-			ctx.lineWidth = this.strokeWidth;
-
-			ctx.fillStyle = this.fillColor;
-
-			ctx.fill();
-			ctx.lineJoin = 'bevel';
-
-			if (this.showStroke){
-				ctx.stroke();
-			}
-		}
-	});
-
-	Chart.Rectangle = Chart.Element.extend({
-		draw : function(){
-			var ctx = this.ctx,
-				halfWidth = this.width/2,
-				leftX = this.x - halfWidth,
-				rightX = this.x + halfWidth,
-				top = this.base - (this.base - this.y),
-				halfStroke = this.strokeWidth / 2;
-
-			// Canvas doesn't allow us to stroke inside the width so we can
-			// adjust the sizes to fit if we're setting a stroke on the line
-			if (this.showStroke){
-				leftX += halfStroke;
-				rightX -= halfStroke;
-				top += halfStroke;
-			}
-
-			ctx.beginPath();
-
-			ctx.fillStyle = this.fillColor;
-			ctx.strokeStyle = this.strokeColor;
-			ctx.lineWidth = this.strokeWidth;
-
-			// It'd be nice to keep this class totally generic to any rectangle
-			// and simply specify which border to miss out.
-			ctx.moveTo(leftX, this.base);
-			ctx.lineTo(leftX, top);
-			ctx.lineTo(rightX, top);
-			ctx.lineTo(rightX, this.base);
-			ctx.fill();
-			if (this.showStroke){
-				ctx.stroke();
-			}
-		},
-		height : function(){
-			return this.base - this.y;
-		},
-		inRange : function(chartX,chartY){
-			return (chartX >= this.x - this.width/2 && chartX <= this.x + this.width/2) && (chartY >= this.y && chartY <= this.base);
-		}
-	});
-
-	Chart.Tooltip = Chart.Element.extend({
-		draw : function(){
-
-			var ctx = this.chart.ctx;
-
-			ctx.font = fontString(this.fontSize,this.fontStyle,this.fontFamily);
-
-			this.xAlign = "center";
-			this.yAlign = "above";
-
-			//Distance between the actual element.y position and the start of the tooltip caret
-			var caretPadding = this.caretPadding = 2;
-
-			var tooltipWidth = ctx.measureText(this.text).width + 2*this.xPadding,
-				tooltipRectHeight = this.fontSize + 2*this.yPadding,
-				tooltipHeight = tooltipRectHeight + this.caretHeight + caretPadding;
-
-			if (this.x + tooltipWidth/2 >this.chart.width){
-				this.xAlign = "left";
-			} else if (this.x - tooltipWidth/2 < 0){
-				this.xAlign = "right";
-			}
-
-			if (this.y - tooltipHeight < 0){
-				this.yAlign = "below";
-			}
-
-
-			var tooltipX = this.x - tooltipWidth/2,
-				tooltipY = this.y - tooltipHeight;
-
-			ctx.fillStyle = this.fillColor;
-
-			// Custom Tooltips
-			if(this.custom){
-				this.custom(this);
-			}
-			else{
-				switch(this.yAlign)
-				{
-				case "above":
-					//Draw a caret above the x/y
-					ctx.beginPath();
-					ctx.moveTo(this.x,this.y - caretPadding);
-					ctx.lineTo(this.x + this.caretHeight, this.y - (caretPadding + this.caretHeight));
-					ctx.lineTo(this.x - this.caretHeight, this.y - (caretPadding + this.caretHeight));
-					ctx.closePath();
-					ctx.fill();
-					break;
-				case "below":
-					tooltipY = this.y + caretPadding + this.caretHeight;
-					//Draw a caret below the x/y
-					ctx.beginPath();
-					ctx.moveTo(this.x, this.y + caretPadding);
-					ctx.lineTo(this.x + this.caretHeight, this.y + caretPadding + this.caretHeight);
-					ctx.lineTo(this.x - this.caretHeight, this.y + caretPadding + this.caretHeight);
-					ctx.closePath();
-					ctx.fill();
-					break;
-				}
-
-				switch(this.xAlign)
-				{
-				case "left":
-					tooltipX = this.x - tooltipWidth + (this.cornerRadius + this.caretHeight);
-					break;
-				case "right":
-					tooltipX = this.x - (this.cornerRadius + this.caretHeight);
-					break;
-				}
-
-				drawRoundedRectangle(ctx,tooltipX,tooltipY,tooltipWidth,tooltipRectHeight,this.cornerRadius);
-
-				ctx.fill();
-
-				ctx.fillStyle = this.textColor;
-				ctx.textAlign = "center";
-				ctx.textBaseline = "middle";
-				ctx.fillText(this.text, tooltipX + tooltipWidth/2, tooltipY + tooltipRectHeight/2);
-			}
-		}
-	});
-
-	Chart.MultiTooltip = Chart.Element.extend({
-		initialize : function(){
-			this.font = fontString(this.fontSize,this.fontStyle,this.fontFamily);
-
-			this.titleFont = fontString(this.titleFontSize,this.titleFontStyle,this.titleFontFamily);
-
-			this.height = (this.labels.length * this.fontSize) + ((this.labels.length-1) * (this.fontSize/2)) + (this.yPadding*2) + this.titleFontSize *1.5;
-
-			this.ctx.font = this.titleFont;
-
-			var titleWidth = this.ctx.measureText(this.title).width,
-				//Label has a legend square as well so account for this.
-				labelWidth = longestText(this.ctx,this.font,this.labels) + this.fontSize + 3,
-				longestTextWidth = max([labelWidth,titleWidth]);
-
-			this.width = longestTextWidth + (this.xPadding*2);
-
-
-			var halfHeight = this.height/2;
-
-			//Check to ensure the height will fit on the canvas
-			if (this.y - halfHeight < 0 ){
-				this.y = halfHeight;
-			} else if (this.y + halfHeight > this.chart.height){
-				this.y = this.chart.height - halfHeight;
-			}
-
-			//Decide whether to align left or right based on position on canvas
-			if (this.x > this.chart.width/2){
-				this.x -= this.xOffset + this.width;
-			} else {
-				this.x += this.xOffset;
-			}
-
-
-		},
-		getLineHeight : function(index){
-			var baseLineHeight = this.y - (this.height/2) + this.yPadding,
-				afterTitleIndex = index-1;
-
-			//If the index is zero, we're getting the title
-			if (index === 0){
-				return baseLineHeight + this.titleFontSize/2;
-			} else{
-				return baseLineHeight + ((this.fontSize*1.5*afterTitleIndex) + this.fontSize/2) + this.titleFontSize * 1.5;
-			}
-
-		},
-		draw : function(){
-			// Custom Tooltips
-			if(this.custom){
-				this.custom(this);
-			}
-			else{
-				drawRoundedRectangle(this.ctx,this.x,this.y - this.height/2,this.width,this.height,this.cornerRadius);
-				var ctx = this.ctx;
-				ctx.fillStyle = this.fillColor;
-				ctx.fill();
-				ctx.closePath();
-
-				ctx.textAlign = "left";
-				ctx.textBaseline = "middle";
-				ctx.fillStyle = this.titleTextColor;
-				ctx.font = this.titleFont;
-
-				ctx.fillText(this.title,this.x + this.xPadding, this.getLineHeight(0));
-
-				ctx.font = this.font;
-				helpers.each(this.labels,function(label,index){
-					ctx.fillStyle = this.textColor;
-					ctx.fillText(label,this.x + this.xPadding + this.fontSize + 3, this.getLineHeight(index + 1));
-
-					//A bit gnarly, but clearing this rectangle breaks when using explorercanvas (clears whole canvas)
-					//ctx.clearRect(this.x + this.xPadding, this.getLineHeight(index + 1) - this.fontSize/2, this.fontSize, this.fontSize);
-					//Instead we'll make a white filled block to put the legendColour palette over.
-
-					ctx.fillStyle = this.legendColorBackground;
-					ctx.fillRect(this.x + this.xPadding, this.getLineHeight(index + 1) - this.fontSize/2, this.fontSize, this.fontSize);
-
-					ctx.fillStyle = this.legendColors[index].fill;
-					ctx.fillRect(this.x + this.xPadding, this.getLineHeight(index + 1) - this.fontSize/2, this.fontSize, this.fontSize);
-
-
-				},this);
-			}
-		}
-	});
-
-	Chart.Scale = Chart.Element.extend({
-		initialize : function(){
-			this.fit();
-		},
-		buildYLabels : function(){
-			this.yLabels = [];
-
-			var stepDecimalPlaces = getDecimalPlaces(this.stepValue);
-
-			for (var i=0; i<=this.steps; i++){
-				this.yLabels.push(template(this.templateString,{value:(this.min + (i * this.stepValue)).toFixed(stepDecimalPlaces)}));
-			}
-			this.yLabelWidth = (this.display && this.showLabels) ? longestText(this.ctx,this.font,this.yLabels) : 0;
-		},
-		addXLabel : function(label){
-			this.xLabels.push(label);
-			this.valuesCount++;
-			this.fit();
-		},
-		removeXLabel : function(){
-			this.xLabels.shift();
-			this.valuesCount--;
-			this.fit();
-		},
-		// Fitting loop to rotate x Labels and figure out what fits there, and also calculate how many Y steps to use
-		fit: function(){
-			// First we need the width of the yLabels, assuming the xLabels aren't rotated
-
-			// To do that we need the base line at the top and base of the chart, assuming there is no x label rotation
-			this.startPoint = (this.display) ? this.fontSize : 0;
-			this.endPoint = (this.display) ? this.height - (this.fontSize * 1.5) - 5 : this.height; // -5 to pad labels
-
-			// Apply padding settings to the start and end point.
-			this.startPoint += this.padding;
-			this.endPoint -= this.padding;
-
-			// Cache the starting height, so can determine if we need to recalculate the scale yAxis
-			var cachedHeight = this.endPoint - this.startPoint,
-				cachedYLabelWidth;
-
-			// Build the current yLabels so we have an idea of what size they'll be to start
-			/*
-			 *	This sets what is returned from calculateScaleRange as static properties of this class:
-			 *
-				this.steps;
-				this.stepValue;
-				this.min;
-				this.max;
-			 *
-			 */
-			this.calculateYRange(cachedHeight);
-
-			// With these properties set we can now build the array of yLabels
-			// and also the width of the largest yLabel
-			this.buildYLabels();
-
-			this.calculateXLabelRotation();
-
-			while((cachedHeight > this.endPoint - this.startPoint)){
-				cachedHeight = this.endPoint - this.startPoint;
-				cachedYLabelWidth = this.yLabelWidth;
-
-				this.calculateYRange(cachedHeight);
-				this.buildYLabels();
-
-				// Only go through the xLabel loop again if the yLabel width has changed
-				if (cachedYLabelWidth < this.yLabelWidth){
-					this.calculateXLabelRotation();
-				}
-			}
-
-		},
-		calculateXLabelRotation : function(){
-			//Get the width of each grid by calculating the difference
-			//between x offsets between 0 and 1.
-
-			this.ctx.font = this.font;
-
-			var firstWidth = this.ctx.measureText(this.xLabels[0]).width,
-				lastWidth = this.ctx.measureText(this.xLabels[this.xLabels.length - 1]).width,
-				firstRotated,
-				lastRotated;
-
-
-			this.xScalePaddingRight = lastWidth/2 + 3;
-			this.xScalePaddingLeft = (firstWidth/2 > this.yLabelWidth + 10) ? firstWidth/2 : this.yLabelWidth + 10;
-
-			this.xLabelRotation = 0;
-			if (this.display){
-				var originalLabelWidth = longestText(this.ctx,this.font,this.xLabels),
-					cosRotation,
-					firstRotatedWidth;
-				this.xLabelWidth = originalLabelWidth;
-				//Allow 3 pixels x2 padding either side for label readability
-				var xGridWidth = Math.floor(this.calculateX(1) - this.calculateX(0)) - 6;
-
-				//Max label rotate should be 90 - also act as a loop counter
-				while ((this.xLabelWidth > xGridWidth && this.xLabelRotation === 0) || (this.xLabelWidth > xGridWidth && this.xLabelRotation <= 90 && this.xLabelRotation > 0)){
-					cosRotation = Math.cos(toRadians(this.xLabelRotation));
-
-					firstRotated = cosRotation * firstWidth;
-					lastRotated = cosRotation * lastWidth;
-
-					// We're right aligning the text now.
-					if (firstRotated + this.fontSize / 2 > this.yLabelWidth + 8){
-						this.xScalePaddingLeft = firstRotated + this.fontSize / 2;
-					}
-					this.xScalePaddingRight = this.fontSize/2;
-
-
-					this.xLabelRotation++;
-					this.xLabelWidth = cosRotation * originalLabelWidth;
-
-				}
-				if (this.xLabelRotation > 0){
-					this.endPoint -= Math.sin(toRadians(this.xLabelRotation))*originalLabelWidth + 3;
-				}
-			}
-			else{
-				this.xLabelWidth = 0;
-				this.xScalePaddingRight = this.padding;
-				this.xScalePaddingLeft = this.padding;
-			}
-
-		},
-		// Needs to be overidden in each Chart type
-		// Otherwise we need to pass all the data into the scale class
-		calculateYRange: noop,
-		drawingArea: function(){
-			return this.startPoint - this.endPoint;
-		},
-		calculateY : function(value){
-			var scalingFactor = this.drawingArea() / (this.min - this.max);
-			return this.endPoint - (scalingFactor * (value - this.min));
-		},
-		calculateX : function(index){
-			var isRotated = (this.xLabelRotation > 0),
-				// innerWidth = (this.offsetGridLines) ? this.width - offsetLeft - this.padding : this.width - (offsetLeft + halfLabelWidth * 2) - this.padding,
-				innerWidth = this.width - (this.xScalePaddingLeft + this.xScalePaddingRight),
-				valueWidth = innerWidth/Math.max((this.valuesCount - ((this.offsetGridLines) ? 0 : 1)), 1),
-				valueOffset = (valueWidth * index) + this.xScalePaddingLeft;
-
-			if (this.offsetGridLines){
-				valueOffset += (valueWidth/2);
-			}
-
-			return Math.round(valueOffset);
-		},
-		update : function(newProps){
-			helpers.extend(this, newProps);
-			this.fit();
-		},
-		draw : function(){
-			var ctx = this.ctx,
-				yLabelGap = (this.endPoint - this.startPoint) / this.steps,
-				xStart = Math.round(this.xScalePaddingLeft);
-			if (this.display){
-				ctx.fillStyle = this.textColor;
-				ctx.font = this.font;
-				each(this.yLabels,function(labelString,index){
-					var yLabelCenter = this.endPoint - (yLabelGap * index),
-						linePositionY = Math.round(yLabelCenter),
-						drawHorizontalLine = this.showHorizontalLines;
-
-					ctx.textAlign = "right";
-					ctx.textBaseline = "middle";
-					if (this.showLabels){
-						ctx.fillText(labelString,xStart - 10,yLabelCenter);
-					}
-
-					// This is X axis, so draw it
-					if (index === 0 && !drawHorizontalLine){
-						drawHorizontalLine = true;
-					}
-
-					if (drawHorizontalLine){
-						ctx.beginPath();
-					}
-
-					if (index > 0){
-						// This is a grid line in the centre, so drop that
-						ctx.lineWidth = this.gridLineWidth;
-						ctx.strokeStyle = this.gridLineColor;
-					} else {
-						// This is the first line on the scale
-						ctx.lineWidth = this.lineWidth;
-						ctx.strokeStyle = this.lineColor;
-					}
-
-					linePositionY += helpers.aliasPixel(ctx.lineWidth);
-
-					if(drawHorizontalLine){
-						ctx.moveTo(xStart, linePositionY);
-						ctx.lineTo(this.width, linePositionY);
-						ctx.stroke();
-						ctx.closePath();
-					}
-
-					ctx.lineWidth = this.lineWidth;
-					ctx.strokeStyle = this.lineColor;
-					ctx.beginPath();
-					ctx.moveTo(xStart - 5, linePositionY);
-					ctx.lineTo(xStart, linePositionY);
-					ctx.stroke();
-					ctx.closePath();
-
-				},this);
-
-				each(this.xLabels,function(label,index){
-					var xPos = this.calculateX(index) + aliasPixel(this.lineWidth),
-						// Check to see if line/bar here and decide where to place the line
-						linePos = this.calculateX(index - (this.offsetGridLines ? 0.5 : 0)) + aliasPixel(this.lineWidth),
-						isRotated = (this.xLabelRotation > 0),
-						drawVerticalLine = this.showVerticalLines;
-
-					// This is Y axis, so draw it
-					if (index === 0 && !drawVerticalLine){
-						drawVerticalLine = true;
-					}
-
-					if (drawVerticalLine){
-						ctx.beginPath();
-					}
-
-					if (index > 0){
-						// This is a grid line in the centre, so drop that
-						ctx.lineWidth = this.gridLineWidth;
-						ctx.strokeStyle = this.gridLineColor;
-					} else {
-						// This is the first line on the scale
-						ctx.lineWidth = this.lineWidth;
-						ctx.strokeStyle = this.lineColor;
-					}
-
-					if (drawVerticalLine){
-						ctx.moveTo(linePos,this.endPoint);
-						ctx.lineTo(linePos,this.startPoint - 3);
-						ctx.stroke();
-						ctx.closePath();
-					}
-
-
-					ctx.lineWidth = this.lineWidth;
-					ctx.strokeStyle = this.lineColor;
-
-
-					// Small lines at the bottom of the base grid line
-					ctx.beginPath();
-					ctx.moveTo(linePos,this.endPoint);
-					ctx.lineTo(linePos,this.endPoint + 5);
-					ctx.stroke();
-					ctx.closePath();
-
-					ctx.save();
-					ctx.translate(xPos,(isRotated) ? this.endPoint + 12 : this.endPoint + 8);
-					ctx.rotate(toRadians(this.xLabelRotation)*-1);
-					ctx.font = this.font;
-					ctx.textAlign = (isRotated) ? "right" : "center";
-					ctx.textBaseline = (isRotated) ? "middle" : "top";
-					ctx.fillText(label, 0, 0);
-					ctx.restore();
-				},this);
-
-			}
-		}
-
-	});
-
-	Chart.RadialScale = Chart.Element.extend({
-		initialize: function(){
-			this.size = min([this.height, this.width]);
-			this.drawingArea = (this.display) ? (this.size/2) - (this.fontSize/2 + this.backdropPaddingY) : (this.size/2);
-		},
-		calculateCenterOffset: function(value){
-			// Take into account half font size + the yPadding of the top value
-			var scalingFactor = this.drawingArea / (this.max - this.min);
-
-			return (value - this.min) * scalingFactor;
-		},
-		update : function(){
-			if (!this.lineArc){
-				this.setScaleSize();
-			} else {
-				this.drawingArea = (this.display) ? (this.size/2) - (this.fontSize/2 + this.backdropPaddingY) : (this.size/2);
-			}
-			this.buildYLabels();
-		},
-		buildYLabels: function(){
-			this.yLabels = [];
-
-			var stepDecimalPlaces = getDecimalPlaces(this.stepValue);
-
-			for (var i=0; i<=this.steps; i++){
-				this.yLabels.push(template(this.templateString,{value:(this.min + (i * this.stepValue)).toFixed(stepDecimalPlaces)}));
-			}
-		},
-		getCircumference : function(){
-			return ((Math.PI*2) / this.valuesCount);
-		},
-		setScaleSize: function(){
-			/*
-			 * Right, this is really confusing and there is a lot of maths going on here
-			 * The gist of the problem is here: https://gist.github.com/nnnick/696cc9c55f4b0beb8fe9
-			 *
-			 * Reaction: https://dl.dropboxusercontent.com/u/34601363/toomuchscience.gif
-			 *
-			 * Solution:
-			 *
-			 * We assume the radius of the polygon is half the size of the canvas at first
-			 * at each index we check if the text overlaps.
-			 *
-			 * Where it does, we store that angle and that index.
-			 *
-			 * After finding the largest index and angle we calculate how much we need to remove
-			 * from the shape radius to move the point inwards by that x.
-			 *
-			 * We average the left and right distances to get the maximum shape radius that can fit in the box
-			 * along with labels.
-			 *
-			 * Once we have that, we can find the centre point for the chart, by taking the x text protrusion
-			 * on each side, removing that from the size, halving it and adding the left x protrusion width.
-			 *
-			 * This will mean we have a shape fitted to the canvas, as large as it can be with the labels
-			 * and position it in the most space efficient manner
-			 *
-			 * https://dl.dropboxusercontent.com/u/34601363/yeahscience.gif
-			 */
-
-
-			// Get maximum radius of the polygon. Either half the height (minus the text width) or half the width.
-			// Use this to calculate the offset + change. - Make sure L/R protrusion is at least 0 to stop issues with centre points
-			var largestPossibleRadius = min([(this.height/2 - this.pointLabelFontSize - 5), this.width/2]),
-				pointPosition,
-				i,
-				textWidth,
-				halfTextWidth,
-				furthestRight = this.width,
-				furthestRightIndex,
-				furthestRightAngle,
-				furthestLeft = 0,
-				furthestLeftIndex,
-				furthestLeftAngle,
-				xProtrusionLeft,
-				xProtrusionRight,
-				radiusReductionRight,
-				radiusReductionLeft,
-				maxWidthRadius;
-			this.ctx.font = fontString(this.pointLabelFontSize,this.pointLabelFontStyle,this.pointLabelFontFamily);
-			for (i=0;i<this.valuesCount;i++){
-				// 5px to space the text slightly out - similar to what we do in the draw function.
-				pointPosition = this.getPointPosition(i, largestPossibleRadius);
-				textWidth = this.ctx.measureText(template(this.templateString, { value: this.labels[i] })).width + 5;
-				if (i === 0 || i === this.valuesCount/2){
-					// If we're at index zero, or exactly the middle, we're at exactly the top/bottom
-					// of the radar chart, so text will be aligned centrally, so we'll half it and compare
-					// w/left and right text sizes
-					halfTextWidth = textWidth/2;
-					if (pointPosition.x + halfTextWidth > furthestRight) {
-						furthestRight = pointPosition.x + halfTextWidth;
-						furthestRightIndex = i;
-					}
-					if (pointPosition.x - halfTextWidth < furthestLeft) {
-						furthestLeft = pointPosition.x - halfTextWidth;
-						furthestLeftIndex = i;
-					}
-				}
-				else if (i < this.valuesCount/2) {
-					// Less than half the values means we'll left align the text
-					if (pointPosition.x + textWidth > furthestRight) {
-						furthestRight = pointPosition.x + textWidth;
-						furthestRightIndex = i;
-					}
-				}
-				else if (i > this.valuesCount/2){
-					// More than half the values means we'll right align the text
-					if (pointPosition.x - textWidth < furthestLeft) {
-						furthestLeft = pointPosition.x - textWidth;
-						furthestLeftIndex = i;
-					}
-				}
-			}
-
-			xProtrusionLeft = furthestLeft;
-
-			xProtrusionRight = Math.ceil(furthestRight - this.width);
-
-			furthestRightAngle = this.getIndexAngle(furthestRightIndex);
-
-			furthestLeftAngle = this.getIndexAngle(furthestLeftIndex);
-
-			radiusReductionRight = xProtrusionRight / Math.sin(furthestRightAngle + Math.PI/2);
-
-			radiusReductionLeft = xProtrusionLeft / Math.sin(furthestLeftAngle + Math.PI/2);
-
-			// Ensure we actually need to reduce the size of the chart
-			radiusReductionRight = (isNumber(radiusReductionRight)) ? radiusReductionRight : 0;
-			radiusReductionLeft = (isNumber(radiusReductionLeft)) ? radiusReductionLeft : 0;
-
-			this.drawingArea = largestPossibleRadius - (radiusReductionLeft + radiusReductionRight)/2;
-
-			//this.drawingArea = min([maxWidthRadius, (this.height - (2 * (this.pointLabelFontSize + 5)))/2])
-			this.setCenterPoint(radiusReductionLeft, radiusReductionRight);
-
-		},
-		setCenterPoint: function(leftMovement, rightMovement){
-
-			var maxRight = this.width - rightMovement - this.drawingArea,
-				maxLeft = leftMovement + this.drawingArea;
-
-			this.xCenter = (maxLeft + maxRight)/2;
-			// Always vertically in the centre as the text height doesn't change
-			this.yCenter = (this.height/2);
-		},
-
-		getIndexAngle : function(index){
-			var angleMultiplier = (Math.PI * 2) / this.valuesCount;
-			// Start from the top instead of right, so remove a quarter of the circle
-
-			return index * angleMultiplier - (Math.PI/2);
-		},
-		getPointPosition : function(index, distanceFromCenter){
-			var thisAngle = this.getIndexAngle(index);
-			return {
-				x : (Math.cos(thisAngle) * distanceFromCenter) + this.xCenter,
-				y : (Math.sin(thisAngle) * distanceFromCenter) + this.yCenter
-			};
-		},
-		draw: function(){
-			if (this.display){
-				var ctx = this.ctx;
-				each(this.yLabels, function(label, index){
-					// Don't draw a centre value
-					if (index > 0){
-						var yCenterOffset = index * (this.drawingArea/this.steps),
-							yHeight = this.yCenter - yCenterOffset,
-							pointPosition;
-
-						// Draw circular lines around the scale
-						if (this.lineWidth > 0){
-							ctx.strokeStyle = this.lineColor;
-							ctx.lineWidth = this.lineWidth;
-
-							if(this.lineArc){
-								ctx.beginPath();
-								ctx.arc(this.xCenter, this.yCenter, yCenterOffset, 0, Math.PI*2);
-								ctx.closePath();
-								ctx.stroke();
-							} else{
-								ctx.beginPath();
-								for (var i=0;i<this.valuesCount;i++)
-								{
-									pointPosition = this.getPointPosition(i, this.calculateCenterOffset(this.min + (index * this.stepValue)));
-									if (i === 0){
-										ctx.moveTo(pointPosition.x, pointPosition.y);
-									} else {
-										ctx.lineTo(pointPosition.x, pointPosition.y);
-									}
-								}
-								ctx.closePath();
-								ctx.stroke();
-							}
-						}
-						if(this.showLabels){
-							ctx.font = fontString(this.fontSize,this.fontStyle,this.fontFamily);
-							if (this.showLabelBackdrop){
-								var labelWidth = ctx.measureText(label).width;
-								ctx.fillStyle = this.backdropColor;
-								ctx.fillRect(
-									this.xCenter - labelWidth/2 - this.backdropPaddingX,
-									yHeight - this.fontSize/2 - this.backdropPaddingY,
-									labelWidth + this.backdropPaddingX*2,
-									this.fontSize + this.backdropPaddingY*2
-								);
-							}
-							ctx.textAlign = 'center';
-							ctx.textBaseline = "middle";
-							ctx.fillStyle = this.fontColor;
-							ctx.fillText(label, this.xCenter, yHeight);
-						}
-					}
-				}, this);
-
-				if (!this.lineArc){
-					ctx.lineWidth = this.angleLineWidth;
-					ctx.strokeStyle = this.angleLineColor;
-					for (var i = this.valuesCount - 1; i >= 0; i--) {
-						if (this.angleLineWidth > 0){
-							var outerPosition = this.getPointPosition(i, this.calculateCenterOffset(this.max));
-							ctx.beginPath();
-							ctx.moveTo(this.xCenter, this.yCenter);
-							ctx.lineTo(outerPosition.x, outerPosition.y);
-							ctx.stroke();
-							ctx.closePath();
-						}
-						// Extra 3px out for some label spacing
-						var pointLabelPosition = this.getPointPosition(i, this.calculateCenterOffset(this.max) + 5);
-						ctx.font = fontString(this.pointLabelFontSize,this.pointLabelFontStyle,this.pointLabelFontFamily);
-						ctx.fillStyle = this.pointLabelFontColor;
-
-						var labelsCount = this.labels.length,
-							halfLabelsCount = this.labels.length/2,
-							quarterLabelsCount = halfLabelsCount/2,
-							upperHalf = (i < quarterLabelsCount || i > labelsCount - quarterLabelsCount),
-							exactQuarter = (i === quarterLabelsCount || i === labelsCount - quarterLabelsCount);
-						if (i === 0){
-							ctx.textAlign = 'center';
-						} else if(i === halfLabelsCount){
-							ctx.textAlign = 'center';
-						} else if (i < halfLabelsCount){
-							ctx.textAlign = 'left';
-						} else {
-							ctx.textAlign = 'right';
-						}
-
-						// Set the correct text baseline based on outer positioning
-						if (exactQuarter){
-							ctx.textBaseline = 'middle';
-						} else if (upperHalf){
-							ctx.textBaseline = 'bottom';
-						} else {
-							ctx.textBaseline = 'top';
-						}
-
-						ctx.fillText(this.labels[i], pointLabelPosition.x, pointLabelPosition.y);
-					}
-				}
-			}
-		}
-	});
-
-	// Attach global event to resize each chart instance when the browser resizes
-	helpers.addEvent(window, "resize", (function(){
-		// Basic debounce of resize function so it doesn't hurt performance when resizing browser.
-		var timeout;
-		return function(){
-			clearTimeout(timeout);
-			timeout = setTimeout(function(){
-				each(Chart.instances,function(instance){
-					// If the responsive flag is set in the chart instance config
-					// Cascade the resize event down to the chart.
-					if (instance.options.responsive){
-						instance.resize(instance.render, true);
-					}
-				});
-			}, 50);
-		};
-	})());
-
-
-	if (amd) {
-		define(function(){
-			return Chart;
-		});
-	} else if (typeof module === 'object' && module.exports) {
-		module.exports = Chart;
-	}
-
-	root.Chart = Chart;
-
-	Chart.noConflict = function(){
-		root.Chart = previous;
-		return Chart;
-	};
-
-}).call(this);
-
-(function(){
-	"use strict";
-
-	var root = this,
-		Chart = root.Chart,
-		helpers = Chart.helpers;
-
-
-	var defaultConfig = {
-		//Boolean - Whether the scale should start at zero, or an order of magnitude down from the lowest value
-		scaleBeginAtZero : true,
-
-		//Boolean - Whether grid lines are shown across the chart
-		scaleShowGridLines : true,
-
-		//String - Colour of the grid lines
-		scaleGridLineColor : "rgba(0,0,0,.05)",
-
-		//Number - Width of the grid lines
-		scaleGridLineWidth : 1,
-
-		//Boolean - Whether to show horizontal lines (except X axis)
-		scaleShowHorizontalLines: true,
-
-		//Boolean - Whether to show vertical lines (except Y axis)
-		scaleShowVerticalLines: true,
-
-		//Boolean - If there is a stroke on each bar
-		barShowStroke : true,
-
-		//Number - Pixel width of the bar stroke
-		barStrokeWidth : 2,
-
-		//Number - Spacing between each of the X value sets
-		barValueSpacing : 5,
-
-		//Number - Spacing between data sets within X values
-		barDatasetSpacing : 1,
-
-		//String - A legend template
-		legendTemplate : "<ul class=\"<%=name.toLowerCase()%>-legend\"><% for (var i=0; i<datasets.length; i++){%><li><span style=\"background-color:<%=datasets[i].fillColor%>\"></span><%if(datasets[i].label){%><%=datasets[i].label%><%}%></li><%}%></ul>"
-
-	};
-
-
-	Chart.Type.extend({
-		name: "Bar",
-		defaults : defaultConfig,
-		initialize:  function(data){
-
-			//Expose options as a scope variable here so we can access it in the ScaleClass
-			var options = this.options;
-
-			this.ScaleClass = Chart.Scale.extend({
-				offsetGridLines : true,
-				calculateBarX : function(datasetCount, datasetIndex, barIndex){
-					//Reusable method for calculating the xPosition of a given bar based on datasetIndex & width of the bar
-					var xWidth = this.calculateBaseWidth(),
-						xAbsolute = this.calculateX(barIndex) - (xWidth/2),
-						barWidth = this.calculateBarWidth(datasetCount);
-
-					return xAbsolute + (barWidth * datasetIndex) + (datasetIndex * options.barDatasetSpacing) + barWidth/2;
-				},
-				calculateBaseWidth : function(){
-					return (this.calculateX(1) - this.calculateX(0)) - (2*options.barValueSpacing);
-				},
-				calculateBarWidth : function(datasetCount){
-					//The padding between datasets is to the right of each bar, providing that there are more than 1 dataset
-					var baseWidth = this.calculateBaseWidth() - ((datasetCount - 1) * options.barDatasetSpacing);
-
-					return (baseWidth / datasetCount);
-				}
-			});
-
-			this.datasets = [];
-
-			//Set up tooltip events on the chart
-			if (this.options.showTooltips){
-				helpers.bindEvents(this, this.options.tooltipEvents, function(evt){
-					var activeBars = (evt.type !== 'mouseout') ? this.getBarsAtEvent(evt) : [];
-
-					this.eachBars(function(bar){
-						bar.restore(['fillColor', 'strokeColor']);
-					});
-					helpers.each(activeBars, function(activeBar){
-						activeBar.fillColor = activeBar.highlightFill;
-						activeBar.strokeColor = activeBar.highlightStroke;
-					});
-					this.showTooltip(activeBars);
-				});
-			}
-
-			//Declare the extension of the default point, to cater for the options passed in to the constructor
-			this.BarClass = Chart.Rectangle.extend({
-				strokeWidth : this.options.barStrokeWidth,
-				showStroke : this.options.barShowStroke,
-				ctx : this.chart.ctx
-			});
-
-			//Iterate through each of the datasets, and build this into a property of the chart
-			helpers.each(data.datasets,function(dataset,datasetIndex){
-
-				var datasetObject = {
-					label : dataset.label || null,
-					fillColor : dataset.fillColor,
-					strokeColor : dataset.strokeColor,
-					bars : []
-				};
-
-				this.datasets.push(datasetObject);
-
-				helpers.each(dataset.data,function(dataPoint,index){
-					//Add a new point for each piece of data, passing any required data to draw.
-					datasetObject.bars.push(new this.BarClass({
-						value : dataPoint,
-						label : data.labels[index],
-						datasetLabel: dataset.label,
-						strokeColor : dataset.strokeColor,
-						fillColor : dataset.fillColor,
-						highlightFill : dataset.highlightFill || dataset.fillColor,
-						highlightStroke : dataset.highlightStroke || dataset.strokeColor
-					}));
-				},this);
-
-			},this);
-
-			this.buildScale(data.labels);
-
-			this.BarClass.prototype.base = this.scale.endPoint;
-
-			this.eachBars(function(bar, index, datasetIndex){
-				helpers.extend(bar, {
-					width : this.scale.calculateBarWidth(this.datasets.length),
-					x: this.scale.calculateBarX(this.datasets.length, datasetIndex, index),
-					y: this.scale.endPoint
-				});
-				bar.save();
-			}, this);
-
-			this.render();
-		},
-		update : function(){
-			this.scale.update();
-			// Reset any highlight colours before updating.
-			helpers.each(this.activeElements, function(activeElement){
-				activeElement.restore(['fillColor', 'strokeColor']);
-			});
-
-			this.eachBars(function(bar){
-				bar.save();
-			});
-			this.render();
-		},
-		eachBars : function(callback){
-			helpers.each(this.datasets,function(dataset, datasetIndex){
-				helpers.each(dataset.bars, callback, this, datasetIndex);
-			},this);
-		},
-		getBarsAtEvent : function(e){
-			var barsArray = [],
-				eventPosition = helpers.getRelativePosition(e),
-				datasetIterator = function(dataset){
-					barsArray.push(dataset.bars[barIndex]);
-				},
-				barIndex;
-
-			for (var datasetIndex = 0; datasetIndex < this.datasets.length; datasetIndex++) {
-				for (barIndex = 0; barIndex < this.datasets[datasetIndex].bars.length; barIndex++) {
-					if (this.datasets[datasetIndex].bars[barIndex].inRange(eventPosition.x,eventPosition.y)){
-						helpers.each(this.datasets, datasetIterator);
-						return barsArray;
-					}
-				}
-			}
-
-			return barsArray;
-		},
-		buildScale : function(labels){
-			var self = this;
-
-			var dataTotal = function(){
-				var values = [];
-				self.eachBars(function(bar){
-					values.push(bar.value);
-				});
-				return values;
-			};
-
-			var scaleOptions = {
-				templateString : this.options.scaleLabel,
-				height : this.chart.height,
-				width : this.chart.width,
-				ctx : this.chart.ctx,
-				textColor : this.options.scaleFontColor,
-				fontSize : this.options.scaleFontSize,
-				fontStyle : this.options.scaleFontStyle,
-				fontFamily : this.options.scaleFontFamily,
-				valuesCount : labels.length,
-				beginAtZero : this.options.scaleBeginAtZero,
-				integersOnly : this.options.scaleIntegersOnly,
-				calculateYRange: function(currentHeight){
-					var updatedRanges = helpers.calculateScaleRange(
-						dataTotal(),
-						currentHeight,
-						this.fontSize,
-						this.beginAtZero,
-						this.integersOnly
-					);
-					helpers.extend(this, updatedRanges);
-				},
-				xLabels : labels,
-				font : helpers.fontString(this.options.scaleFontSize, this.options.scaleFontStyle, this.options.scaleFontFamily),
-				lineWidth : this.options.scaleLineWidth,
-				lineColor : this.options.scaleLineColor,
-				showHorizontalLines : this.options.scaleShowHorizontalLines,
-				showVerticalLines : this.options.scaleShowVerticalLines,
-				gridLineWidth : (this.options.scaleShowGridLines) ? this.options.scaleGridLineWidth : 0,
-				gridLineColor : (this.options.scaleShowGridLines) ? this.options.scaleGridLineColor : "rgba(0,0,0,0)",
-				padding : (this.options.showScale) ? 0 : (this.options.barShowStroke) ? this.options.barStrokeWidth : 0,
-				showLabels : this.options.scaleShowLabels,
-				display : this.options.showScale
-			};
-
-			if (this.options.scaleOverride){
-				helpers.extend(scaleOptions, {
-					calculateYRange: helpers.noop,
-					steps: this.options.scaleSteps,
-					stepValue: this.options.scaleStepWidth,
-					min: this.options.scaleStartValue,
-					max: this.options.scaleStartValue + (this.options.scaleSteps * this.options.scaleStepWidth)
-				});
-			}
-
-			this.scale = new this.ScaleClass(scaleOptions);
-		},
-		addData : function(valuesArray,label){
-			//Map the values array for each of the datasets
-			helpers.each(valuesArray,function(value,datasetIndex){
-				//Add a new point for each piece of data, passing any required data to draw.
-				this.datasets[datasetIndex].bars.push(new this.BarClass({
-					value : value,
-					label : label,
-					x: this.scale.calculateBarX(this.datasets.length, datasetIndex, this.scale.valuesCount+1),
-					y: this.scale.endPoint,
-					width : this.scale.calculateBarWidth(this.datasets.length),
-					base : this.scale.endPoint,
-					strokeColor : this.datasets[datasetIndex].strokeColor,
-					fillColor : this.datasets[datasetIndex].fillColor
-				}));
-			},this);
-
-			this.scale.addXLabel(label);
-			//Then re-render the chart.
-			this.update();
-		},
-		removeData : function(){
-			this.scale.removeXLabel();
-			//Then re-render the chart.
-			helpers.each(this.datasets,function(dataset){
-				dataset.bars.shift();
-			},this);
-			this.update();
-		},
-		reflow : function(){
-			helpers.extend(this.BarClass.prototype,{
-				y: this.scale.endPoint,
-				base : this.scale.endPoint
-			});
-			var newScaleProps = helpers.extend({
-				height : this.chart.height,
-				width : this.chart.width
-			});
-			this.scale.update(newScaleProps);
-		},
-		draw : function(ease){
-			var easingDecimal = ease || 1;
-			this.clear();
-
-			var ctx = this.chart.ctx;
-
-			this.scale.draw(easingDecimal);
-
-			//Draw all the bars for each dataset
-			helpers.each(this.datasets,function(dataset,datasetIndex){
-				helpers.each(dataset.bars,function(bar,index){
-					if (bar.hasValue()){
-						bar.base = this.scale.endPoint;
-						//Transition then draw
-						bar.transition({
-							x : this.scale.calculateBarX(this.datasets.length, datasetIndex, index),
-							y : this.scale.calculateY(bar.value),
-							width : this.scale.calculateBarWidth(this.datasets.length)
-						}, easingDecimal).draw();
-					}
-				},this);
-
-			},this);
-		}
-	});
-
-
-}).call(this);
-
-(function(){
-	"use strict";
-
-	var root = this,
-		Chart = root.Chart,
-		//Cache a local reference to Chart.helpers
-		helpers = Chart.helpers;
-
-	var defaultConfig = {
-		//Boolean - Whether we should show a stroke on each segment
-		segmentShowStroke : true,
-
-		//String - The colour of each segment stroke
-		segmentStrokeColor : "#fff",
-
-		//Number - The width of each segment stroke
-		segmentStrokeWidth : 2,
-
-		//The percentage of the chart that we cut out of the middle.
-		percentageInnerCutout : 50,
-
-		//Number - Amount of animation steps
-		animationSteps : 100,
-
-		//String - Animation easing effect
-		animationEasing : "easeOutBounce",
-
-		//Boolean - Whether we animate the rotation of the Doughnut
-		animateRotate : true,
-
-		//Boolean - Whether we animate scaling the Doughnut from the centre
-		animateScale : false,
-
-		//String - A legend template
-		legendTemplate : "<ul class=\"<%=name.toLowerCase()%>-legend\"><% for (var i=0; i<segments.length; i++){%><li><span style=\"background-color:<%=segments[i].fillColor%>\"></span><%if(segments[i].label){%><%=segments[i].label%><%}%></li><%}%></ul>"
-
-	};
-
-
-	Chart.Type.extend({
-		//Passing in a name registers this chart in the Chart namespace
-		name: "Doughnut",
-		//Providing a defaults will also register the deafults in the chart namespace
-		defaults : defaultConfig,
-		//Initialize is fired when the chart is initialized - Data is passed in as a parameter
-		//Config is automatically merged by the core of Chart.js, and is available at this.options
-		initialize:  function(data){
-
-			//Declare segments as a static property to prevent inheriting across the Chart type prototype
-			this.segments = [];
-			this.outerRadius = (helpers.min([this.chart.width,this.chart.height]) -	this.options.segmentStrokeWidth/2)/2;
-
-			this.SegmentArc = Chart.Arc.extend({
-				ctx : this.chart.ctx,
-				x : this.chart.width/2,
-				y : this.chart.height/2
-			});
-
-			//Set up tooltip events on the chart
-			if (this.options.showTooltips){
-				helpers.bindEvents(this, this.options.tooltipEvents, function(evt){
-					var activeSegments = (evt.type !== 'mouseout') ? this.getSegmentsAtEvent(evt) : [];
-
-					helpers.each(this.segments,function(segment){
-						segment.restore(["fillColor"]);
-					});
-					helpers.each(activeSegments,function(activeSegment){
-						activeSegment.fillColor = activeSegment.highlightColor;
-					});
-					this.showTooltip(activeSegments);
-				});
-			}
-			this.calculateTotal(data);
-
-			helpers.each(data,function(datapoint, index){
-				this.addData(datapoint, index, true);
-			},this);
-
-			this.render();
-		},
-		getSegmentsAtEvent : function(e){
-			var segmentsArray = [];
-
-			var location = helpers.getRelativePosition(e);
-
-			helpers.each(this.segments,function(segment){
-				if (segment.inRange(location.x,location.y)) segmentsArray.push(segment);
-			},this);
-			return segmentsArray;
-		},
-		addData : function(segment, atIndex, silent){
-			var index = atIndex || this.segments.length;
-			this.segments.splice(index, 0, new this.SegmentArc({
-				value : segment.value,
-				outerRadius : (this.options.animateScale) ? 0 : this.outerRadius,
-				innerRadius : (this.options.animateScale) ? 0 : (this.outerRadius/100) * this.options.percentageInnerCutout,
-				fillColor : segment.color,
-				highlightColor : segment.highlight || segment.color,
-				showStroke : this.options.segmentShowStroke,
-				strokeWidth : this.options.segmentStrokeWidth,
-				strokeColor : this.options.segmentStrokeColor,
-				startAngle : Math.PI * 1.5,
-				circumference : (this.options.animateRotate) ? 0 : this.calculateCircumference(segment.value),
-				label : segment.label
-			}));
-			if (!silent){
-				this.reflow();
-				this.update();
-			}
-		},
-		calculateCircumference : function(value){
-			return (Math.PI*2)*(Math.abs(value) / this.total);
-		},
-		calculateTotal : function(data){
-			this.total = 0;
-			helpers.each(data,function(segment){
-				this.total += Math.abs(segment.value);
-			},this);
-		},
-		update : function(){
-			this.calculateTotal(this.segments);
-
-			// Reset any highlight colours before updating.
-			helpers.each(this.activeElements, function(activeElement){
-				activeElement.restore(['fillColor']);
-			});
-
-			helpers.each(this.segments,function(segment){
-				segment.save();
-			});
-			this.render();
-		},
-
-		removeData: function(atIndex){
-			var indexToDelete = (helpers.isNumber(atIndex)) ? atIndex : this.segments.length-1;
-			this.segments.splice(indexToDelete, 1);
-			this.reflow();
-			this.update();
-		},
-
-		reflow : function(){
-			helpers.extend(this.SegmentArc.prototype,{
-				x : this.chart.width/2,
-				y : this.chart.height/2
-			});
-			this.outerRadius = (helpers.min([this.chart.width,this.chart.height]) -	this.options.segmentStrokeWidth/2)/2;
-			helpers.each(this.segments, function(segment){
-				segment.update({
-					outerRadius : this.outerRadius,
-					innerRadius : (this.outerRadius/100) * this.options.percentageInnerCutout
-				});
-			}, this);
-		},
-		draw : function(easeDecimal){
-			var animDecimal = (easeDecimal) ? easeDecimal : 1;
-			this.clear();
-			helpers.each(this.segments,function(segment,index){
-				segment.transition({
-					circumference : this.calculateCircumference(segment.value),
-					outerRadius : this.outerRadius,
-					innerRadius : (this.outerRadius/100) * this.options.percentageInnerCutout
-				},animDecimal);
-
-				segment.endAngle = segment.startAngle + segment.circumference;
-
-				segment.draw();
-				if (index === 0){
-					segment.startAngle = Math.PI * 1.5;
-				}
-				//Check to see if it's the last segment, if not get the next and update the start angle
-				if (index < this.segments.length-1){
-					this.segments[index+1].startAngle = segment.endAngle;
-				}
-			},this);
-
-		}
-	});
-
-	Chart.types.Doughnut.extend({
-		name : "Pie",
-		defaults : helpers.merge(defaultConfig,{percentageInnerCutout : 0})
-	});
-
-}).call(this);
-(function(){
-	"use strict";
-
-	var root = this,
-		Chart = root.Chart,
-		helpers = Chart.helpers;
-
-	var defaultConfig = {
-
-		///Boolean - Whether grid lines are shown across the chart
-		scaleShowGridLines : true,
-
-		//String - Colour of the grid lines
-		scaleGridLineColor : "rgba(0,0,0,.05)",
-
-		//Number - Width of the grid lines
-		scaleGridLineWidth : 1,
-
-		//Boolean - Whether to show horizontal lines (except X axis)
-		scaleShowHorizontalLines: true,
-
-		//Boolean - Whether to show vertical lines (except Y axis)
-		scaleShowVerticalLines: true,
-
-		//Boolean - Whether the line is curved between points
-		bezierCurve : true,
-
-		//Number - Tension of the bezier curve between points
-		bezierCurveTension : 0.4,
-
-		//Boolean - Whether to show a dot for each point
-		pointDot : true,
-
-		//Number - Radius of each point dot in pixels
-		pointDotRadius : 4,
-
-		//Number - Pixel width of point dot stroke
-		pointDotStrokeWidth : 1,
-
-		//Number - amount extra to add to the radius to cater for hit detection outside the drawn point
-		pointHitDetectionRadius : 20,
-
-		//Boolean - Whether to show a stroke for datasets
-		datasetStroke : true,
-
-		//Number - Pixel width of dataset stroke
-		datasetStrokeWidth : 2,
-
-		//Boolean - Whether to fill the dataset with a colour
-		datasetFill : true,
-
-		//String - A legend template
-		legendTemplate : "<ul class=\"<%=name.toLowerCase()%>-legend\"><% for (var i=0; i<datasets.length; i++){%><li><span style=\"background-color:<%=datasets[i].strokeColor%>\"></span><%if(datasets[i].label){%><%=datasets[i].label%><%}%></li><%}%></ul>"
-
-	};
-
-
-	Chart.Type.extend({
-		name: "Line",
-		defaults : defaultConfig,
-		initialize:  function(data){
-			//Declare the extension of the default point, to cater for the options passed in to the constructor
-			this.PointClass = Chart.Point.extend({
-				strokeWidth : this.options.pointDotStrokeWidth,
-				radius : this.options.pointDotRadius,
-				display: this.options.pointDot,
-				hitDetectionRadius : this.options.pointHitDetectionRadius,
-				ctx : this.chart.ctx,
-				inRange : function(mouseX){
-					return (Math.pow(mouseX-this.x, 2) < Math.pow(this.radius + this.hitDetectionRadius,2));
-				}
-			});
-
-			this.datasets = [];
-
-			//Set up tooltip events on the chart
-			if (this.options.showTooltips){
-				helpers.bindEvents(this, this.options.tooltipEvents, function(evt){
-					var activePoints = (evt.type !== 'mouseout') ? this.getPointsAtEvent(evt) : [];
-					this.eachPoints(function(point){
-						point.restore(['fillColor', 'strokeColor']);
-					});
-					helpers.each(activePoints, function(activePoint){
-						activePoint.fillColor = activePoint.highlightFill;
-						activePoint.strokeColor = activePoint.highlightStroke;
-					});
-					this.showTooltip(activePoints);
-				});
-			}
-
-			//Iterate through each of the datasets, and build this into a property of the chart
-			helpers.each(data.datasets,function(dataset){
-
-				var datasetObject = {
-					label : dataset.label || null,
-					fillColor : dataset.fillColor,
-					strokeColor : dataset.strokeColor,
-					pointColor : dataset.pointColor,
-					pointStrokeColor : dataset.pointStrokeColor,
-					points : []
-				};
-
-				this.datasets.push(datasetObject);
-
-
-				helpers.each(dataset.data,function(dataPoint,index){
-					//Add a new point for each piece of data, passing any required data to draw.
-					datasetObject.points.push(new this.PointClass({
-						value : dataPoint,
-						label : data.labels[index],
-						datasetLabel: dataset.label,
-						strokeColor : dataset.pointStrokeColor,
-						fillColor : dataset.pointColor,
-						highlightFill : dataset.pointHighlightFill || dataset.pointColor,
-						highlightStroke : dataset.pointHighlightStroke || dataset.pointStrokeColor
-					}));
-				},this);
-
-				this.buildScale(data.labels);
-
-
-				this.eachPoints(function(point, index){
-					helpers.extend(point, {
-						x: this.scale.calculateX(index),
-						y: this.scale.endPoint
-					});
-					point.save();
-				}, this);
-
-			},this);
-
-
-			this.render();
-		},
-		update : function(){
-			this.scale.update();
-			// Reset any highlight colours before updating.
-			helpers.each(this.activeElements, function(activeElement){
-				activeElement.restore(['fillColor', 'strokeColor']);
-			});
-			this.eachPoints(function(point){
-				point.save();
-			});
-			this.render();
-		},
-		eachPoints : function(callback){
-			helpers.each(this.datasets,function(dataset){
-				helpers.each(dataset.points,callback,this);
-			},this);
-		},
-		getPointsAtEvent : function(e){
-			var pointsArray = [],
-				eventPosition = helpers.getRelativePosition(e);
-			helpers.each(this.datasets,function(dataset){
-				helpers.each(dataset.points,function(point){
-					if (point.inRange(eventPosition.x,eventPosition.y)) pointsArray.push(point);
-				});
-			},this);
-			return pointsArray;
-		},
-		buildScale : function(labels){
-			var self = this;
-
-			var dataTotal = function(){
-				var values = [];
-				self.eachPoints(function(point){
-					values.push(point.value);
-				});
-
-				return values;
-			};
-
-			var scaleOptions = {
-				templateString : this.options.scaleLabel,
-				height : this.chart.height,
-				width : this.chart.width,
-				ctx : this.chart.ctx,
-				textColor : this.options.scaleFontColor,
-				fontSize : this.options.scaleFontSize,
-				fontStyle : this.options.scaleFontStyle,
-				fontFamily : this.options.scaleFontFamily,
-				valuesCount : labels.length,
-				beginAtZero : this.options.scaleBeginAtZero,
-				integersOnly : this.options.scaleIntegersOnly,
-				calculateYRange : function(currentHeight){
-					var updatedRanges = helpers.calculateScaleRange(
-						dataTotal(),
-						currentHeight,
-						this.fontSize,
-						this.beginAtZero,
-						this.integersOnly
-					);
-					helpers.extend(this, updatedRanges);
-				},
-				xLabels : labels,
-				font : helpers.fontString(this.options.scaleFontSize, this.options.scaleFontStyle, this.options.scaleFontFamily),
-				lineWidth : this.options.scaleLineWidth,
-				lineColor : this.options.scaleLineColor,
-				showHorizontalLines : this.options.scaleShowHorizontalLines,
-				showVerticalLines : this.options.scaleShowVerticalLines,
-				gridLineWidth : (this.options.scaleShowGridLines) ? this.options.scaleGridLineWidth : 0,
-				gridLineColor : (this.options.scaleShowGridLines) ? this.options.scaleGridLineColor : "rgba(0,0,0,0)",
-				padding: (this.options.showScale) ? 0 : this.options.pointDotRadius + this.options.pointDotStrokeWidth,
-				showLabels : this.options.scaleShowLabels,
-				display : this.options.showScale
-			};
-
-			if (this.options.scaleOverride){
-				helpers.extend(scaleOptions, {
-					calculateYRange: helpers.noop,
-					steps: this.options.scaleSteps,
-					stepValue: this.options.scaleStepWidth,
-					min: this.options.scaleStartValue,
-					max: this.options.scaleStartValue + (this.options.scaleSteps * this.options.scaleStepWidth)
-				});
-			}
-
-
-			this.scale = new Chart.Scale(scaleOptions);
-		},
-		addData : function(valuesArray,label){
-			//Map the values array for each of the datasets
-
-			helpers.each(valuesArray,function(value,datasetIndex){
-				//Add a new point for each piece of data, passing any required data to draw.
-				this.datasets[datasetIndex].points.push(new this.PointClass({
-					value : value,
-					label : label,
-					x: this.scale.calculateX(this.scale.valuesCount+1),
-					y: this.scale.endPoint,
-					strokeColor : this.datasets[datasetIndex].pointStrokeColor,
-					fillColor : this.datasets[datasetIndex].pointColor
-				}));
-			},this);
-
-			this.scale.addXLabel(label);
-			//Then re-render the chart.
-			this.update();
-		},
-		removeData : function(){
-			this.scale.removeXLabel();
-			//Then re-render the chart.
-			helpers.each(this.datasets,function(dataset){
-				dataset.points.shift();
-			},this);
-			this.update();
-		},
-		reflow : function(){
-			var newScaleProps = helpers.extend({
-				height : this.chart.height,
-				width : this.chart.width
-			});
-			this.scale.update(newScaleProps);
-		},
-		draw : function(ease){
-			var easingDecimal = ease || 1;
-			this.clear();
-
-			var ctx = this.chart.ctx;
-
-			// Some helper methods for getting the next/prev points
-			var hasValue = function(item){
-				return item.value !== null;
-			},
-			nextPoint = function(point, collection, index){
-				return helpers.findNextWhere(collection, hasValue, index) || point;
-			},
-			previousPoint = function(point, collection, index){
-				return helpers.findPreviousWhere(collection, hasValue, index) || point;
-			};
-
-			this.scale.draw(easingDecimal);
-
-
-			helpers.each(this.datasets,function(dataset){
-				var pointsWithValues = helpers.where(dataset.points, hasValue);
-
-				//Transition each point first so that the line and point drawing isn't out of sync
-				//We can use this extra loop to calculate the control points of this dataset also in this loop
-
-				helpers.each(dataset.points, function(point, index){
-					if (point.hasValue()){
-						point.transition({
-							y : this.scale.calculateY(point.value),
-							x : this.scale.calculateX(index)
-						}, easingDecimal);
-					}
-				},this);
-
-
-				// Control points need to be calculated in a seperate loop, because we need to know the current x/y of the point
-				// This would cause issues when there is no animation, because the y of the next point would be 0, so beziers would be skewed
-				if (this.options.bezierCurve){
-					helpers.each(pointsWithValues, function(point, index){
-						var tension = (index > 0 && index < pointsWithValues.length - 1) ? this.options.bezierCurveTension : 0;
-						point.controlPoints = helpers.splineCurve(
-							previousPoint(point, pointsWithValues, index),
-							point,
-							nextPoint(point, pointsWithValues, index),
-							tension
-						);
-
-						// Prevent the bezier going outside of the bounds of the graph
-
-						// Cap puter bezier handles to the upper/lower scale bounds
-						if (point.controlPoints.outer.y > this.scale.endPoint){
-							point.controlPoints.outer.y = this.scale.endPoint;
-						}
-						else if (point.controlPoints.outer.y < this.scale.startPoint){
-							point.controlPoints.outer.y = this.scale.startPoint;
-						}
-
-						// Cap inner bezier handles to the upper/lower scale bounds
-						if (point.controlPoints.inner.y > this.scale.endPoint){
-							point.controlPoints.inner.y = this.scale.endPoint;
-						}
-						else if (point.controlPoints.inner.y < this.scale.startPoint){
-							point.controlPoints.inner.y = this.scale.startPoint;
-						}
-					},this);
-				}
-
-
-				//Draw the line between all the points
-				ctx.lineWidth = this.options.datasetStrokeWidth;
-				ctx.strokeStyle = dataset.strokeColor;
-				ctx.beginPath();
-
-				helpers.each(pointsWithValues, function(point, index){
-					if (index === 0){
-						ctx.moveTo(point.x, point.y);
-					}
-					else{
-						if(this.options.bezierCurve){
-							var previous = previousPoint(point, pointsWithValues, index);
-
-							ctx.bezierCurveTo(
-								previous.controlPoints.outer.x,
-								previous.controlPoints.outer.y,
-								point.controlPoints.inner.x,
-								point.controlPoints.inner.y,
-								point.x,
-								point.y
-							);
-						}
-						else{
-							ctx.lineTo(point.x,point.y);
-						}
-					}
-				}, this);
-
-				ctx.stroke();
-
-				if (this.options.datasetFill && pointsWithValues.length > 0){
-					//Round off the line by going to the base of the chart, back to the start, then fill.
-					ctx.lineTo(pointsWithValues[pointsWithValues.length - 1].x, this.scale.endPoint);
-					ctx.lineTo(pointsWithValues[0].x, this.scale.endPoint);
-					ctx.fillStyle = dataset.fillColor;
-					ctx.closePath();
-					ctx.fill();
-				}
-
-				//Now draw the points over the line
-				//A little inefficient double looping, but better than the line
-				//lagging behind the point positions
-				helpers.each(pointsWithValues,function(point){
-					point.draw();
-				});
-			},this);
-		}
-	});
-
-
-}).call(this);
-
-(function(){
-	"use strict";
-
-	var root = this,
-		Chart = root.Chart,
-		//Cache a local reference to Chart.helpers
-		helpers = Chart.helpers;
-
-	var defaultConfig = {
-		//Boolean - Show a backdrop to the scale label
-		scaleShowLabelBackdrop : true,
-
-		//String - The colour of the label backdrop
-		scaleBackdropColor : "rgba(255,255,255,0.75)",
-
-		// Boolean - Whether the scale should begin at zero
-		scaleBeginAtZero : true,
-
-		//Number - The backdrop padding above & below the label in pixels
-		scaleBackdropPaddingY : 2,
-
-		//Number - The backdrop padding to the side of the label in pixels
-		scaleBackdropPaddingX : 2,
-
-		//Boolean - Show line for each value in the scale
-		scaleShowLine : true,
-
-		//Boolean - Stroke a line around each segment in the chart
-		segmentShowStroke : true,
-
-		//String - The colour of the stroke on each segement.
-		segmentStrokeColor : "#fff",
-
-		//Number - The width of the stroke value in pixels
-		segmentStrokeWidth : 2,
-
-		//Number - Amount of animation steps
-		animationSteps : 100,
-
-		//String - Animation easing effect.
-		animationEasing : "easeOutBounce",
-
-		//Boolean - Whether to animate the rotation of the chart
-		animateRotate : true,
-
-		//Boolean - Whether to animate scaling the chart from the centre
-		animateScale : false,
-
-		//String - A legend template
-		legendTemplate : "<ul class=\"<%=name.toLowerCase()%>-legend\"><% for (var i=0; i<segments.length; i++){%><li><span style=\"background-color:<%=segments[i].fillColor%>\"></span><%if(segments[i].label){%><%=segments[i].label%><%}%></li><%}%></ul>"
-	};
-
-
-	Chart.Type.extend({
-		//Passing in a name registers this chart in the Chart namespace
-		name: "PolarArea",
-		//Providing a defaults will also register the deafults in the chart namespace
-		defaults : defaultConfig,
-		//Initialize is fired when the chart is initialized - Data is passed in as a parameter
-		//Config is automatically merged by the core of Chart.js, and is available at this.options
-		initialize:  function(data){
-			this.segments = [];
-			//Declare segment class as a chart instance specific class, so it can share props for this instance
-			this.SegmentArc = Chart.Arc.extend({
-				showStroke : this.options.segmentShowStroke,
-				strokeWidth : this.options.segmentStrokeWidth,
-				strokeColor : this.options.segmentStrokeColor,
-				ctx : this.chart.ctx,
-				innerRadius : 0,
-				x : this.chart.width/2,
-				y : this.chart.height/2
-			});
-			this.scale = new Chart.RadialScale({
-				display: this.options.showScale,
-				fontStyle: this.options.scaleFontStyle,
-				fontSize: this.options.scaleFontSize,
-				fontFamily: this.options.scaleFontFamily,
-				fontColor: this.options.scaleFontColor,
-				showLabels: this.options.scaleShowLabels,
-				showLabelBackdrop: this.options.scaleShowLabelBackdrop,
-				backdropColor: this.options.scaleBackdropColor,
-				backdropPaddingY : this.options.scaleBackdropPaddingY,
-				backdropPaddingX: this.options.scaleBackdropPaddingX,
-				lineWidth: (this.options.scaleShowLine) ? this.options.scaleLineWidth : 0,
-				lineColor: this.options.scaleLineColor,
-				lineArc: true,
-				width: this.chart.width,
-				height: this.chart.height,
-				xCenter: this.chart.width/2,
-				yCenter: this.chart.height/2,
-				ctx : this.chart.ctx,
-				templateString: this.options.scaleLabel,
-				valuesCount: data.length
-			});
-
-			this.updateScaleRange(data);
-
-			this.scale.update();
-
-			helpers.each(data,function(segment,index){
-				this.addData(segment,index,true);
-			},this);
-
-			//Set up tooltip events on the chart
-			if (this.options.showTooltips){
-				helpers.bindEvents(this, this.options.tooltipEvents, function(evt){
-					var activeSegments = (evt.type !== 'mouseout') ? this.getSegmentsAtEvent(evt) : [];
-					helpers.each(this.segments,function(segment){
-						segment.restore(["fillColor"]);
-					});
-					helpers.each(activeSegments,function(activeSegment){
-						activeSegment.fillColor = activeSegment.highlightColor;
-					});
-					this.showTooltip(activeSegments);
-				});
-			}
-
-			this.render();
-		},
-		getSegmentsAtEvent : function(e){
-			var segmentsArray = [];
-
-			var location = helpers.getRelativePosition(e);
-
-			helpers.each(this.segments,function(segment){
-				if (segment.inRange(location.x,location.y)) segmentsArray.push(segment);
-			},this);
-			return segmentsArray;
-		},
-		addData : function(segment, atIndex, silent){
-			var index = atIndex || this.segments.length;
-
-			this.segments.splice(index, 0, new this.SegmentArc({
-				fillColor: segment.color,
-				highlightColor: segment.highlight || segment.color,
-				label: segment.label,
-				value: segment.value,
-				outerRadius: (this.options.animateScale) ? 0 : this.scale.calculateCenterOffset(segment.value),
-				circumference: (this.options.animateRotate) ? 0 : this.scale.getCircumference(),
-				startAngle: Math.PI * 1.5
-			}));
-			if (!silent){
-				this.reflow();
-				this.update();
-			}
-		},
-		removeData: function(atIndex){
-			var indexToDelete = (helpers.isNumber(atIndex)) ? atIndex : this.segments.length-1;
-			this.segments.splice(indexToDelete, 1);
-			this.reflow();
-			this.update();
-		},
-		calculateTotal: function(data){
-			this.total = 0;
-			helpers.each(data,function(segment){
-				this.total += segment.value;
-			},this);
-			this.scale.valuesCount = this.segments.length;
-		},
-		updateScaleRange: function(datapoints){
-			var valuesArray = [];
-			helpers.each(datapoints,function(segment){
-				valuesArray.push(segment.value);
-			});
-
-			var scaleSizes = (this.options.scaleOverride) ?
-				{
-					steps: this.options.scaleSteps,
-					stepValue: this.options.scaleStepWidth,
-					min: this.options.scaleStartValue,
-					max: this.options.scaleStartValue + (this.options.scaleSteps * this.options.scaleStepWidth)
-				} :
-				helpers.calculateScaleRange(
-					valuesArray,
-					helpers.min([this.chart.width, this.chart.height])/2,
-					this.options.scaleFontSize,
-					this.options.scaleBeginAtZero,
-					this.options.scaleIntegersOnly
-				);
-
-			helpers.extend(
-				this.scale,
-				scaleSizes,
-				{
-					size: helpers.min([this.chart.width, this.chart.height]),
-					xCenter: this.chart.width/2,
-					yCenter: this.chart.height/2
-				}
-			);
-
-		},
-		update : function(){
-			this.calculateTotal(this.segments);
-
-			helpers.each(this.segments,function(segment){
-				segment.save();
-			});
-			
-			this.reflow();
-			this.render();
-		},
-		reflow : function(){
-			helpers.extend(this.SegmentArc.prototype,{
-				x : this.chart.width/2,
-				y : this.chart.height/2
-			});
-			this.updateScaleRange(this.segments);
-			this.scale.update();
-
-			helpers.extend(this.scale,{
-				xCenter: this.chart.width/2,
-				yCenter: this.chart.height/2
-			});
-
-			helpers.each(this.segments, function(segment){
-				segment.update({
-					outerRadius : this.scale.calculateCenterOffset(segment.value)
-				});
-			}, this);
-
-		},
-		draw : function(ease){
-			var easingDecimal = ease || 1;
-			//Clear & draw the canvas
-			this.clear();
-			helpers.each(this.segments,function(segment, index){
-				segment.transition({
-					circumference : this.scale.getCircumference(),
-					outerRadius : this.scale.calculateCenterOffset(segment.value)
-				},easingDecimal);
-
-				segment.endAngle = segment.startAngle + segment.circumference;
-
-				// If we've removed the first segment we need to set the first one to
-				// start at the top.
-				if (index === 0){
-					segment.startAngle = Math.PI * 1.5;
-				}
-
-				//Check to see if it's the last segment, if not get the next and update the start angle
-				if (index < this.segments.length - 1){
-					this.segments[index+1].startAngle = segment.endAngle;
-				}
-				segment.draw();
-			}, this);
-			this.scale.draw();
-		}
-	});
-
-}).call(this);
-(function(){
-	"use strict";
-
-	var root = this,
-		Chart = root.Chart,
-		helpers = Chart.helpers;
-
-
-
-	Chart.Type.extend({
-		name: "Radar",
-		defaults:{
-			//Boolean - Whether to show lines for each scale point
-			scaleShowLine : true,
-
-			//Boolean - Whether we show the angle lines out of the radar
-			angleShowLineOut : true,
-
-			//Boolean - Whether to show labels on the scale
-			scaleShowLabels : false,
-
-			// Boolean - Whether the scale should begin at zero
-			scaleBeginAtZero : true,
-
-			//String - Colour of the angle line
-			angleLineColor : "rgba(0,0,0,.1)",
-
-			//Number - Pixel width of the angle line
-			angleLineWidth : 1,
-
-			//String - Point label font declaration
-			pointLabelFontFamily : "'Arial'",
-
-			//String - Point label font weight
-			pointLabelFontStyle : "normal",
-
-			//Number - Point label font size in pixels
-			pointLabelFontSize : 10,
-
-			//String - Point label font colour
-			pointLabelFontColor : "#666",
-
-			//Boolean - Whether to show a dot for each point
-			pointDot : true,
-
-			//Number - Radius of each point dot in pixels
-			pointDotRadius : 3,
-
-			//Number - Pixel width of point dot stroke
-			pointDotStrokeWidth : 1,
-
-			//Number - amount extra to add to the radius to cater for hit detection outside the drawn point
-			pointHitDetectionRadius : 20,
-
-			//Boolean - Whether to show a stroke for datasets
-			datasetStroke : true,
-
-			//Number - Pixel width of dataset stroke
-			datasetStrokeWidth : 2,
-
-			//Boolean - Whether to fill the dataset with a colour
-			datasetFill : true,
-
-			//String - A legend template
-			legendTemplate : "<ul class=\"<%=name.toLowerCase()%>-legend\"><% for (var i=0; i<datasets.length; i++){%><li><span style=\"background-color:<%=datasets[i].strokeColor%>\"></span><%if(datasets[i].label){%><%=datasets[i].label%><%}%></li><%}%></ul>"
-
-		},
-
-		initialize: function(data){
-			this.PointClass = Chart.Point.extend({
-				strokeWidth : this.options.pointDotStrokeWidth,
-				radius : this.options.pointDotRadius,
-				display: this.options.pointDot,
-				hitDetectionRadius : this.options.pointHitDetectionRadius,
-				ctx : this.chart.ctx
-			});
-
-			this.datasets = [];
-
-			this.buildScale(data);
-
-			//Set up tooltip events on the chart
-			if (this.options.showTooltips){
-				helpers.bindEvents(this, this.options.tooltipEvents, function(evt){
-					var activePointsCollection = (evt.type !== 'mouseout') ? this.getPointsAtEvent(evt) : [];
-
-					this.eachPoints(function(point){
-						point.restore(['fillColor', 'strokeColor']);
-					});
-					helpers.each(activePointsCollection, function(activePoint){
-						activePoint.fillColor = activePoint.highlightFill;
-						activePoint.strokeColor = activePoint.highlightStroke;
-					});
-
-					this.showTooltip(activePointsCollection);
-				});
-			}
-
-			//Iterate through each of the datasets, and build this into a property of the chart
-			helpers.each(data.datasets,function(dataset){
-
-				var datasetObject = {
-					label: dataset.label || null,
-					fillColor : dataset.fillColor,
-					strokeColor : dataset.strokeColor,
-					pointColor : dataset.pointColor,
-					pointStrokeColor : dataset.pointStrokeColor,
-					points : []
-				};
-
-				this.datasets.push(datasetObject);
-
-				helpers.each(dataset.data,function(dataPoint,index){
-					//Add a new point for each piece of data, passing any required data to draw.
-					var pointPosition;
-					if (!this.scale.animation){
-						pointPosition = this.scale.getPointPosition(index, this.scale.calculateCenterOffset(dataPoint));
-					}
-					datasetObject.points.push(new this.PointClass({
-						value : dataPoint,
-						label : data.labels[index],
-						datasetLabel: dataset.label,
-						x: (this.options.animation) ? this.scale.xCenter : pointPosition.x,
-						y: (this.options.animation) ? this.scale.yCenter : pointPosition.y,
-						strokeColor : dataset.pointStrokeColor,
-						fillColor : dataset.pointColor,
-						highlightFill : dataset.pointHighlightFill || dataset.pointColor,
-						highlightStroke : dataset.pointHighlightStroke || dataset.pointStrokeColor
-					}));
-				},this);
-
-			},this);
-
-			this.render();
-		},
-		eachPoints : function(callback){
-			helpers.each(this.datasets,function(dataset){
-				helpers.each(dataset.points,callback,this);
-			},this);
-		},
-
-		getPointsAtEvent : function(evt){
-			var mousePosition = helpers.getRelativePosition(evt),
-				fromCenter = helpers.getAngleFromPoint({
-					x: this.scale.xCenter,
-					y: this.scale.yCenter
-				}, mousePosition);
-
-			var anglePerIndex = (Math.PI * 2) /this.scale.valuesCount,
-				pointIndex = Math.round((fromCenter.angle - Math.PI * 1.5) / anglePerIndex),
-				activePointsCollection = [];
-
-			// If we're at the top, make the pointIndex 0 to get the first of the array.
-			if (pointIndex >= this.scale.valuesCount || pointIndex < 0){
-				pointIndex = 0;
-			}
-
-			if (fromCenter.distance <= this.scale.drawingArea){
-				helpers.each(this.datasets, function(dataset){
-					activePointsCollection.push(dataset.points[pointIndex]);
-				});
-			}
-
-			return activePointsCollection;
-		},
-
-		buildScale : function(data){
-			this.scale = new Chart.RadialScale({
-				display: this.options.showScale,
-				fontStyle: this.options.scaleFontStyle,
-				fontSize: this.options.scaleFontSize,
-				fontFamily: this.options.scaleFontFamily,
-				fontColor: this.options.scaleFontColor,
-				showLabels: this.options.scaleShowLabels,
-				showLabelBackdrop: this.options.scaleShowLabelBackdrop,
-				backdropColor: this.options.scaleBackdropColor,
-				backdropPaddingY : this.options.scaleBackdropPaddingY,
-				backdropPaddingX: this.options.scaleBackdropPaddingX,
-				lineWidth: (this.options.scaleShowLine) ? this.options.scaleLineWidth : 0,
-				lineColor: this.options.scaleLineColor,
-				angleLineColor : this.options.angleLineColor,
-				angleLineWidth : (this.options.angleShowLineOut) ? this.options.angleLineWidth : 0,
-				// Point labels at the edge of each line
-				pointLabelFontColor : this.options.pointLabelFontColor,
-				pointLabelFontSize : this.options.pointLabelFontSize,
-				pointLabelFontFamily : this.options.pointLabelFontFamily,
-				pointLabelFontStyle : this.options.pointLabelFontStyle,
-				height : this.chart.height,
-				width: this.chart.width,
-				xCenter: this.chart.width/2,
-				yCenter: this.chart.height/2,
-				ctx : this.chart.ctx,
-				templateString: this.options.scaleLabel,
-				labels: data.labels,
-				valuesCount: data.datasets[0].data.length
-			});
-
-			this.scale.setScaleSize();
-			this.updateScaleRange(data.datasets);
-			this.scale.buildYLabels();
-		},
-		updateScaleRange: function(datasets){
-			var valuesArray = (function(){
-				var totalDataArray = [];
-				helpers.each(datasets,function(dataset){
-					if (dataset.data){
-						totalDataArray = totalDataArray.concat(dataset.data);
-					}
-					else {
-						helpers.each(dataset.points, function(point){
-							totalDataArray.push(point.value);
-						});
-					}
-				});
-				return totalDataArray;
-			})();
-
-
-			var scaleSizes = (this.options.scaleOverride) ?
-				{
-					steps: this.options.scaleSteps,
-					stepValue: this.options.scaleStepWidth,
-					min: this.options.scaleStartValue,
-					max: this.options.scaleStartValue + (this.options.scaleSteps * this.options.scaleStepWidth)
-				} :
-				helpers.calculateScaleRange(
-					valuesArray,
-					helpers.min([this.chart.width, this.chart.height])/2,
-					this.options.scaleFontSize,
-					this.options.scaleBeginAtZero,
-					this.options.scaleIntegersOnly
-				);
-
-			helpers.extend(
-				this.scale,
-				scaleSizes
-			);
-
-		},
-		addData : function(valuesArray,label){
-			//Map the values array for each of the datasets
-			this.scale.valuesCount++;
-			helpers.each(valuesArray,function(value,datasetIndex){
-				var pointPosition = this.scale.getPointPosition(this.scale.valuesCount, this.scale.calculateCenterOffset(value));
-				this.datasets[datasetIndex].points.push(new this.PointClass({
-					value : value,
-					label : label,
-					x: pointPosition.x,
-					y: pointPosition.y,
-					strokeColor : this.datasets[datasetIndex].pointStrokeColor,
-					fillColor : this.datasets[datasetIndex].pointColor
-				}));
-			},this);
-
-			this.scale.labels.push(label);
-
-			this.reflow();
-
-			this.update();
-		},
-		removeData : function(){
-			this.scale.valuesCount--;
-			this.scale.labels.shift();
-			helpers.each(this.datasets,function(dataset){
-				dataset.points.shift();
-			},this);
-			this.reflow();
-			this.update();
-		},
-		update : function(){
-			this.eachPoints(function(point){
-				point.save();
-			});
-			this.reflow();
-			this.render();
-		},
-		reflow: function(){
-			helpers.extend(this.scale, {
-				width : this.chart.width,
-				height: this.chart.height,
-				size : helpers.min([this.chart.width, this.chart.height]),
-				xCenter: this.chart.width/2,
-				yCenter: this.chart.height/2
-			});
-			this.updateScaleRange(this.datasets);
-			this.scale.setScaleSize();
-			this.scale.buildYLabels();
-		},
-		draw : function(ease){
-			var easeDecimal = ease || 1,
-				ctx = this.chart.ctx;
-			this.clear();
-			this.scale.draw();
-
-			helpers.each(this.datasets,function(dataset){
-
-				//Transition each point first so that the line and point drawing isn't out of sync
-				helpers.each(dataset.points,function(point,index){
-					if (point.hasValue()){
-						point.transition(this.scale.getPointPosition(index, this.scale.calculateCenterOffset(point.value)), easeDecimal);
-					}
-				},this);
-
-
-
-				//Draw the line between all the points
-				ctx.lineWidth = this.options.datasetStrokeWidth;
-				ctx.strokeStyle = dataset.strokeColor;
-				ctx.beginPath();
-				helpers.each(dataset.points,function(point,index){
-					if (index === 0){
-						ctx.moveTo(point.x,point.y);
-					}
-					else{
-						ctx.lineTo(point.x,point.y);
-					}
-				},this);
-				ctx.closePath();
-				ctx.stroke();
-
-				ctx.fillStyle = dataset.fillColor;
-				ctx.fill();
-
-				//Now draw the points over the line
-				//A little inefficient double looping, but better than the line
-				//lagging behind the point positions
-				helpers.each(dataset.points,function(point){
-					if (point.hasValue()){
-						point.draw();
-					}
-				});
-
-			},this);
-
-		}
-
-	});
-
-
-
-
-
-}).call(this);
-},{}],2:[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2013-2015, Facebook, Inc.
@@ -3563,7 +85,7 @@ var EventListener = {
 
 module.exports = EventListener;
 }).call(this,require('_process'))
-},{"./emptyFunction":9,"_process":180}],3:[function(require,module,exports){
+},{"./emptyFunction":8,"_process":159}],2:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -3600,7 +122,7 @@ var ExecutionEnvironment = {
 };
 
 module.exports = ExecutionEnvironment;
-},{}],4:[function(require,module,exports){
+},{}],3:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -3633,7 +155,7 @@ function camelize(string) {
 }
 
 module.exports = camelize;
-},{}],5:[function(require,module,exports){
+},{}],4:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -3674,7 +196,7 @@ function camelizeStyleName(string) {
 }
 
 module.exports = camelizeStyleName;
-},{"./camelize":4}],6:[function(require,module,exports){
+},{"./camelize":3}],5:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -3730,7 +252,7 @@ function containsNode(_x, _x2) {
 }
 
 module.exports = containsNode;
-},{"./isTextNode":19}],7:[function(require,module,exports){
+},{"./isTextNode":18}],6:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -3816,7 +338,7 @@ function createArrayFromMixed(obj) {
 }
 
 module.exports = createArrayFromMixed;
-},{"./toArray":27}],8:[function(require,module,exports){
+},{"./toArray":26}],7:[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2013-2015, Facebook, Inc.
@@ -3903,7 +425,7 @@ function createNodesFromMarkup(markup, handleScript) {
 
 module.exports = createNodesFromMarkup;
 }).call(this,require('_process'))
-},{"./ExecutionEnvironment":3,"./createArrayFromMixed":7,"./getMarkupWrap":13,"./invariant":17,"_process":180}],9:[function(require,module,exports){
+},{"./ExecutionEnvironment":2,"./createArrayFromMixed":6,"./getMarkupWrap":12,"./invariant":16,"_process":159}],8:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -3942,7 +464,7 @@ emptyFunction.thatReturnsArgument = function (arg) {
 };
 
 module.exports = emptyFunction;
-},{}],10:[function(require,module,exports){
+},{}],9:[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2013-2015, Facebook, Inc.
@@ -3965,7 +487,7 @@ if (process.env.NODE_ENV !== 'production') {
 
 module.exports = emptyObject;
 }).call(this,require('_process'))
-},{"_process":180}],11:[function(require,module,exports){
+},{"_process":159}],10:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -3992,7 +514,7 @@ function focusNode(node) {
 }
 
 module.exports = focusNode;
-},{}],12:[function(require,module,exports){
+},{}],11:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -4026,7 +548,7 @@ function getActiveElement() /*?DOMElement*/{
 }
 
 module.exports = getActiveElement;
-},{}],13:[function(require,module,exports){
+},{}],12:[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2013-2015, Facebook, Inc.
@@ -4124,7 +646,7 @@ function getMarkupWrap(nodeName) {
 
 module.exports = getMarkupWrap;
 }).call(this,require('_process'))
-},{"./ExecutionEnvironment":3,"./invariant":17,"_process":180}],14:[function(require,module,exports){
+},{"./ExecutionEnvironment":2,"./invariant":16,"_process":159}],13:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -4163,7 +685,7 @@ function getUnboundedScrollPosition(scrollable) {
 }
 
 module.exports = getUnboundedScrollPosition;
-},{}],15:[function(require,module,exports){
+},{}],14:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -4197,7 +719,7 @@ function hyphenate(string) {
 }
 
 module.exports = hyphenate;
-},{}],16:[function(require,module,exports){
+},{}],15:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -4237,7 +759,7 @@ function hyphenateStyleName(string) {
 }
 
 module.exports = hyphenateStyleName;
-},{"./hyphenate":15}],17:[function(require,module,exports){
+},{"./hyphenate":14}],16:[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2013-2015, Facebook, Inc.
@@ -4289,7 +811,7 @@ var invariant = function (condition, format, a, b, c, d, e, f) {
 
 module.exports = invariant;
 }).call(this,require('_process'))
-},{"_process":180}],18:[function(require,module,exports){
+},{"_process":159}],17:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -4313,7 +835,7 @@ function isNode(object) {
 }
 
 module.exports = isNode;
-},{}],19:[function(require,module,exports){
+},{}],18:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -4339,7 +861,7 @@ function isTextNode(object) {
 }
 
 module.exports = isTextNode;
-},{"./isNode":18}],20:[function(require,module,exports){
+},{"./isNode":17}],19:[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2013-2015, Facebook, Inc.
@@ -4390,7 +912,7 @@ var keyMirror = function (obj) {
 
 module.exports = keyMirror;
 }).call(this,require('_process'))
-},{"./invariant":17,"_process":180}],21:[function(require,module,exports){
+},{"./invariant":16,"_process":159}],20:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -4426,7 +948,7 @@ var keyOf = function (oneKeyObj) {
 };
 
 module.exports = keyOf;
-},{}],22:[function(require,module,exports){
+},{}],21:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -4478,7 +1000,7 @@ function mapObject(object, callback, context) {
 }
 
 module.exports = mapObject;
-},{}],23:[function(require,module,exports){
+},{}],22:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -4510,7 +1032,7 @@ function memoizeStringOnly(callback) {
 }
 
 module.exports = memoizeStringOnly;
-},{}],24:[function(require,module,exports){
+},{}],23:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -4534,7 +1056,7 @@ if (ExecutionEnvironment.canUseDOM) {
 }
 
 module.exports = performance || {};
-},{"./ExecutionEnvironment":3}],25:[function(require,module,exports){
+},{"./ExecutionEnvironment":2}],24:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -4564,7 +1086,7 @@ if (!curPerformance || !curPerformance.now) {
 var performanceNow = curPerformance.now.bind(curPerformance);
 
 module.exports = performanceNow;
-},{"./performance":24}],26:[function(require,module,exports){
+},{"./performance":23}],25:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -4615,7 +1137,7 @@ function shallowEqual(objA, objB) {
 }
 
 module.exports = shallowEqual;
-},{}],27:[function(require,module,exports){
+},{}],26:[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2013-2015, Facebook, Inc.
@@ -4675,7 +1197,7 @@ function toArray(obj) {
 
 module.exports = toArray;
 }).call(this,require('_process'))
-},{"./invariant":17,"_process":180}],28:[function(require,module,exports){
+},{"./invariant":16,"_process":159}],27:[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2014-2015, Facebook, Inc.
@@ -4735,159 +1257,12 @@ if (process.env.NODE_ENV !== 'production') {
 
 module.exports = warning;
 }).call(this,require('_process'))
-},{"./emptyFunction":9,"_process":180}],29:[function(require,module,exports){
-module.exports = {
-  Bar: require('./lib/bar'),
-  Doughnut: require('./lib/doughnut'),
-  Line: require('./lib/line'),
-  Pie: require('./lib/pie'),
-  PolarArea: require('./lib/polar-area'),
-  Radar: require('./lib/radar'),
-  createClass: require('./lib/core').createClass
-};
-
-},{"./lib/bar":30,"./lib/core":31,"./lib/doughnut":32,"./lib/line":33,"./lib/pie":34,"./lib/polar-area":35,"./lib/radar":36}],30:[function(require,module,exports){
-var vars = require('./core');
-
-module.exports = vars.createClass('Bar', ['getBarsAtEvent']);
-
-},{"./core":31}],31:[function(require,module,exports){
-module.exports = {
-  createClass: function(chartType, methodNames, dataKey) {
-    var classData = {
-      displayName: chartType + 'Chart',
-      getInitialState: function() { return {}; },
-      render: function() {
-        var _props = {
-          ref: 'canvass'
-        };
-        for (var name in this.props) {
-          if (this.props.hasOwnProperty(name)) {
-            if (name !== 'data' && name !== 'options') {
-              _props[name] = this.props[name];
-            }
-          }
-        }
-        return React.createElement('canvas', _props);
-      }
-    };
-
-    var extras = ['clear', 'stop', 'resize', 'toBase64Image', 'generateLegend', 'update', 'addData', 'removeData'];
-    function extra(type) {
-      classData[type] = function() {
-        this.state.chart[name].apply(this.state.chart, arguments);
-      };
-    }
-
-    classData.componentDidMount = function() {
-      this.initializeChart(this.props);
-    };
-
-    classData.componentWillUnmount = function() {
-      var chart = this.state.chart;
-      chart.destroy();
-    };
-
-    classData.componentWillReceiveProps = function(nextProps) {
-      var chart = this.state.chart;
-      if (this.props.redraw) {
-        chart.destroy();
-        this.initializeChart(nextProps);
-      } else {
-        dataKey = dataKey || dataKeys[chart.name];
-        updatePoints(nextProps, chart, dataKey);
-        chart.update();
-      }
-    };
-
-    classData.initializeChart = function(nextProps) {
-      var Chart = require('chart.js');
-      var el = this.getDOMNode();
-      var ctx = el.getContext("2d");
-      var chart = new Chart(ctx)[chartType](nextProps.data, nextProps.options || {});
-      this.state.chart = chart;
-    };
-
-    // return the chartjs instance
-    classData.getChart = function() {
-      return this.state.chart;
-    };
-
-    // return the canvass element that contains the chart
-    classData.getCanvass = function() {
-      return this.refs.canvass.getDOMNode();
-    };
-
-    var i;
-    for (i=0; i<extras.length; i++) {
-      extra(extras[i]);
-    }
-    for (i=0; i<methodNames.length; i++) {
-      extra(methodNames[i]);
-    }
-
-    var React = require('react');
-    return React.createClass(classData);
-  }
-};
-
-var dataKeys = {
-  'Line': 'points',
-  'Radar': 'points',
-  'Bar': 'bars'
-};
-
-var updatePoints = function(nextProps, chart, dataKey) {
-  var name = chart.name;
-
-  if (name === 'PolarArea' || name === 'Pie' || name === 'Doughnut') {
-    nextProps.data.forEach(function(segment, segmentIndex) {
-      chart.segments[segmentIndex].value = segment.value;
-    });
-  } else {
-    nextProps.data.datasets.forEach(function(set, setIndex) {
-      set.data.forEach(function(val, pointIndex) {
-        chart.datasets[setIndex][dataKey][pointIndex].value = val;
-      });
-    });
-  }
-};
-
-
-
-
-
-},{"chart.js":1,"react":166}],32:[function(require,module,exports){
-var vars = require('./core');
-
-module.exports = vars.createClass('Doughnut', ['getSegmentsAtEvent']);
-
-},{"./core":31}],33:[function(require,module,exports){
-var vars = require('./core');
-
-module.exports = vars.createClass('Line', ['getPointsAtEvent']);
-
-},{"./core":31}],34:[function(require,module,exports){
-var vars = require('./core');
-
-module.exports = vars.createClass('Pie', ['getSegmentsAtEvent']);
-
-},{"./core":31}],35:[function(require,module,exports){
-var vars = require('./core');
-
-module.exports = vars.createClass('PolarArea', ['getSegmentsAtEvent']);
-
-},{"./core":31}],36:[function(require,module,exports){
-var vars = require('./core');
-
-module.exports = vars.createClass('Radar', ['getPointsAtEvent']);
-
-},{"./core":31}],37:[function(require,module,exports){
+},{"./emptyFunction":8,"_process":159}],28:[function(require,module,exports){
 'use strict';
 
 module.exports = require('react/lib/ReactDOM');
 
-},{"react/lib/ReactDOM":72}],38:[function(require,module,exports){
+},{"react/lib/ReactDOM":63}],29:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -4924,7 +1299,7 @@ var AutoFocusUtils = {
 };
 
 module.exports = AutoFocusUtils;
-},{"./ReactMount":102,"./findDOMNode":145,"fbjs/lib/focusNode":11}],39:[function(require,module,exports){
+},{"./ReactMount":93,"./findDOMNode":136,"fbjs/lib/focusNode":10}],30:[function(require,module,exports){
 /**
  * Copyright 2013-2015 Facebook, Inc.
  * All rights reserved.
@@ -5330,7 +1705,7 @@ var BeforeInputEventPlugin = {
 };
 
 module.exports = BeforeInputEventPlugin;
-},{"./EventConstants":51,"./EventPropagators":55,"./FallbackCompositionState":56,"./SyntheticCompositionEvent":127,"./SyntheticInputEvent":131,"fbjs/lib/ExecutionEnvironment":3,"fbjs/lib/keyOf":21}],40:[function(require,module,exports){
+},{"./EventConstants":42,"./EventPropagators":46,"./FallbackCompositionState":47,"./SyntheticCompositionEvent":118,"./SyntheticInputEvent":122,"fbjs/lib/ExecutionEnvironment":2,"fbjs/lib/keyOf":20}],31:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -5470,7 +1845,7 @@ var CSSProperty = {
 };
 
 module.exports = CSSProperty;
-},{}],41:[function(require,module,exports){
+},{}],32:[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2013-2015, Facebook, Inc.
@@ -5648,7 +2023,7 @@ ReactPerf.measureMethods(CSSPropertyOperations, 'CSSPropertyOperations', {
 
 module.exports = CSSPropertyOperations;
 }).call(this,require('_process'))
-},{"./CSSProperty":40,"./ReactPerf":108,"./dangerousStyleValue":142,"_process":180,"fbjs/lib/ExecutionEnvironment":3,"fbjs/lib/camelizeStyleName":5,"fbjs/lib/hyphenateStyleName":16,"fbjs/lib/memoizeStringOnly":23,"fbjs/lib/warning":28}],42:[function(require,module,exports){
+},{"./CSSProperty":31,"./ReactPerf":99,"./dangerousStyleValue":133,"_process":159,"fbjs/lib/ExecutionEnvironment":2,"fbjs/lib/camelizeStyleName":4,"fbjs/lib/hyphenateStyleName":15,"fbjs/lib/memoizeStringOnly":22,"fbjs/lib/warning":27}],33:[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2013-2015, Facebook, Inc.
@@ -5744,7 +2119,7 @@ PooledClass.addPoolingTo(CallbackQueue);
 
 module.exports = CallbackQueue;
 }).call(this,require('_process'))
-},{"./Object.assign":59,"./PooledClass":60,"_process":180,"fbjs/lib/invariant":17}],43:[function(require,module,exports){
+},{"./Object.assign":50,"./PooledClass":51,"_process":159,"fbjs/lib/invariant":16}],34:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -6066,7 +2441,7 @@ var ChangeEventPlugin = {
 };
 
 module.exports = ChangeEventPlugin;
-},{"./EventConstants":51,"./EventPluginHub":52,"./EventPropagators":55,"./ReactUpdates":120,"./SyntheticEvent":129,"./getEventTarget":151,"./isEventSupported":156,"./isTextInputElement":157,"fbjs/lib/ExecutionEnvironment":3,"fbjs/lib/keyOf":21}],44:[function(require,module,exports){
+},{"./EventConstants":42,"./EventPluginHub":43,"./EventPropagators":46,"./ReactUpdates":111,"./SyntheticEvent":120,"./getEventTarget":142,"./isEventSupported":147,"./isTextInputElement":148,"fbjs/lib/ExecutionEnvironment":2,"fbjs/lib/keyOf":20}],35:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -6090,7 +2465,7 @@ var ClientReactRootIndex = {
 };
 
 module.exports = ClientReactRootIndex;
-},{}],45:[function(require,module,exports){
+},{}],36:[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2013-2015, Facebook, Inc.
@@ -6222,7 +2597,7 @@ ReactPerf.measureMethods(DOMChildrenOperations, 'DOMChildrenOperations', {
 
 module.exports = DOMChildrenOperations;
 }).call(this,require('_process'))
-},{"./Danger":48,"./ReactMultiChildUpdateTypes":104,"./ReactPerf":108,"./setInnerHTML":161,"./setTextContent":162,"_process":180,"fbjs/lib/invariant":17}],46:[function(require,module,exports){
+},{"./Danger":39,"./ReactMultiChildUpdateTypes":95,"./ReactPerf":99,"./setInnerHTML":152,"./setTextContent":153,"_process":159,"fbjs/lib/invariant":16}],37:[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2013-2015, Facebook, Inc.
@@ -6459,7 +2834,7 @@ var DOMProperty = {
 
 module.exports = DOMProperty;
 }).call(this,require('_process'))
-},{"_process":180,"fbjs/lib/invariant":17}],47:[function(require,module,exports){
+},{"_process":159,"fbjs/lib/invariant":16}],38:[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2013-2015, Facebook, Inc.
@@ -6687,7 +3062,7 @@ ReactPerf.measureMethods(DOMPropertyOperations, 'DOMPropertyOperations', {
 
 module.exports = DOMPropertyOperations;
 }).call(this,require('_process'))
-},{"./DOMProperty":46,"./ReactPerf":108,"./quoteAttributeValueForBrowser":159,"_process":180,"fbjs/lib/warning":28}],48:[function(require,module,exports){
+},{"./DOMProperty":37,"./ReactPerf":99,"./quoteAttributeValueForBrowser":150,"_process":159,"fbjs/lib/warning":27}],39:[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2013-2015, Facebook, Inc.
@@ -6835,7 +3210,7 @@ var Danger = {
 
 module.exports = Danger;
 }).call(this,require('_process'))
-},{"_process":180,"fbjs/lib/ExecutionEnvironment":3,"fbjs/lib/createNodesFromMarkup":8,"fbjs/lib/emptyFunction":9,"fbjs/lib/getMarkupWrap":13,"fbjs/lib/invariant":17}],49:[function(require,module,exports){
+},{"_process":159,"fbjs/lib/ExecutionEnvironment":2,"fbjs/lib/createNodesFromMarkup":7,"fbjs/lib/emptyFunction":8,"fbjs/lib/getMarkupWrap":12,"fbjs/lib/invariant":16}],40:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -6863,7 +3238,7 @@ var keyOf = require('fbjs/lib/keyOf');
 var DefaultEventPluginOrder = [keyOf({ ResponderEventPlugin: null }), keyOf({ SimpleEventPlugin: null }), keyOf({ TapEventPlugin: null }), keyOf({ EnterLeaveEventPlugin: null }), keyOf({ ChangeEventPlugin: null }), keyOf({ SelectEventPlugin: null }), keyOf({ BeforeInputEventPlugin: null })];
 
 module.exports = DefaultEventPluginOrder;
-},{"fbjs/lib/keyOf":21}],50:[function(require,module,exports){
+},{"fbjs/lib/keyOf":20}],41:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -6988,7 +3363,7 @@ var EnterLeaveEventPlugin = {
 };
 
 module.exports = EnterLeaveEventPlugin;
-},{"./EventConstants":51,"./EventPropagators":55,"./ReactMount":102,"./SyntheticMouseEvent":133,"fbjs/lib/keyOf":21}],51:[function(require,module,exports){
+},{"./EventConstants":42,"./EventPropagators":46,"./ReactMount":93,"./SyntheticMouseEvent":124,"fbjs/lib/keyOf":20}],42:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -7081,7 +3456,7 @@ var EventConstants = {
 };
 
 module.exports = EventConstants;
-},{"fbjs/lib/keyMirror":20}],52:[function(require,module,exports){
+},{"fbjs/lib/keyMirror":19}],43:[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2013-2015, Facebook, Inc.
@@ -7363,7 +3738,7 @@ var EventPluginHub = {
 
 module.exports = EventPluginHub;
 }).call(this,require('_process'))
-},{"./EventPluginRegistry":53,"./EventPluginUtils":54,"./ReactErrorUtils":93,"./accumulateInto":139,"./forEachAccumulated":147,"_process":180,"fbjs/lib/invariant":17,"fbjs/lib/warning":28}],53:[function(require,module,exports){
+},{"./EventPluginRegistry":44,"./EventPluginUtils":45,"./ReactErrorUtils":84,"./accumulateInto":130,"./forEachAccumulated":138,"_process":159,"fbjs/lib/invariant":16,"fbjs/lib/warning":27}],44:[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2013-2015, Facebook, Inc.
@@ -7586,7 +3961,7 @@ var EventPluginRegistry = {
 
 module.exports = EventPluginRegistry;
 }).call(this,require('_process'))
-},{"_process":180,"fbjs/lib/invariant":17}],54:[function(require,module,exports){
+},{"_process":159,"fbjs/lib/invariant":16}],45:[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2013-2015, Facebook, Inc.
@@ -7791,7 +4166,7 @@ var EventPluginUtils = {
 
 module.exports = EventPluginUtils;
 }).call(this,require('_process'))
-},{"./EventConstants":51,"./ReactErrorUtils":93,"_process":180,"fbjs/lib/invariant":17,"fbjs/lib/warning":28}],55:[function(require,module,exports){
+},{"./EventConstants":42,"./ReactErrorUtils":84,"_process":159,"fbjs/lib/invariant":16,"fbjs/lib/warning":27}],46:[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2013-2015, Facebook, Inc.
@@ -7929,7 +4304,7 @@ var EventPropagators = {
 
 module.exports = EventPropagators;
 }).call(this,require('_process'))
-},{"./EventConstants":51,"./EventPluginHub":52,"./accumulateInto":139,"./forEachAccumulated":147,"_process":180,"fbjs/lib/warning":28}],56:[function(require,module,exports){
+},{"./EventConstants":42,"./EventPluginHub":43,"./accumulateInto":130,"./forEachAccumulated":138,"_process":159,"fbjs/lib/warning":27}],47:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -8025,7 +4400,7 @@ assign(FallbackCompositionState.prototype, {
 PooledClass.addPoolingTo(FallbackCompositionState);
 
 module.exports = FallbackCompositionState;
-},{"./Object.assign":59,"./PooledClass":60,"./getTextContentAccessor":154}],57:[function(require,module,exports){
+},{"./Object.assign":50,"./PooledClass":51,"./getTextContentAccessor":145}],48:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -8258,7 +4633,7 @@ var HTMLDOMPropertyConfig = {
 };
 
 module.exports = HTMLDOMPropertyConfig;
-},{"./DOMProperty":46,"fbjs/lib/ExecutionEnvironment":3}],58:[function(require,module,exports){
+},{"./DOMProperty":37,"fbjs/lib/ExecutionEnvironment":2}],49:[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2013-2015, Facebook, Inc.
@@ -8395,7 +4770,7 @@ var LinkedValueUtils = {
 
 module.exports = LinkedValueUtils;
 }).call(this,require('_process'))
-},{"./ReactPropTypeLocations":110,"./ReactPropTypes":111,"_process":180,"fbjs/lib/invariant":17,"fbjs/lib/warning":28}],59:[function(require,module,exports){
+},{"./ReactPropTypeLocations":101,"./ReactPropTypes":102,"_process":159,"fbjs/lib/invariant":16,"fbjs/lib/warning":27}],50:[function(require,module,exports){
 /**
  * Copyright 2014-2015, Facebook, Inc.
  * All rights reserved.
@@ -8443,7 +4818,7 @@ function assign(target, sources) {
 }
 
 module.exports = assign;
-},{}],60:[function(require,module,exports){
+},{}],51:[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2013-2015, Facebook, Inc.
@@ -8565,7 +4940,7 @@ var PooledClass = {
 
 module.exports = PooledClass;
 }).call(this,require('_process'))
-},{"_process":180,"fbjs/lib/invariant":17}],61:[function(require,module,exports){
+},{"_process":159,"fbjs/lib/invariant":16}],52:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -8606,7 +4981,7 @@ React.__SECRET_DOM_DO_NOT_USE_OR_YOU_WILL_BE_FIRED = ReactDOM;
 React.__SECRET_DOM_SERVER_DO_NOT_USE_OR_YOU_WILL_BE_FIRED = ReactDOMServer;
 
 module.exports = React;
-},{"./Object.assign":59,"./ReactDOM":72,"./ReactDOMServer":82,"./ReactIsomorphic":100,"./deprecated":143}],62:[function(require,module,exports){
+},{"./Object.assign":50,"./ReactDOM":63,"./ReactDOMServer":73,"./ReactIsomorphic":91,"./deprecated":134}],53:[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2013-2015, Facebook, Inc.
@@ -8645,7 +5020,7 @@ var ReactBrowserComponentMixin = {
 
 module.exports = ReactBrowserComponentMixin;
 }).call(this,require('_process'))
-},{"./ReactInstanceMap":99,"./findDOMNode":145,"_process":180,"fbjs/lib/warning":28}],63:[function(require,module,exports){
+},{"./ReactInstanceMap":90,"./findDOMNode":136,"_process":159,"fbjs/lib/warning":27}],54:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -8970,7 +5345,7 @@ ReactPerf.measureMethods(ReactBrowserEventEmitter, 'ReactBrowserEventEmitter', {
 });
 
 module.exports = ReactBrowserEventEmitter;
-},{"./EventConstants":51,"./EventPluginHub":52,"./EventPluginRegistry":53,"./Object.assign":59,"./ReactEventEmitterMixin":94,"./ReactPerf":108,"./ViewportMetrics":138,"./isEventSupported":156}],64:[function(require,module,exports){
+},{"./EventConstants":42,"./EventPluginHub":43,"./EventPluginRegistry":44,"./Object.assign":50,"./ReactEventEmitterMixin":85,"./ReactPerf":99,"./ViewportMetrics":129,"./isEventSupported":147}],55:[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2014-2015, Facebook, Inc.
@@ -9095,7 +5470,7 @@ var ReactChildReconciler = {
 
 module.exports = ReactChildReconciler;
 }).call(this,require('_process'))
-},{"./ReactReconciler":113,"./instantiateReactComponent":155,"./shouldUpdateReactComponent":163,"./traverseAllChildren":164,"_process":180,"fbjs/lib/warning":28}],65:[function(require,module,exports){
+},{"./ReactReconciler":104,"./instantiateReactComponent":146,"./shouldUpdateReactComponent":154,"./traverseAllChildren":155,"_process":159,"fbjs/lib/warning":27}],56:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -9278,7 +5653,7 @@ var ReactChildren = {
 };
 
 module.exports = ReactChildren;
-},{"./PooledClass":60,"./ReactElement":89,"./traverseAllChildren":164,"fbjs/lib/emptyFunction":9}],66:[function(require,module,exports){
+},{"./PooledClass":51,"./ReactElement":80,"./traverseAllChildren":155,"fbjs/lib/emptyFunction":8}],57:[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2013-2015, Facebook, Inc.
@@ -10052,7 +6427,7 @@ var ReactClass = {
 
 module.exports = ReactClass;
 }).call(this,require('_process'))
-},{"./Object.assign":59,"./ReactComponent":67,"./ReactElement":89,"./ReactNoopUpdateQueue":106,"./ReactPropTypeLocationNames":109,"./ReactPropTypeLocations":110,"_process":180,"fbjs/lib/emptyObject":10,"fbjs/lib/invariant":17,"fbjs/lib/keyMirror":20,"fbjs/lib/keyOf":21,"fbjs/lib/warning":28}],67:[function(require,module,exports){
+},{"./Object.assign":50,"./ReactComponent":58,"./ReactElement":80,"./ReactNoopUpdateQueue":97,"./ReactPropTypeLocationNames":100,"./ReactPropTypeLocations":101,"_process":159,"fbjs/lib/emptyObject":9,"fbjs/lib/invariant":16,"fbjs/lib/keyMirror":19,"fbjs/lib/keyOf":20,"fbjs/lib/warning":27}],58:[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2013-2015, Facebook, Inc.
@@ -10177,7 +6552,7 @@ if (process.env.NODE_ENV !== 'production') {
 
 module.exports = ReactComponent;
 }).call(this,require('_process'))
-},{"./ReactNoopUpdateQueue":106,"./canDefineProperty":141,"_process":180,"fbjs/lib/emptyObject":10,"fbjs/lib/invariant":17,"fbjs/lib/warning":28}],68:[function(require,module,exports){
+},{"./ReactNoopUpdateQueue":97,"./canDefineProperty":132,"_process":159,"fbjs/lib/emptyObject":9,"fbjs/lib/invariant":16,"fbjs/lib/warning":27}],59:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -10219,7 +6594,7 @@ var ReactComponentBrowserEnvironment = {
 };
 
 module.exports = ReactComponentBrowserEnvironment;
-},{"./ReactDOMIDOperations":77,"./ReactMount":102}],69:[function(require,module,exports){
+},{"./ReactDOMIDOperations":68,"./ReactMount":93}],60:[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2014-2015, Facebook, Inc.
@@ -10273,7 +6648,7 @@ var ReactComponentEnvironment = {
 
 module.exports = ReactComponentEnvironment;
 }).call(this,require('_process'))
-},{"_process":180,"fbjs/lib/invariant":17}],70:[function(require,module,exports){
+},{"_process":159,"fbjs/lib/invariant":16}],61:[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2013-2015, Facebook, Inc.
@@ -10970,7 +7345,7 @@ var ReactCompositeComponent = {
 
 module.exports = ReactCompositeComponent;
 }).call(this,require('_process'))
-},{"./Object.assign":59,"./ReactComponentEnvironment":69,"./ReactCurrentOwner":71,"./ReactElement":89,"./ReactInstanceMap":99,"./ReactPerf":108,"./ReactPropTypeLocationNames":109,"./ReactPropTypeLocations":110,"./ReactReconciler":113,"./ReactUpdateQueue":119,"./shouldUpdateReactComponent":163,"_process":180,"fbjs/lib/emptyObject":10,"fbjs/lib/invariant":17,"fbjs/lib/warning":28}],71:[function(require,module,exports){
+},{"./Object.assign":50,"./ReactComponentEnvironment":60,"./ReactCurrentOwner":62,"./ReactElement":80,"./ReactInstanceMap":90,"./ReactPerf":99,"./ReactPropTypeLocationNames":100,"./ReactPropTypeLocations":101,"./ReactReconciler":104,"./ReactUpdateQueue":110,"./shouldUpdateReactComponent":154,"_process":159,"fbjs/lib/emptyObject":9,"fbjs/lib/invariant":16,"fbjs/lib/warning":27}],62:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -11001,7 +7376,7 @@ var ReactCurrentOwner = {
 };
 
 module.exports = ReactCurrentOwner;
-},{}],72:[function(require,module,exports){
+},{}],63:[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2013-2015, Facebook, Inc.
@@ -11096,7 +7471,7 @@ if (process.env.NODE_ENV !== 'production') {
 
 module.exports = React;
 }).call(this,require('_process'))
-},{"./ReactCurrentOwner":71,"./ReactDOMTextComponent":83,"./ReactDefaultInjection":86,"./ReactInstanceHandles":98,"./ReactMount":102,"./ReactPerf":108,"./ReactReconciler":113,"./ReactUpdates":120,"./ReactVersion":121,"./findDOMNode":145,"./renderSubtreeIntoContainer":160,"_process":180,"fbjs/lib/ExecutionEnvironment":3,"fbjs/lib/warning":28}],73:[function(require,module,exports){
+},{"./ReactCurrentOwner":62,"./ReactDOMTextComponent":74,"./ReactDefaultInjection":77,"./ReactInstanceHandles":89,"./ReactMount":93,"./ReactPerf":99,"./ReactReconciler":104,"./ReactUpdates":111,"./ReactVersion":112,"./findDOMNode":136,"./renderSubtreeIntoContainer":151,"_process":159,"fbjs/lib/ExecutionEnvironment":2,"fbjs/lib/warning":27}],64:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -11147,7 +7522,7 @@ var ReactDOMButton = {
 };
 
 module.exports = ReactDOMButton;
-},{}],74:[function(require,module,exports){
+},{}],65:[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2013-2015, Facebook, Inc.
@@ -12112,7 +8487,7 @@ assign(ReactDOMComponent.prototype, ReactDOMComponent.Mixin, ReactMultiChild.Mix
 
 module.exports = ReactDOMComponent;
 }).call(this,require('_process'))
-},{"./AutoFocusUtils":38,"./CSSPropertyOperations":41,"./DOMProperty":46,"./DOMPropertyOperations":47,"./EventConstants":51,"./Object.assign":59,"./ReactBrowserEventEmitter":63,"./ReactComponentBrowserEnvironment":68,"./ReactDOMButton":73,"./ReactDOMInput":78,"./ReactDOMOption":79,"./ReactDOMSelect":80,"./ReactDOMTextarea":84,"./ReactMount":102,"./ReactMultiChild":103,"./ReactPerf":108,"./ReactUpdateQueue":119,"./canDefineProperty":141,"./escapeTextContentForBrowser":144,"./isEventSupported":156,"./setInnerHTML":161,"./setTextContent":162,"./validateDOMNesting":165,"_process":180,"fbjs/lib/invariant":17,"fbjs/lib/keyOf":21,"fbjs/lib/shallowEqual":26,"fbjs/lib/warning":28}],75:[function(require,module,exports){
+},{"./AutoFocusUtils":29,"./CSSPropertyOperations":32,"./DOMProperty":37,"./DOMPropertyOperations":38,"./EventConstants":42,"./Object.assign":50,"./ReactBrowserEventEmitter":54,"./ReactComponentBrowserEnvironment":59,"./ReactDOMButton":64,"./ReactDOMInput":69,"./ReactDOMOption":70,"./ReactDOMSelect":71,"./ReactDOMTextarea":75,"./ReactMount":93,"./ReactMultiChild":94,"./ReactPerf":99,"./ReactUpdateQueue":110,"./canDefineProperty":132,"./escapeTextContentForBrowser":135,"./isEventSupported":147,"./setInnerHTML":152,"./setTextContent":153,"./validateDOMNesting":156,"_process":159,"fbjs/lib/invariant":16,"fbjs/lib/keyOf":20,"fbjs/lib/shallowEqual":25,"fbjs/lib/warning":27}],66:[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2013-2015, Facebook, Inc.
@@ -12292,7 +8667,7 @@ var ReactDOMFactories = mapObject({
 
 module.exports = ReactDOMFactories;
 }).call(this,require('_process'))
-},{"./ReactElement":89,"./ReactElementValidator":90,"_process":180,"fbjs/lib/mapObject":22}],76:[function(require,module,exports){
+},{"./ReactElement":80,"./ReactElementValidator":81,"_process":159,"fbjs/lib/mapObject":21}],67:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -12311,7 +8686,7 @@ var ReactDOMFeatureFlags = {
 };
 
 module.exports = ReactDOMFeatureFlags;
-},{}],77:[function(require,module,exports){
+},{}],68:[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2013-2015, Facebook, Inc.
@@ -12408,7 +8783,7 @@ ReactPerf.measureMethods(ReactDOMIDOperations, 'ReactDOMIDOperations', {
 
 module.exports = ReactDOMIDOperations;
 }).call(this,require('_process'))
-},{"./DOMChildrenOperations":45,"./DOMPropertyOperations":47,"./ReactMount":102,"./ReactPerf":108,"_process":180,"fbjs/lib/invariant":17}],78:[function(require,module,exports){
+},{"./DOMChildrenOperations":36,"./DOMPropertyOperations":38,"./ReactMount":93,"./ReactPerf":99,"_process":159,"fbjs/lib/invariant":16}],69:[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2013-2015, Facebook, Inc.
@@ -12564,7 +8939,7 @@ function _handleChange(event) {
 
 module.exports = ReactDOMInput;
 }).call(this,require('_process'))
-},{"./LinkedValueUtils":58,"./Object.assign":59,"./ReactDOMIDOperations":77,"./ReactMount":102,"./ReactUpdates":120,"_process":180,"fbjs/lib/invariant":17}],79:[function(require,module,exports){
+},{"./LinkedValueUtils":49,"./Object.assign":50,"./ReactDOMIDOperations":68,"./ReactMount":93,"./ReactUpdates":111,"_process":159,"fbjs/lib/invariant":16}],70:[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2013-2015, Facebook, Inc.
@@ -12653,7 +9028,7 @@ var ReactDOMOption = {
 
 module.exports = ReactDOMOption;
 }).call(this,require('_process'))
-},{"./Object.assign":59,"./ReactChildren":65,"./ReactDOMSelect":80,"_process":180,"fbjs/lib/warning":28}],80:[function(require,module,exports){
+},{"./Object.assign":50,"./ReactChildren":56,"./ReactDOMSelect":71,"_process":159,"fbjs/lib/warning":27}],71:[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2013-2015, Facebook, Inc.
@@ -12844,7 +9219,7 @@ function _handleChange(event) {
 
 module.exports = ReactDOMSelect;
 }).call(this,require('_process'))
-},{"./LinkedValueUtils":58,"./Object.assign":59,"./ReactMount":102,"./ReactUpdates":120,"_process":180,"fbjs/lib/warning":28}],81:[function(require,module,exports){
+},{"./LinkedValueUtils":49,"./Object.assign":50,"./ReactMount":93,"./ReactUpdates":111,"_process":159,"fbjs/lib/warning":27}],72:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -13057,7 +9432,7 @@ var ReactDOMSelection = {
 };
 
 module.exports = ReactDOMSelection;
-},{"./getNodeForCharacterOffset":153,"./getTextContentAccessor":154,"fbjs/lib/ExecutionEnvironment":3}],82:[function(require,module,exports){
+},{"./getNodeForCharacterOffset":144,"./getTextContentAccessor":145,"fbjs/lib/ExecutionEnvironment":2}],73:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -13084,7 +9459,7 @@ var ReactDOMServer = {
 };
 
 module.exports = ReactDOMServer;
-},{"./ReactDefaultInjection":86,"./ReactServerRendering":117,"./ReactVersion":121}],83:[function(require,module,exports){
+},{"./ReactDefaultInjection":77,"./ReactServerRendering":108,"./ReactVersion":112}],74:[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2013-2015, Facebook, Inc.
@@ -13214,7 +9589,7 @@ assign(ReactDOMTextComponent.prototype, {
 
 module.exports = ReactDOMTextComponent;
 }).call(this,require('_process'))
-},{"./DOMChildrenOperations":45,"./DOMPropertyOperations":47,"./Object.assign":59,"./ReactComponentBrowserEnvironment":68,"./ReactMount":102,"./escapeTextContentForBrowser":144,"./setTextContent":162,"./validateDOMNesting":165,"_process":180}],84:[function(require,module,exports){
+},{"./DOMChildrenOperations":36,"./DOMPropertyOperations":38,"./Object.assign":50,"./ReactComponentBrowserEnvironment":59,"./ReactMount":93,"./escapeTextContentForBrowser":135,"./setTextContent":153,"./validateDOMNesting":156,"_process":159}],75:[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2013-2015, Facebook, Inc.
@@ -13330,7 +9705,7 @@ function _handleChange(event) {
 
 module.exports = ReactDOMTextarea;
 }).call(this,require('_process'))
-},{"./LinkedValueUtils":58,"./Object.assign":59,"./ReactDOMIDOperations":77,"./ReactUpdates":120,"_process":180,"fbjs/lib/invariant":17,"fbjs/lib/warning":28}],85:[function(require,module,exports){
+},{"./LinkedValueUtils":49,"./Object.assign":50,"./ReactDOMIDOperations":68,"./ReactUpdates":111,"_process":159,"fbjs/lib/invariant":16,"fbjs/lib/warning":27}],76:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -13398,7 +9773,7 @@ var ReactDefaultBatchingStrategy = {
 };
 
 module.exports = ReactDefaultBatchingStrategy;
-},{"./Object.assign":59,"./ReactUpdates":120,"./Transaction":137,"fbjs/lib/emptyFunction":9}],86:[function(require,module,exports){
+},{"./Object.assign":50,"./ReactUpdates":111,"./Transaction":128,"fbjs/lib/emptyFunction":8}],77:[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2013-2015, Facebook, Inc.
@@ -13498,7 +9873,7 @@ module.exports = {
   inject: inject
 };
 }).call(this,require('_process'))
-},{"./BeforeInputEventPlugin":39,"./ChangeEventPlugin":43,"./ClientReactRootIndex":44,"./DefaultEventPluginOrder":49,"./EnterLeaveEventPlugin":50,"./HTMLDOMPropertyConfig":57,"./ReactBrowserComponentMixin":62,"./ReactComponentBrowserEnvironment":68,"./ReactDOMComponent":74,"./ReactDOMTextComponent":83,"./ReactDefaultBatchingStrategy":85,"./ReactDefaultPerf":87,"./ReactEventListener":95,"./ReactInjection":96,"./ReactInstanceHandles":98,"./ReactMount":102,"./ReactReconcileTransaction":112,"./SVGDOMPropertyConfig":122,"./SelectEventPlugin":123,"./ServerReactRootIndex":124,"./SimpleEventPlugin":125,"_process":180,"fbjs/lib/ExecutionEnvironment":3}],87:[function(require,module,exports){
+},{"./BeforeInputEventPlugin":30,"./ChangeEventPlugin":34,"./ClientReactRootIndex":35,"./DefaultEventPluginOrder":40,"./EnterLeaveEventPlugin":41,"./HTMLDOMPropertyConfig":48,"./ReactBrowserComponentMixin":53,"./ReactComponentBrowserEnvironment":59,"./ReactDOMComponent":65,"./ReactDOMTextComponent":74,"./ReactDefaultBatchingStrategy":76,"./ReactDefaultPerf":78,"./ReactEventListener":86,"./ReactInjection":87,"./ReactInstanceHandles":89,"./ReactMount":93,"./ReactReconcileTransaction":103,"./SVGDOMPropertyConfig":113,"./SelectEventPlugin":114,"./ServerReactRootIndex":115,"./SimpleEventPlugin":116,"_process":159,"fbjs/lib/ExecutionEnvironment":2}],78:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -13736,7 +10111,7 @@ var ReactDefaultPerf = {
 };
 
 module.exports = ReactDefaultPerf;
-},{"./DOMProperty":46,"./ReactDefaultPerfAnalysis":88,"./ReactMount":102,"./ReactPerf":108,"fbjs/lib/performanceNow":25}],88:[function(require,module,exports){
+},{"./DOMProperty":37,"./ReactDefaultPerfAnalysis":79,"./ReactMount":93,"./ReactPerf":99,"fbjs/lib/performanceNow":24}],79:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -13936,7 +10311,7 @@ var ReactDefaultPerfAnalysis = {
 };
 
 module.exports = ReactDefaultPerfAnalysis;
-},{"./Object.assign":59}],89:[function(require,module,exports){
+},{"./Object.assign":50}],80:[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2014-2015, Facebook, Inc.
@@ -14186,7 +10561,7 @@ ReactElement.isValidElement = function (object) {
 
 module.exports = ReactElement;
 }).call(this,require('_process'))
-},{"./Object.assign":59,"./ReactCurrentOwner":71,"./canDefineProperty":141,"_process":180}],90:[function(require,module,exports){
+},{"./Object.assign":50,"./ReactCurrentOwner":62,"./canDefineProperty":132,"_process":159}],81:[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2014-2015, Facebook, Inc.
@@ -14470,7 +10845,7 @@ var ReactElementValidator = {
 
 module.exports = ReactElementValidator;
 }).call(this,require('_process'))
-},{"./ReactCurrentOwner":71,"./ReactElement":89,"./ReactPropTypeLocationNames":109,"./ReactPropTypeLocations":110,"./canDefineProperty":141,"./getIteratorFn":152,"_process":180,"fbjs/lib/invariant":17,"fbjs/lib/warning":28}],91:[function(require,module,exports){
+},{"./ReactCurrentOwner":62,"./ReactElement":80,"./ReactPropTypeLocationNames":100,"./ReactPropTypeLocations":101,"./canDefineProperty":132,"./getIteratorFn":143,"_process":159,"fbjs/lib/invariant":16,"fbjs/lib/warning":27}],82:[function(require,module,exports){
 /**
  * Copyright 2014-2015, Facebook, Inc.
  * All rights reserved.
@@ -14522,7 +10897,7 @@ assign(ReactEmptyComponent.prototype, {
 ReactEmptyComponent.injection = ReactEmptyComponentInjection;
 
 module.exports = ReactEmptyComponent;
-},{"./Object.assign":59,"./ReactElement":89,"./ReactEmptyComponentRegistry":92,"./ReactReconciler":113}],92:[function(require,module,exports){
+},{"./Object.assign":50,"./ReactElement":80,"./ReactEmptyComponentRegistry":83,"./ReactReconciler":104}],83:[function(require,module,exports){
 /**
  * Copyright 2014-2015, Facebook, Inc.
  * All rights reserved.
@@ -14571,7 +10946,7 @@ var ReactEmptyComponentRegistry = {
 };
 
 module.exports = ReactEmptyComponentRegistry;
-},{}],93:[function(require,module,exports){
+},{}],84:[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2013-2015, Facebook, Inc.
@@ -14651,7 +11026,7 @@ if (process.env.NODE_ENV !== 'production') {
 
 module.exports = ReactErrorUtils;
 }).call(this,require('_process'))
-},{"_process":180}],94:[function(require,module,exports){
+},{"_process":159}],85:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -14690,7 +11065,7 @@ var ReactEventEmitterMixin = {
 };
 
 module.exports = ReactEventEmitterMixin;
-},{"./EventPluginHub":52}],95:[function(require,module,exports){
+},{"./EventPluginHub":43}],86:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -14902,7 +11277,7 @@ var ReactEventListener = {
 };
 
 module.exports = ReactEventListener;
-},{"./Object.assign":59,"./PooledClass":60,"./ReactInstanceHandles":98,"./ReactMount":102,"./ReactUpdates":120,"./getEventTarget":151,"fbjs/lib/EventListener":2,"fbjs/lib/ExecutionEnvironment":3,"fbjs/lib/getUnboundedScrollPosition":14}],96:[function(require,module,exports){
+},{"./Object.assign":50,"./PooledClass":51,"./ReactInstanceHandles":89,"./ReactMount":93,"./ReactUpdates":111,"./getEventTarget":142,"fbjs/lib/EventListener":1,"fbjs/lib/ExecutionEnvironment":2,"fbjs/lib/getUnboundedScrollPosition":13}],87:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -14941,7 +11316,7 @@ var ReactInjection = {
 };
 
 module.exports = ReactInjection;
-},{"./DOMProperty":46,"./EventPluginHub":52,"./ReactBrowserEventEmitter":63,"./ReactClass":66,"./ReactComponentEnvironment":69,"./ReactEmptyComponent":91,"./ReactNativeComponent":105,"./ReactPerf":108,"./ReactRootIndex":115,"./ReactUpdates":120}],97:[function(require,module,exports){
+},{"./DOMProperty":37,"./EventPluginHub":43,"./ReactBrowserEventEmitter":54,"./ReactClass":57,"./ReactComponentEnvironment":60,"./ReactEmptyComponent":82,"./ReactNativeComponent":96,"./ReactPerf":99,"./ReactRootIndex":106,"./ReactUpdates":111}],88:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -15066,7 +11441,7 @@ var ReactInputSelection = {
 };
 
 module.exports = ReactInputSelection;
-},{"./ReactDOMSelection":81,"fbjs/lib/containsNode":6,"fbjs/lib/focusNode":11,"fbjs/lib/getActiveElement":12}],98:[function(require,module,exports){
+},{"./ReactDOMSelection":72,"fbjs/lib/containsNode":5,"fbjs/lib/focusNode":10,"fbjs/lib/getActiveElement":11}],89:[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2013-2015, Facebook, Inc.
@@ -15371,7 +11746,7 @@ var ReactInstanceHandles = {
 
 module.exports = ReactInstanceHandles;
 }).call(this,require('_process'))
-},{"./ReactRootIndex":115,"_process":180,"fbjs/lib/invariant":17}],99:[function(require,module,exports){
+},{"./ReactRootIndex":106,"_process":159,"fbjs/lib/invariant":16}],90:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -15419,7 +11794,7 @@ var ReactInstanceMap = {
 };
 
 module.exports = ReactInstanceMap;
-},{}],100:[function(require,module,exports){
+},{}],91:[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2013-2015, Facebook, Inc.
@@ -15496,7 +11871,7 @@ var React = {
 
 module.exports = React;
 }).call(this,require('_process'))
-},{"./Object.assign":59,"./ReactChildren":65,"./ReactClass":66,"./ReactComponent":67,"./ReactDOMFactories":75,"./ReactElement":89,"./ReactElementValidator":90,"./ReactPropTypes":111,"./ReactVersion":121,"./onlyChild":158,"_process":180}],101:[function(require,module,exports){
+},{"./Object.assign":50,"./ReactChildren":56,"./ReactClass":57,"./ReactComponent":58,"./ReactDOMFactories":66,"./ReactElement":80,"./ReactElementValidator":81,"./ReactPropTypes":102,"./ReactVersion":112,"./onlyChild":149,"_process":159}],92:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -15542,7 +11917,7 @@ var ReactMarkupChecksum = {
 };
 
 module.exports = ReactMarkupChecksum;
-},{"./adler32":140}],102:[function(require,module,exports){
+},{"./adler32":131}],93:[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2013-2015, Facebook, Inc.
@@ -16395,7 +12770,7 @@ ReactPerf.measureMethods(ReactMount, 'ReactMount', {
 
 module.exports = ReactMount;
 }).call(this,require('_process'))
-},{"./DOMProperty":46,"./Object.assign":59,"./ReactBrowserEventEmitter":63,"./ReactCurrentOwner":71,"./ReactDOMFeatureFlags":76,"./ReactElement":89,"./ReactEmptyComponentRegistry":92,"./ReactInstanceHandles":98,"./ReactInstanceMap":99,"./ReactMarkupChecksum":101,"./ReactPerf":108,"./ReactReconciler":113,"./ReactUpdateQueue":119,"./ReactUpdates":120,"./instantiateReactComponent":155,"./setInnerHTML":161,"./shouldUpdateReactComponent":163,"./validateDOMNesting":165,"_process":180,"fbjs/lib/containsNode":6,"fbjs/lib/emptyObject":10,"fbjs/lib/invariant":17,"fbjs/lib/warning":28}],103:[function(require,module,exports){
+},{"./DOMProperty":37,"./Object.assign":50,"./ReactBrowserEventEmitter":54,"./ReactCurrentOwner":62,"./ReactDOMFeatureFlags":67,"./ReactElement":80,"./ReactEmptyComponentRegistry":83,"./ReactInstanceHandles":89,"./ReactInstanceMap":90,"./ReactMarkupChecksum":92,"./ReactPerf":99,"./ReactReconciler":104,"./ReactUpdateQueue":110,"./ReactUpdates":111,"./instantiateReactComponent":146,"./setInnerHTML":152,"./shouldUpdateReactComponent":154,"./validateDOMNesting":156,"_process":159,"fbjs/lib/containsNode":5,"fbjs/lib/emptyObject":9,"fbjs/lib/invariant":16,"fbjs/lib/warning":27}],94:[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2013-2015, Facebook, Inc.
@@ -16894,7 +13269,7 @@ var ReactMultiChild = {
 
 module.exports = ReactMultiChild;
 }).call(this,require('_process'))
-},{"./ReactChildReconciler":64,"./ReactComponentEnvironment":69,"./ReactCurrentOwner":71,"./ReactMultiChildUpdateTypes":104,"./ReactReconciler":113,"./flattenChildren":146,"_process":180}],104:[function(require,module,exports){
+},{"./ReactChildReconciler":55,"./ReactComponentEnvironment":60,"./ReactCurrentOwner":62,"./ReactMultiChildUpdateTypes":95,"./ReactReconciler":104,"./flattenChildren":137,"_process":159}],95:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -16927,7 +13302,7 @@ var ReactMultiChildUpdateTypes = keyMirror({
 });
 
 module.exports = ReactMultiChildUpdateTypes;
-},{"fbjs/lib/keyMirror":20}],105:[function(require,module,exports){
+},{"fbjs/lib/keyMirror":19}],96:[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2014-2015, Facebook, Inc.
@@ -17024,7 +13399,7 @@ var ReactNativeComponent = {
 
 module.exports = ReactNativeComponent;
 }).call(this,require('_process'))
-},{"./Object.assign":59,"_process":180,"fbjs/lib/invariant":17}],106:[function(require,module,exports){
+},{"./Object.assign":50,"_process":159,"fbjs/lib/invariant":16}],97:[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2015, Facebook, Inc.
@@ -17145,7 +13520,7 @@ var ReactNoopUpdateQueue = {
 
 module.exports = ReactNoopUpdateQueue;
 }).call(this,require('_process'))
-},{"_process":180,"fbjs/lib/warning":28}],107:[function(require,module,exports){
+},{"_process":159,"fbjs/lib/warning":27}],98:[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2013-2015, Facebook, Inc.
@@ -17239,7 +13614,7 @@ var ReactOwner = {
 
 module.exports = ReactOwner;
 }).call(this,require('_process'))
-},{"_process":180,"fbjs/lib/invariant":17}],108:[function(require,module,exports){
+},{"_process":159,"fbjs/lib/invariant":16}],99:[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2013-2015, Facebook, Inc.
@@ -17338,7 +13713,7 @@ function _noMeasure(objName, fnName, func) {
 
 module.exports = ReactPerf;
 }).call(this,require('_process'))
-},{"_process":180}],109:[function(require,module,exports){
+},{"_process":159}],100:[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2013-2015, Facebook, Inc.
@@ -17365,7 +13740,7 @@ if (process.env.NODE_ENV !== 'production') {
 
 module.exports = ReactPropTypeLocationNames;
 }).call(this,require('_process'))
-},{"_process":180}],110:[function(require,module,exports){
+},{"_process":159}],101:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -17388,7 +13763,7 @@ var ReactPropTypeLocations = keyMirror({
 });
 
 module.exports = ReactPropTypeLocations;
-},{"fbjs/lib/keyMirror":20}],111:[function(require,module,exports){
+},{"fbjs/lib/keyMirror":19}],102:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -17745,7 +14120,7 @@ function getClassName(propValue) {
 }
 
 module.exports = ReactPropTypes;
-},{"./ReactElement":89,"./ReactPropTypeLocationNames":109,"./getIteratorFn":152,"fbjs/lib/emptyFunction":9}],112:[function(require,module,exports){
+},{"./ReactElement":80,"./ReactPropTypeLocationNames":100,"./getIteratorFn":143,"fbjs/lib/emptyFunction":8}],103:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -17897,7 +14272,7 @@ assign(ReactReconcileTransaction.prototype, Transaction.Mixin, Mixin);
 PooledClass.addPoolingTo(ReactReconcileTransaction);
 
 module.exports = ReactReconcileTransaction;
-},{"./CallbackQueue":42,"./Object.assign":59,"./PooledClass":60,"./ReactBrowserEventEmitter":63,"./ReactDOMFeatureFlags":76,"./ReactInputSelection":97,"./Transaction":137}],113:[function(require,module,exports){
+},{"./CallbackQueue":33,"./Object.assign":50,"./PooledClass":51,"./ReactBrowserEventEmitter":54,"./ReactDOMFeatureFlags":67,"./ReactInputSelection":88,"./Transaction":128}],104:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -18005,7 +14380,7 @@ var ReactReconciler = {
 };
 
 module.exports = ReactReconciler;
-},{"./ReactRef":114}],114:[function(require,module,exports){
+},{"./ReactRef":105}],105:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -18084,7 +14459,7 @@ ReactRef.detachRefs = function (instance, element) {
 };
 
 module.exports = ReactRef;
-},{"./ReactOwner":107}],115:[function(require,module,exports){
+},{"./ReactOwner":98}],106:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -18114,7 +14489,7 @@ var ReactRootIndex = {
 };
 
 module.exports = ReactRootIndex;
-},{}],116:[function(require,module,exports){
+},{}],107:[function(require,module,exports){
 /**
  * Copyright 2014-2015, Facebook, Inc.
  * All rights reserved.
@@ -18138,7 +14513,7 @@ var ReactServerBatchingStrategy = {
 };
 
 module.exports = ReactServerBatchingStrategy;
-},{}],117:[function(require,module,exports){
+},{}],108:[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2013-2015, Facebook, Inc.
@@ -18224,7 +14599,7 @@ module.exports = {
   renderToStaticMarkup: renderToStaticMarkup
 };
 }).call(this,require('_process'))
-},{"./ReactDefaultBatchingStrategy":85,"./ReactElement":89,"./ReactInstanceHandles":98,"./ReactMarkupChecksum":101,"./ReactServerBatchingStrategy":116,"./ReactServerRenderingTransaction":118,"./ReactUpdates":120,"./instantiateReactComponent":155,"_process":180,"fbjs/lib/emptyObject":10,"fbjs/lib/invariant":17}],118:[function(require,module,exports){
+},{"./ReactDefaultBatchingStrategy":76,"./ReactElement":80,"./ReactInstanceHandles":89,"./ReactMarkupChecksum":92,"./ReactServerBatchingStrategy":107,"./ReactServerRenderingTransaction":109,"./ReactUpdates":111,"./instantiateReactComponent":146,"_process":159,"fbjs/lib/emptyObject":9,"fbjs/lib/invariant":16}],109:[function(require,module,exports){
 /**
  * Copyright 2014-2015, Facebook, Inc.
  * All rights reserved.
@@ -18312,7 +14687,7 @@ assign(ReactServerRenderingTransaction.prototype, Transaction.Mixin, Mixin);
 PooledClass.addPoolingTo(ReactServerRenderingTransaction);
 
 module.exports = ReactServerRenderingTransaction;
-},{"./CallbackQueue":42,"./Object.assign":59,"./PooledClass":60,"./Transaction":137,"fbjs/lib/emptyFunction":9}],119:[function(require,module,exports){
+},{"./CallbackQueue":33,"./Object.assign":50,"./PooledClass":51,"./Transaction":128,"fbjs/lib/emptyFunction":8}],110:[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2015, Facebook, Inc.
@@ -18572,7 +14947,7 @@ var ReactUpdateQueue = {
 
 module.exports = ReactUpdateQueue;
 }).call(this,require('_process'))
-},{"./Object.assign":59,"./ReactCurrentOwner":71,"./ReactElement":89,"./ReactInstanceMap":99,"./ReactUpdates":120,"_process":180,"fbjs/lib/invariant":17,"fbjs/lib/warning":28}],120:[function(require,module,exports){
+},{"./Object.assign":50,"./ReactCurrentOwner":62,"./ReactElement":80,"./ReactInstanceMap":90,"./ReactUpdates":111,"_process":159,"fbjs/lib/invariant":16,"fbjs/lib/warning":27}],111:[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2013-2015, Facebook, Inc.
@@ -18798,7 +15173,7 @@ var ReactUpdates = {
 
 module.exports = ReactUpdates;
 }).call(this,require('_process'))
-},{"./CallbackQueue":42,"./Object.assign":59,"./PooledClass":60,"./ReactPerf":108,"./ReactReconciler":113,"./Transaction":137,"_process":180,"fbjs/lib/invariant":17}],121:[function(require,module,exports){
+},{"./CallbackQueue":33,"./Object.assign":50,"./PooledClass":51,"./ReactPerf":99,"./ReactReconciler":104,"./Transaction":128,"_process":159,"fbjs/lib/invariant":16}],112:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -18813,7 +15188,7 @@ module.exports = ReactUpdates;
 'use strict';
 
 module.exports = '0.14.3';
-},{}],122:[function(require,module,exports){
+},{}],113:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -18941,7 +15316,7 @@ var SVGDOMPropertyConfig = {
 };
 
 module.exports = SVGDOMPropertyConfig;
-},{"./DOMProperty":46}],123:[function(require,module,exports){
+},{"./DOMProperty":37}],114:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -19143,7 +15518,7 @@ var SelectEventPlugin = {
 };
 
 module.exports = SelectEventPlugin;
-},{"./EventConstants":51,"./EventPropagators":55,"./ReactInputSelection":97,"./SyntheticEvent":129,"./isTextInputElement":157,"fbjs/lib/ExecutionEnvironment":3,"fbjs/lib/getActiveElement":12,"fbjs/lib/keyOf":21,"fbjs/lib/shallowEqual":26}],124:[function(require,module,exports){
+},{"./EventConstants":42,"./EventPropagators":46,"./ReactInputSelection":88,"./SyntheticEvent":120,"./isTextInputElement":148,"fbjs/lib/ExecutionEnvironment":2,"fbjs/lib/getActiveElement":11,"fbjs/lib/keyOf":20,"fbjs/lib/shallowEqual":25}],115:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -19173,7 +15548,7 @@ var ServerReactRootIndex = {
 };
 
 module.exports = ServerReactRootIndex;
-},{}],125:[function(require,module,exports){
+},{}],116:[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2013-2015, Facebook, Inc.
@@ -19763,7 +16138,7 @@ var SimpleEventPlugin = {
 
 module.exports = SimpleEventPlugin;
 }).call(this,require('_process'))
-},{"./EventConstants":51,"./EventPropagators":55,"./ReactMount":102,"./SyntheticClipboardEvent":126,"./SyntheticDragEvent":128,"./SyntheticEvent":129,"./SyntheticFocusEvent":130,"./SyntheticKeyboardEvent":132,"./SyntheticMouseEvent":133,"./SyntheticTouchEvent":134,"./SyntheticUIEvent":135,"./SyntheticWheelEvent":136,"./getEventCharCode":148,"_process":180,"fbjs/lib/EventListener":2,"fbjs/lib/emptyFunction":9,"fbjs/lib/invariant":17,"fbjs/lib/keyOf":21}],126:[function(require,module,exports){
+},{"./EventConstants":42,"./EventPropagators":46,"./ReactMount":93,"./SyntheticClipboardEvent":117,"./SyntheticDragEvent":119,"./SyntheticEvent":120,"./SyntheticFocusEvent":121,"./SyntheticKeyboardEvent":123,"./SyntheticMouseEvent":124,"./SyntheticTouchEvent":125,"./SyntheticUIEvent":126,"./SyntheticWheelEvent":127,"./getEventCharCode":139,"_process":159,"fbjs/lib/EventListener":1,"fbjs/lib/emptyFunction":8,"fbjs/lib/invariant":16,"fbjs/lib/keyOf":20}],117:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -19803,7 +16178,7 @@ function SyntheticClipboardEvent(dispatchConfig, dispatchMarker, nativeEvent, na
 SyntheticEvent.augmentClass(SyntheticClipboardEvent, ClipboardEventInterface);
 
 module.exports = SyntheticClipboardEvent;
-},{"./SyntheticEvent":129}],127:[function(require,module,exports){
+},{"./SyntheticEvent":120}],118:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -19841,7 +16216,7 @@ function SyntheticCompositionEvent(dispatchConfig, dispatchMarker, nativeEvent, 
 SyntheticEvent.augmentClass(SyntheticCompositionEvent, CompositionEventInterface);
 
 module.exports = SyntheticCompositionEvent;
-},{"./SyntheticEvent":129}],128:[function(require,module,exports){
+},{"./SyntheticEvent":120}],119:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -19879,7 +16254,7 @@ function SyntheticDragEvent(dispatchConfig, dispatchMarker, nativeEvent, nativeE
 SyntheticMouseEvent.augmentClass(SyntheticDragEvent, DragEventInterface);
 
 module.exports = SyntheticDragEvent;
-},{"./SyntheticMouseEvent":133}],129:[function(require,module,exports){
+},{"./SyntheticMouseEvent":124}],120:[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2013-2015, Facebook, Inc.
@@ -20059,7 +16434,7 @@ PooledClass.addPoolingTo(SyntheticEvent, PooledClass.fourArgumentPooler);
 
 module.exports = SyntheticEvent;
 }).call(this,require('_process'))
-},{"./Object.assign":59,"./PooledClass":60,"_process":180,"fbjs/lib/emptyFunction":9,"fbjs/lib/warning":28}],130:[function(require,module,exports){
+},{"./Object.assign":50,"./PooledClass":51,"_process":159,"fbjs/lib/emptyFunction":8,"fbjs/lib/warning":27}],121:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -20097,7 +16472,7 @@ function SyntheticFocusEvent(dispatchConfig, dispatchMarker, nativeEvent, native
 SyntheticUIEvent.augmentClass(SyntheticFocusEvent, FocusEventInterface);
 
 module.exports = SyntheticFocusEvent;
-},{"./SyntheticUIEvent":135}],131:[function(require,module,exports){
+},{"./SyntheticUIEvent":126}],122:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -20136,7 +16511,7 @@ function SyntheticInputEvent(dispatchConfig, dispatchMarker, nativeEvent, native
 SyntheticEvent.augmentClass(SyntheticInputEvent, InputEventInterface);
 
 module.exports = SyntheticInputEvent;
-},{"./SyntheticEvent":129}],132:[function(require,module,exports){
+},{"./SyntheticEvent":120}],123:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -20222,7 +16597,7 @@ function SyntheticKeyboardEvent(dispatchConfig, dispatchMarker, nativeEvent, nat
 SyntheticUIEvent.augmentClass(SyntheticKeyboardEvent, KeyboardEventInterface);
 
 module.exports = SyntheticKeyboardEvent;
-},{"./SyntheticUIEvent":135,"./getEventCharCode":148,"./getEventKey":149,"./getEventModifierState":150}],133:[function(require,module,exports){
+},{"./SyntheticUIEvent":126,"./getEventCharCode":139,"./getEventKey":140,"./getEventModifierState":141}],124:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -20296,7 +16671,7 @@ function SyntheticMouseEvent(dispatchConfig, dispatchMarker, nativeEvent, native
 SyntheticUIEvent.augmentClass(SyntheticMouseEvent, MouseEventInterface);
 
 module.exports = SyntheticMouseEvent;
-},{"./SyntheticUIEvent":135,"./ViewportMetrics":138,"./getEventModifierState":150}],134:[function(require,module,exports){
+},{"./SyntheticUIEvent":126,"./ViewportMetrics":129,"./getEventModifierState":141}],125:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -20343,7 +16718,7 @@ function SyntheticTouchEvent(dispatchConfig, dispatchMarker, nativeEvent, native
 SyntheticUIEvent.augmentClass(SyntheticTouchEvent, TouchEventInterface);
 
 module.exports = SyntheticTouchEvent;
-},{"./SyntheticUIEvent":135,"./getEventModifierState":150}],135:[function(require,module,exports){
+},{"./SyntheticUIEvent":126,"./getEventModifierState":141}],126:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -20404,7 +16779,7 @@ function SyntheticUIEvent(dispatchConfig, dispatchMarker, nativeEvent, nativeEve
 SyntheticEvent.augmentClass(SyntheticUIEvent, UIEventInterface);
 
 module.exports = SyntheticUIEvent;
-},{"./SyntheticEvent":129,"./getEventTarget":151}],136:[function(require,module,exports){
+},{"./SyntheticEvent":120,"./getEventTarget":142}],127:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -20460,7 +16835,7 @@ function SyntheticWheelEvent(dispatchConfig, dispatchMarker, nativeEvent, native
 SyntheticMouseEvent.augmentClass(SyntheticWheelEvent, WheelEventInterface);
 
 module.exports = SyntheticWheelEvent;
-},{"./SyntheticMouseEvent":133}],137:[function(require,module,exports){
+},{"./SyntheticMouseEvent":124}],128:[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2013-2015, Facebook, Inc.
@@ -20694,7 +17069,7 @@ var Transaction = {
 
 module.exports = Transaction;
 }).call(this,require('_process'))
-},{"_process":180,"fbjs/lib/invariant":17}],138:[function(require,module,exports){
+},{"_process":159,"fbjs/lib/invariant":16}],129:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -20722,7 +17097,7 @@ var ViewportMetrics = {
 };
 
 module.exports = ViewportMetrics;
-},{}],139:[function(require,module,exports){
+},{}],130:[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2014-2015, Facebook, Inc.
@@ -20784,7 +17159,7 @@ function accumulateInto(current, next) {
 
 module.exports = accumulateInto;
 }).call(this,require('_process'))
-},{"_process":180,"fbjs/lib/invariant":17}],140:[function(require,module,exports){
+},{"_process":159,"fbjs/lib/invariant":16}],131:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -20827,7 +17202,7 @@ function adler32(data) {
 }
 
 module.exports = adler32;
-},{}],141:[function(require,module,exports){
+},{}],132:[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2013-2015, Facebook, Inc.
@@ -20854,7 +17229,7 @@ if (process.env.NODE_ENV !== 'production') {
 
 module.exports = canDefineProperty;
 }).call(this,require('_process'))
-},{"_process":180}],142:[function(require,module,exports){
+},{"_process":159}],133:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -20910,7 +17285,7 @@ function dangerousStyleValue(name, value) {
 }
 
 module.exports = dangerousStyleValue;
-},{"./CSSProperty":40}],143:[function(require,module,exports){
+},{"./CSSProperty":31}],134:[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2013-2015, Facebook, Inc.
@@ -20961,7 +17336,7 @@ function deprecated(fnName, newModule, newPackage, ctx, fn) {
 
 module.exports = deprecated;
 }).call(this,require('_process'))
-},{"./Object.assign":59,"_process":180,"fbjs/lib/warning":28}],144:[function(require,module,exports){
+},{"./Object.assign":50,"_process":159,"fbjs/lib/warning":27}],135:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -21000,7 +17375,7 @@ function escapeTextContentForBrowser(text) {
 }
 
 module.exports = escapeTextContentForBrowser;
-},{}],145:[function(require,module,exports){
+},{}],136:[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2013-2015, Facebook, Inc.
@@ -21052,7 +17427,7 @@ function findDOMNode(componentOrElement) {
 
 module.exports = findDOMNode;
 }).call(this,require('_process'))
-},{"./ReactCurrentOwner":71,"./ReactInstanceMap":99,"./ReactMount":102,"_process":180,"fbjs/lib/invariant":17,"fbjs/lib/warning":28}],146:[function(require,module,exports){
+},{"./ReactCurrentOwner":62,"./ReactInstanceMap":90,"./ReactMount":93,"_process":159,"fbjs/lib/invariant":16,"fbjs/lib/warning":27}],137:[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2013-2015, Facebook, Inc.
@@ -21103,7 +17478,7 @@ function flattenChildren(children) {
 
 module.exports = flattenChildren;
 }).call(this,require('_process'))
-},{"./traverseAllChildren":164,"_process":180,"fbjs/lib/warning":28}],147:[function(require,module,exports){
+},{"./traverseAllChildren":155,"_process":159,"fbjs/lib/warning":27}],138:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -21133,7 +17508,7 @@ var forEachAccumulated = function (arr, cb, scope) {
 };
 
 module.exports = forEachAccumulated;
-},{}],148:[function(require,module,exports){
+},{}],139:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -21184,7 +17559,7 @@ function getEventCharCode(nativeEvent) {
 }
 
 module.exports = getEventCharCode;
-},{}],149:[function(require,module,exports){
+},{}],140:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -21288,7 +17663,7 @@ function getEventKey(nativeEvent) {
 }
 
 module.exports = getEventKey;
-},{"./getEventCharCode":148}],150:[function(require,module,exports){
+},{"./getEventCharCode":139}],141:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -21333,7 +17708,7 @@ function getEventModifierState(nativeEvent) {
 }
 
 module.exports = getEventModifierState;
-},{}],151:[function(require,module,exports){
+},{}],142:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -21363,7 +17738,7 @@ function getEventTarget(nativeEvent) {
 }
 
 module.exports = getEventTarget;
-},{}],152:[function(require,module,exports){
+},{}],143:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -21404,7 +17779,7 @@ function getIteratorFn(maybeIterable) {
 }
 
 module.exports = getIteratorFn;
-},{}],153:[function(require,module,exports){
+},{}],144:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -21478,7 +17853,7 @@ function getNodeForCharacterOffset(root, offset) {
 }
 
 module.exports = getNodeForCharacterOffset;
-},{}],154:[function(require,module,exports){
+},{}],145:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -21512,7 +17887,7 @@ function getTextContentAccessor() {
 }
 
 module.exports = getTextContentAccessor;
-},{"fbjs/lib/ExecutionEnvironment":3}],155:[function(require,module,exports){
+},{"fbjs/lib/ExecutionEnvironment":2}],146:[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2013-2015, Facebook, Inc.
@@ -21627,7 +18002,7 @@ function instantiateReactComponent(node) {
 
 module.exports = instantiateReactComponent;
 }).call(this,require('_process'))
-},{"./Object.assign":59,"./ReactCompositeComponent":70,"./ReactEmptyComponent":91,"./ReactNativeComponent":105,"_process":180,"fbjs/lib/invariant":17,"fbjs/lib/warning":28}],156:[function(require,module,exports){
+},{"./Object.assign":50,"./ReactCompositeComponent":61,"./ReactEmptyComponent":82,"./ReactNativeComponent":96,"_process":159,"fbjs/lib/invariant":16,"fbjs/lib/warning":27}],147:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -21688,7 +18063,7 @@ function isEventSupported(eventNameSuffix, capture) {
 }
 
 module.exports = isEventSupported;
-},{"fbjs/lib/ExecutionEnvironment":3}],157:[function(require,module,exports){
+},{"fbjs/lib/ExecutionEnvironment":2}],148:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -21729,7 +18104,7 @@ function isTextInputElement(elem) {
 }
 
 module.exports = isTextInputElement;
-},{}],158:[function(require,module,exports){
+},{}],149:[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2013-2015, Facebook, Inc.
@@ -21765,7 +18140,7 @@ function onlyChild(children) {
 
 module.exports = onlyChild;
 }).call(this,require('_process'))
-},{"./ReactElement":89,"_process":180,"fbjs/lib/invariant":17}],159:[function(require,module,exports){
+},{"./ReactElement":80,"_process":159,"fbjs/lib/invariant":16}],150:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -21792,7 +18167,7 @@ function quoteAttributeValueForBrowser(value) {
 }
 
 module.exports = quoteAttributeValueForBrowser;
-},{"./escapeTextContentForBrowser":144}],160:[function(require,module,exports){
+},{"./escapeTextContentForBrowser":135}],151:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -21809,7 +18184,7 @@ module.exports = quoteAttributeValueForBrowser;
 var ReactMount = require('./ReactMount');
 
 module.exports = ReactMount.renderSubtreeIntoContainer;
-},{"./ReactMount":102}],161:[function(require,module,exports){
+},{"./ReactMount":93}],152:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -21900,7 +18275,7 @@ if (ExecutionEnvironment.canUseDOM) {
 }
 
 module.exports = setInnerHTML;
-},{"fbjs/lib/ExecutionEnvironment":3}],162:[function(require,module,exports){
+},{"fbjs/lib/ExecutionEnvironment":2}],153:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -21941,7 +18316,7 @@ if (ExecutionEnvironment.canUseDOM) {
 }
 
 module.exports = setTextContent;
-},{"./escapeTextContentForBrowser":144,"./setInnerHTML":161,"fbjs/lib/ExecutionEnvironment":3}],163:[function(require,module,exports){
+},{"./escapeTextContentForBrowser":135,"./setInnerHTML":152,"fbjs/lib/ExecutionEnvironment":2}],154:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -21985,7 +18360,7 @@ function shouldUpdateReactComponent(prevElement, nextElement) {
 }
 
 module.exports = shouldUpdateReactComponent;
-},{}],164:[function(require,module,exports){
+},{}],155:[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2013-2015, Facebook, Inc.
@@ -22177,7 +18552,7 @@ function traverseAllChildren(children, callback, traverseContext) {
 
 module.exports = traverseAllChildren;
 }).call(this,require('_process'))
-},{"./ReactCurrentOwner":71,"./ReactElement":89,"./ReactInstanceHandles":98,"./getIteratorFn":152,"_process":180,"fbjs/lib/invariant":17,"fbjs/lib/warning":28}],165:[function(require,module,exports){
+},{"./ReactCurrentOwner":62,"./ReactElement":80,"./ReactInstanceHandles":89,"./getIteratorFn":143,"_process":159,"fbjs/lib/invariant":16,"fbjs/lib/warning":27}],156:[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2015, Facebook, Inc.
@@ -22543,315 +18918,12 @@ if (process.env.NODE_ENV !== 'production') {
 
 module.exports = validateDOMNesting;
 }).call(this,require('_process'))
-},{"./Object.assign":59,"_process":180,"fbjs/lib/emptyFunction":9,"fbjs/lib/warning":28}],166:[function(require,module,exports){
+},{"./Object.assign":50,"_process":159,"fbjs/lib/emptyFunction":8,"fbjs/lib/warning":27}],157:[function(require,module,exports){
 'use strict';
 
 module.exports = require('./lib/React');
 
-},{"./lib/React":61}],167:[function(require,module,exports){
-/**
- * The Calendar section of the page. This section graphically displays the user's
- * selected courses in calendar format, and is updated to reflect changes in the
- * user's schedule.
- */
-
-var React = require('react');
-var ReactDOM = require('react-dom');
-
-var ajax = require('./util/ajax.js');
-var parse = require('./util/parse.js');
-var time = require('./util/time.js');
-
-var hours = ["0800", "0900", "1000", "1100", "1200", "1300", "1400", "1500", "1600", "1700", "1800", "1900", "2000", "2100"];
-
-var Calendar = React.createClass({
-	displayName: 'Calendar',
-
-	componentDidMount: function () {
-		var that = this;
-		var callback = function () {
-			that.setState({
-				conflict: that.props.store.conflict()
-			});
-		};
-		this.props.store.addConflictListener(callback);
-		this.props.store.getSchedule();
-	},
-	conflictString: function () {
-		var conflict = this.state.conflict;
-		if (conflict != null) {
-			return "There is a conflict with " + conflict.name;
-		}
-		return "";
-	},
-	getInitialState: function () {
-		return {
-			conflict: null
-		};
-	},
-	render: function () {
-		return React.createElement(
-			'div',
-			{ className: 'calendar' },
-			React.createElement(
-				'div',
-				{ className: 'calendar-conflict' },
-				this.conflictString()
-			),
-			React.createElement(Calendar.Axis, null),
-			React.createElement(Calendar.Grid, { store: this.props.store })
-		);
-	}
-});
-
-Calendar.Axis = React.createClass({
-	displayName: 'Axis',
-
-	render: function () {
-		var labels = [];
-		for (var i = 0; i < hours.length; i++) {
-			var tokens = time.display(hours[i]).split(":");
-			var label = tokens[0] + tokens[1].substring(2, 4);
-			labels.push(React.createElement(
-				'div',
-				{ className: 'calendar-axis-label', key: i },
-				label
-			));
-		}
-		return React.createElement(
-			'div',
-			{ className: 'calendar-axis' },
-			labels
-		);
-	}
-});
-
-Calendar.Grid = React.createClass({
-	displayName: 'Grid',
-
-	componentDidMount: function () {
-		var that = this;
-		var callback = function () {
-			var schedule = that.props.store.schedule();
-			that.setState({
-				courses: that.updatedCourses(schedule)
-			});
-		};
-		this.props.store.addScheduleListener(callback);
-	},
-	getInitialState: function () {
-		return {
-			courses: {
-				"M": [], "T": [], "W": [], "R": [], "F": []
-			}
-		};
-	},
-	// @param course = {name, room, time, ccn}
-	updatedCourses: function () {
-		var courses = {
-			"M": [], "T": [], "W": [], "R": [], "F": []
-		};
-		this.props.store.schedule().forEach(function (course) {
-			var t = time.parse(course.time);
-			for (var i = 0; i < t.days.length; i++) {
-				var day = t.days[i];
-				var newCourse = {
-					name: course.name,
-					room: course.room,
-					time: day + " " + t.start + " " + t.end,
-					ccn: course.ccn
-				};
-				courses[day].push(newCourse);
-			}
-		});
-		return courses;
-	},
-	render: function () {
-		var columns = [];
-		var courses = this.updatedCourses();
-		for (var day in courses) {
-			columns.push(React.createElement(Calendar.Grid.Column, { store: this.props.store, key: day, day: day, courses: courses[day] }));
-		}
-		return React.createElement(
-			'div',
-			{ className: 'calendar-grid' },
-			columns
-		);
-	}
-});
-
-Calendar.Grid.Column = React.createClass({
-	displayName: 'Column',
-
-	// Render the static column of the Calendar and insert courses objects.
-	render: function () {
-		var cells = [];
-		for (var i = 0; i < hours.length - 1; i++) {
-			cells.push(React.createElement('div', { className: 'calendar-grid-column-cell', key: i }));
-		}
-		var days = {
-			"M": "Mon", "T": "Tues", "W": "Wed", "R": "Thurs", "F": "Fri"
-		};
-		return React.createElement(
-			'div',
-			{ className: 'calendar-grid-column' },
-			React.createElement(
-				'div',
-				{ className: 'calendar-grid-column-header' },
-				days[this.props.day]
-			),
-			React.createElement(Calendar.Grid.Column.Courses, { store: this.props.store, courses: this.props.courses }),
-			cells
-		);
-	}
-});
-
-Calendar.Grid.Column.Courses = React.createClass({
-	displayName: 'Courses',
-
-	render: function () {
-		var that = this;
-		var courses = [];
-		this.props.courses.forEach(function (course) {
-			courses.push(React.createElement(Calendar.Course, { store: that.props.store, course: course, key: course.ccn }));
-		});
-		return React.createElement(
-			'div',
-			{ className: 'calendar-grid-column-courses' },
-			courses
-		);
-	}
-});
-
-Calendar.Course = React.createClass({
-	displayName: 'Course',
-
-	componentDidMount: function () {
-		var that = this;
-
-		var conflictCallback = function () {
-			var course = that.props.course;
-			var conflict = that.props.store.conflict();
-			var conflicting = conflict != null && conflict.ccn == course.ccn;
-			that.setState({
-				conflicting: conflicting
-			});
-		};
-		this.props.store.addConflictListener(conflictCallback);
-
-		var highlightCallback = function () {
-			var course = that.props.course;
-			var highlight = that.props.store.highlighted();
-			var highlighted = highlight != null && highlight.ccn == course.ccn;
-			that.setState({
-				highlighted: highlighted
-			});
-		};
-		this.props.store.addHighlightListener(highlightCallback);
-	},
-	getInitialState: function () {
-		return {
-			conflicting: false,
-			highlighted: false
-		};
-	},
-	remove: function (e) {
-		var c = this.props.course;
-		this.props.store.removeCourse(c);
-		this.props.store.unhighlight();
-	},
-	shorten: function (str) {
-		var tokens = str.split(" ");
-		var result = "";
-		for (var i = 0; i < tokens.length - 1; i++) {
-			result += tokens[i][0];
-		}
-		return result + " " + tokens[tokens.length - 1];
-	},
-	position: function () {
-		var c = this.props.course;
-		var t = time.parse(c.time);
-		// These are hard-coded appropriately to the static Calendar
-		return {
-			height: time.duration(t.start, t.end) * 32 / 60 - 1,
-			top: time.duration("0800", t.start) * 34 / 60 + 35
-		};
-	},
-	style: function () {
-		var css = this.position();
-		if (this.state.conflicting) {
-			css['border'] = "2px solid red";
-			css['left'] = "calc(4% - 1px)";
-			css['top'] -= 1;
-		}
-		if (!this.state.highlighted && this.props.store.highlighted() != null) {
-			css['opacity'] = 0.5;
-		}
-		return css;
-	},
-	render: function () {
-		var c = this.props.course;
-		var store = this.props.store;
-		var over = store.highlight.bind(store, c);
-		var out = store.unhighlight.bind(store);
-		return React.createElement(
-			'div',
-			{ className: 'calendar-course', style: this.style(), onMouseOver: over, onMouseOut: out },
-			React.createElement(
-				'div',
-				{ className: 'calendar-course-name' },
-				this.shorten(c.name)
-			),
-			React.createElement(
-				'div',
-				{ className: 'calendar-course-type', hidden: true },
-				c.type
-			),
-			React.createElement(
-				'div',
-				{ className: 'calendar-course-room' },
-				parse.normalCase(c.room)
-			),
-			React.createElement(
-				'div',
-				{ className: 'calendar-course-remove', onClick: this.remove },
-				'X'
-			)
-		);
-	}
-});
-
-module.exports = Calendar;
-
-},{"./util/ajax.js":176,"./util/parse.js":177,"./util/time.js":178,"react":166,"react-dom":37}],168:[function(require,module,exports){
-
-/**
- * The central script that renders the React components of index.html and stores
- * the global page state.
- */
-
-var React = require('react');
-var ReactDOM = require('react-dom');
-
-var Menu = require('./menu.js');
-var Calendar = require('./calendar.js');
-var Query = require('./query.js');
-
-var ajax = require('./util/ajax.js');
-var time = require('./util/time.js');
-
-var Store = require('./store.js');
-var store = new Store();
-
-var testUser = "username420";
-
-var MenuAPI = ReactDOM.render(React.createElement(Menu, null), document.getElementById('container-top'));
-
-var CalendarAPI = ReactDOM.render(React.createElement(Calendar, { store: store, user: testUser }), document.getElementById('container-left'));
-
-var QueryAPI = ReactDOM.render(React.createElement(Query, { store: store }), document.getElementById('container-right'));
-
-},{"./calendar.js":167,"./menu.js":169,"./query.js":170,"./store.js":175,"./util/ajax.js":176,"./util/time.js":178,"react":166,"react-dom":37}],169:[function(require,module,exports){
+},{"./lib/React":52}],158:[function(require,module,exports){
 /**
  * The Menu section of the page. This section displays the logo and may contain
  * additional menu buttons, such as the log-out button.
@@ -22859,21 +18931,27 @@ var QueryAPI = ReactDOM.render(React.createElement(Query, { store: store }), doc
 
 var React = require('react');
 var ReactDOM = require('react-dom');
-var ajax = require('./util/ajax.js');
+
+var ajax = {
+	get: function (url, onSuccess, onFailure) {
+		$.ajax({
+			type: 'GET',
+			url: apiUrl + url,
+			dataType: "json",
+			success: onSuccess,
+			error: onFailure
+		});
+	}
+};
 
 var Menu = React.createClass({
 	displayName: 'Menu',
 
-	slogan: function () {
-		menuDOM = $(ReactDOM.findDOMNode(this));
-		menuDOM.find('.menu-slogan').animate({ width: 'toggle' }, "100%");
-	},
 	render: function () {
 		return React.createElement(
 			'header',
 			null,
-			React.createElement(Menu.Logo, { slogan: this.slogan }),
-			React.createElement(Menu.Slogan, null),
+			React.createElement(Menu.Logo, null),
 			React.createElement(Menu.Buttons, null)
 		);
 	}
@@ -22885,20 +18963,8 @@ Menu.Logo = React.createClass({
 	render: function () {
 		return React.createElement(
 			'a',
-			{ className: 'pure-menu-heading pure-menu-link', onClick: this.props.slogan },
+			{ className: 'pure-menu-heading pure-menu-link', href: '/homepage' },
 			'HeleBears'
-		);
-	}
-});
-
-Menu.Slogan = React.createClass({
-	displayName: 'Slogan',
-
-	render: function () {
-		return React.createElement(
-			'div',
-			{ className: 'menu-slogan', style: { display: 'none' } },
-			'Tell your friends'
 		);
 	}
 });
@@ -22926,11 +18992,6 @@ Menu.Buttons = React.createClass({
 			{ className: 'pure-menu-list' },
 			React.createElement(
 				'a',
-				{ className: 'pure-menu-link pure-menu-item menu-logout', href: '/profile' },
-				'Profile'
-			),
-			React.createElement(
-				'a',
 				{ className: 'pure-menu-link pure-menu-item menu-logout', href: '/logout' },
 				'Log Out'
 			)
@@ -22938,2150 +18999,9 @@ Menu.Buttons = React.createClass({
 	}
 });
 
-module.exports = Menu;
+ReactDOM.render(React.createElement(Menu, null), document.getElementById('container-top'));
 
-},{"./util/ajax.js":176,"react":166,"react-dom":37}],170:[function(require,module,exports){
-/**
- * The Query section of the page. This section contains Search and Results.
- */
-
-var React = require('react');
-
-var Search = require('./search.js');
-var Results = require('./results.js');
-
-var Query = React.createClass({
-	displayName: 'Query',
-
-	render: function () {
-		return React.createElement(
-			'div',
-			{ className: 'query' },
-			React.createElement(Search, { store: this.props.store }),
-			React.createElement(Results, { store: this.props.store })
-		);
-	}
-});
-
-module.exports = Query;
-
-},{"./results.js":171,"./search.js":174,"react":166}],171:[function(require,module,exports){
-/**
- * The Results section of the page. Results contains a scrollable list of courses
- * that match the user's query.
- */
-
-var React = require('react');
-var ReactDOM = require('react-dom');
-var PieChart = require("react-chartjs").Pie;
-
-var Reviews = require('./reviews.js');
-
-var ajax = require('./util/ajax.js');
-var parse = require('./util/parse.js');
-var time = require('./util/time.js');
-
-var Results = React.createClass({
-	displayName: 'Results',
-
-	componentDidMount: function () {
-		var that = this;
-
-		// Respond appropriately when results change (e.g. new search)
-		var resultsCallback = function () {
-			that.setState({
-				results: that.props.store.results()
-			});
-		};
-		this.props.store.addResultsListener(resultsCallback);
-
-		// Respond appropriately when a result is selected
-		var selectedCallback = function () {
-			var selected = that.props.store.selected();
-			var results = [selected];
-			if (selected == null) {
-				// If a result is unselected (loses focus), show all results again
-				results = that.props.store.results();
-			}
-			that.setState({
-				results: results,
-				selected: selected
-			});
-		};
-		this.props.store.addSelectedListener(selectedCallback);
-	},
-	getInitialState: function () {
-		return {
-			reviews: [],
-			results: [],
-			selected: null
-		};
-	},
-	render: function () {
-		var that = this;
-		var results = [];
-		// If 'selected' is not null, something must be selected, and there will
-		// only be one result to show
-		if (this.state.selected != null) {
-			var s = this.state.selected;
-			results.push(React.createElement(Results.Course, { store: that.props.store, key: s.ccn, course: s, selected: this.state.selected }));
-		}
-		// Otherwise, generate all Results immediately after a search
-		else {
-				this.state.results.forEach(function (c) {
-					results.push(React.createElement(Results.Course, { store: that.props.store, key: c.ccn, course: c }));
-				});
-			}
-		return React.createElement(
-			'div',
-			{ className: 'results' },
-			results
-		);
-	}
-});
-
-Results.Course = React.createClass({
-	displayName: 'Course',
-
-	componentDidMount: function () {
-		this.props.store.addReviewsListener(this.showReviews);
-	},
-	getInitialState: function () {
-		return {
-			infoContent: []
-		};
-	},
-	showDescription: function () {
-		var store = this.props.store;
-		var course = this.props.course;
-		store.select(course);
-		this.setState({
-			infoContent: React.createElement(Results.Course.Description, { course: course })
-		});
-	},
-	showReviews: function () {
-		var store = this.props.store;
-		var course = this.props.course;
-		if (store.selected().ccn == course.ccn) {
-			var inst = course.inst;
-			var ccn = course.ccn;
-			var reviews = store.reviews();
-			this.setState({
-				infoContent: React.createElement(Reviews, { store: store, inst: inst, reviews: reviews })
-			});
-		}
-	},
-	showSections: function () {
-		var store = this.props.store;
-		var course = this.props.course;
-		store.select(course);
-		this.setState({
-			infoContent: React.createElement(Results.Course.Sections, { sections: course.sections })
-		});
-	},
-	toggleVisual: function () {
-		$(ReactDOM.findDOMNode(this)).find('.data-visualization').slideToggle();
-	},
-
-	render: function () {
-		var info = [];
-		if (this.props.selected) {
-			// 'key' property needed to make React happy
-			info.push(React.createElement(Results.Course.Info, { key: '420', store: this.props.store, info: this.state.infoContent }));
-		}
-		return React.createElement(
-			'div',
-			{ className: 'results-course' },
-			React.createElement(Results.Course.Lecture, { store: this.props.store, course: this.props.course, selected: this.props.selected, sections: this.showSections, desc: this.showDescription, toggleVisual: this.toggleVisual }),
-			info
-		);
-	}
-});
-
-/**
- * Info is a container for information associated with this Course. It can contain
- * section information, reviews, or recommendations. Info is only displayed when its
- * corresponding Course is 'selected'.
- */
-Results.Course.Info = React.createClass({
-	displayName: 'Info',
-
-	render: function () {
-		return React.createElement(
-			'div',
-			{ className: 'results-course-info' },
-			this.props.info
-		);
-	}
-});
-
-Results.Course.Lecture = React.createClass({
-	displayName: 'Lecture',
-
-	add: function () {
-		var course = this.props.course;
-		this.props.store.addCourse(course);
-	},
-	back: function () {
-		this.props.store.unselect();
-	},
-	description: function () {
-		this.select();
-		this.props.desc();
-	},
-	sections: function () {
-		this.select();
-		this.props.sections();
-		var course = this.props.course;
-	},
-	reviews: function () {
-		this.select();
-		var inst = this.props.course.inst;
-		this.props.store.getReviews(inst);
-	},
-	select: function () {
-		var course = this.props.course;
-		this.props.store.select(course);
-	},
-	render: function () {
-		var back = [];
-		if (this.props.selected) {
-			back.push(React.createElement(
-				'div',
-				{ className: 'results-course-lecture-back', key: '420', onClick: this.back },
-				"Return to results"
-			));
-		}
-		var showSections = [];
-		if (!this.props.selected) {
-			showSections = React.createElement(
-				'div',
-				{ className: 'results-course-show-sections', onClick: this.sections },
-				"Show sections"
-			);
-		}
-		var c = this.props.course;
-		var t = time.parse(c.time);
-		t = t.days + " " + time.display(t.start) + " - " + time.display(t.end);
-		return React.createElement(
-			'div',
-			{ className: 'results-course-lecture' },
-			back,
-			React.createElement(
-				'div',
-				{ className: 'results-course-lec-name', onClick: this.description },
-				c.name
-			),
-			showSections,
-			React.createElement(
-				'div',
-				{ className: 'results-course-lec-desc' },
-				c.desc
-			),
-			React.createElement(
-				'div',
-				{ className: 'results-course-lec-inst', onClick: this.reviews },
-				parse.normalCase(c.inst)
-			),
-			React.createElement(
-				'div',
-				{ className: 'results-course-lec-time' },
-				t
-			),
-			React.createElement(
-				'div',
-				{ className: 'results-course-lecture-add', onClick: this.add },
-				"Add Course"
-			)
-		);
-	}
-});
-
-Results.Course.Lecture.RecommendationChart = React.createClass({
-	displayName: 'RecommendationChart',
-
-	render: function () {
-		var rec = this.props.recommendation;
-		if (rec == null) {
-			return React.createElement('div', null);
-		}
-
-		var recc_courses = Object.keys(rec);
-		var chartData = [];
-		for (var i = 0; i < recc_courses.length; i++) {
-			tempDict = {};
-			tempDict['label'] = recc_courses[i];
-			tempDict['value'] = rec[recc_courses[i]];
-			var letters = '0123456789ABCDEF'.split('');
-			var color = '#';
-			for (var j = 0; j < 6; j++) {
-				color += letters[Math.floor(Math.random() * 16)];
-			}
-			tempDict['color'] = color;
-			chartData.push(tempDict);
-		}
-		return React.createElement(
-			'div',
-			{ className: 'data-vis' },
-			React.createElement(
-				'div',
-				{ className: 'data-vis-label' },
-				"Other people took..."
-			),
-			React.createElement(PieChart, { data: chartData })
-		);
-	}
-});
-
-Results.Course.Sections = React.createClass({
-	displayName: 'Sections',
-
-	render: function () {
-		var sections = {
-			mon: [],
-			tues: [],
-			wed: [],
-			thurs: [],
-			fri: []
-		};
-		for (var i = 0; i < this.props.sections.length; i++) {
-			var sec = this.props.sections[i];
-			var t = time.parse(sec.time);
-			switch (t.days) {
-				case "M":
-					sections.mon.push(React.createElement(Results.Course.Sections.Section, { key: sec.ccn, time: sec.time }));break;
-				case "T":
-					sections.tues.push(React.createElement(Results.Course.Sections.Section, { key: sec.ccn, time: sec.time }));break;
-				case "W":
-					sections.wed.push(React.createElement(Results.Course.Sections.Section, { key: sec.ccn, time: sec.time }));break;
-				case "R":
-					sections.thurs.push(React.createElement(Results.Course.Sections.Section, { key: sec.ccn, time: sec.time }));break;
-				case "F":
-					sections.fri.push(React.createElement(Results.Course.Sections.Section, { key: sec.ccn, time: sec.time }));break;
-			}
-		}
-		for (d in sections) {
-			if (sections[d].length == 0) {
-				sections[d] = React.createElement(
-					'div',
-					{ className: 'results-course-sections-none' },
-					"None"
-				);
-			}
-		}
-		return React.createElement(
-			'div',
-			{ className: 'results-course-sections' },
-			React.createElement(
-				'div',
-				{ className: 'results-course-sections-col' },
-				React.createElement(
-					'div',
-					{ className: 'results-course-sections-col-header' },
-					'Mon'
-				),
-				sections.mon
-			),
-			React.createElement(
-				'div',
-				{ className: 'results-course-sections-col' },
-				React.createElement(
-					'div',
-					{ className: 'results-course-sections-col-header' },
-					'Tues'
-				),
-				sections.tues
-			),
-			React.createElement(
-				'div',
-				{ className: 'results-course-sections-col' },
-				React.createElement(
-					'div',
-					{ className: 'results-course-sections-col-header' },
-					'Wed'
-				),
-				sections.wed
-			),
-			React.createElement(
-				'div',
-				{ className: 'results-course-sections-col' },
-				React.createElement(
-					'div',
-					{ className: 'results-course-sections-col-header' },
-					'Thurs'
-				),
-				sections.thurs
-			),
-			React.createElement(
-				'div',
-				{ className: 'results-course-sections-col' },
-				React.createElement(
-					'div',
-					{ className: 'results-course-sections-col-header' },
-					'Fri'
-				),
-				sections.fri
-			)
-		);
-	}
-});
-
-Results.Course.Sections.Section = React.createClass({
-	displayName: 'Section',
-
-	render: function () {
-		var t = time.parse(this.props.time);
-		t = time.display(t.start) + " - " + time.display(t.end);
-		return React.createElement(
-			'div',
-			{ className: 'results-course-sections-sec' },
-			t
-		);
-	}
-});
-
-Results.Course.Description = React.createClass({
-	displayName: 'Description',
-
-	render: function () {
-		var c = this.props.course;
-		var t = time.parse(c.time);
-		t = t.days + " " + time.display(t.start) + " - " + time.display(t.end);
-		return React.createElement(
-			'div',
-			{ className: 'results-course-description' },
-			React.createElement(
-				'div',
-				{ className: 'results-course-title ci-metadata' },
-				"Course Description"
-			),
-			React.createElement(
-				'div',
-				{ className: 'alignment-container' },
-				React.createElement(
-					'div',
-					{ className: 'results-course-desc-container' },
-					React.createElement(
-						'table',
-						{ className: 'desc-table' },
-						React.createElement(
-							'tbody',
-							null,
-							React.createElement(
-								'tr',
-								null,
-								React.createElement(
-									'td',
-									{ className: 'desc-left' },
-									'Professor'
-								),
-								React.createElement(
-									'td',
-									{ className: 'desc-right' },
-									parse.normalCase(c.inst)
-								)
-							),
-							React.createElement(
-								'tr',
-								null,
-								React.createElement(
-									'td',
-									{ className: 'desc-left' },
-									'Time'
-								),
-								React.createElement(
-									'td',
-									{ className: 'desc-right' },
-									t
-								)
-							),
-							React.createElement(
-								'tr',
-								null,
-								React.createElement(
-									'td',
-									{ className: 'desc-left' },
-									'Location'
-								),
-								React.createElement(
-									'td',
-									{ className: 'desc-right' },
-									parse.normalCase(c.room)
-								)
-							),
-							React.createElement(
-								'tr',
-								null,
-								React.createElement(
-									'td',
-									{ className: 'desc-left' },
-									'Enrolled'
-								),
-								React.createElement(
-									'td',
-									{ className: 'desc-right' },
-									c.enrolled + " / " + c.limit
-								)
-							),
-							React.createElement(
-								'tr',
-								null,
-								React.createElement(
-									'td',
-									{ className: 'desc-left' },
-									'Waitlist'
-								),
-								React.createElement(
-									'td',
-									{ className: 'desc-right' },
-									c.waitlist
-								)
-							),
-							React.createElement(
-								'tr',
-								null,
-								React.createElement(
-									'td',
-									{ className: 'desc-left' },
-									'CCN'
-								),
-								React.createElement(
-									'td',
-									{ className: 'desc-right' },
-									c.ccn
-								)
-							)
-						)
-					),
-					React.createElement(
-						'p',
-						{ className: 'long-description ci-metadata' },
-						c.info
-					)
-				),
-				React.createElement(
-					'div',
-					{ className: 'data-visualization' },
-					React.createElement(Results.Course.Lecture.RecommendationChart, { recommendation: c.rec })
-				)
-			)
-		);
-	}
-});
-
-module.exports = Results;
-
-},{"./reviews.js":173,"./util/ajax.js":176,"./util/parse.js":177,"./util/time.js":178,"react":166,"react-chartjs":29,"react-dom":37}],172:[function(require,module,exports){
-/**
- * The ReviewForm class. This is the form the user uses to submit a new review.
- */
-
-var React = require('react');
-var ReactDOM = require('react-dom');
-
-var ReviewForm = React.createClass({
-	displayName: 'ReviewForm',
-
-	formData: function () {
-		var formDOM = $(ReactDOM.findDOMNode(this));
-		return {
-			rating_1: formDOM.find('.reviewform-rating-rating_1').val(),
-			rating_2: formDOM.find('.reviewform-rating-rating_2').val(),
-			rating_3: formDOM.find('.reviewform-rating-rating_3').val(),
-			review: formDOM.find('.reviewform-textarea').val(),
-			inst: this.props.inst
-		};
-	},
-	submit: function () {
-		var that = this;
-		var review = this.formData();
-		this.props.store.postReview(review);
-		this.props.store.closeReviewForm();
-	},
-	render: function () {
-		var placeholder = "Write a review, then tell your friends!";
-		return React.createElement(
-			'div',
-			{ className: 'reviewform' },
-			React.createElement(
-				'fieldset',
-				null,
-				React.createElement(ReviewForm.Rating, { 'for': 'rating_1', attr: "Difficulty" }),
-				React.createElement(ReviewForm.Rating, { 'for': 'rating_2', attr: "Engagement" }),
-				React.createElement(ReviewForm.Rating, { 'for': 'rating_3', attr: "Content" }),
-				React.createElement('textarea', { className: 'reviewform-textarea', placeholder: placeholder })
-			),
-			React.createElement(ReviewForm.Submit, { submit: this.submit })
-		);
-	}
-});
-
-ReviewForm.Rating = React.createClass({
-	displayName: 'Rating',
-
-	render: function () {
-		var className = 'reviewform-rating-' + this.props.for;
-		var options = [];
-		for (i = 0; i <= 10; i++) {
-			options.push(React.createElement(
-				'option',
-				{ key: i, value: i },
-				i
-			));
-		}
-		return React.createElement(
-			'div',
-			{ className: 'reviewform-rating' },
-			React.createElement(
-				'label',
-				{ htmlFor: this.props.for },
-				this.props.attr
-			),
-			React.createElement(
-				'select',
-				{ className: className, defaultValue: 'disabled' },
-				options
-			)
-		);
-	}
-});
-
-ReviewForm.Submit = React.createClass({
-	displayName: 'Submit',
-
-	submit: function (e) {
-		e.preventDefault();
-		this.props.submit();
-	},
-	render: function () {
-		return React.createElement(
-			'div',
-			{ className: 'reviewform-submit', href: '#', onClick: this.submit },
-			"Submit"
-		);
-	}
-});
-
-module.exports = ReviewForm;
-
-},{"react":166,"react-dom":37}],173:[function(require,module,exports){
-/**
- * The Reviews section of the page. This area is only displayed when selected.
- */
-
-var React = require('react');
-var ReactDOM = require('react-dom');
-
-var ReviewForm = require('./review-form.js');
-
-var ajax = require('./util/ajax.js');
-var parse = require('./util/parse.js');
-var time = require('./util/time.js');
-
-var Reviews = React.createClass({
-	displayName: 'Reviews',
-
-	componentDidMount: function () {
-		var that = this;
-		var callback = function () {
-			that.setState({
-				create: that.props.store.formOpen()
-			});
-		};
-		this.props.store.addReviewFormListener(callback);
-	},
-	getInitialState: function () {
-		return {
-			create: false
-		};
-	},
-	render: function () {
-		var reviews = this.props.reviews;
-		var inst = this.props.inst;
-		var store = this.props.store;
-		return React.createElement(
-			'div',
-			{ className: 'reviews' },
-			React.createElement(Reviews.Overall, { reviews: reviews, inst: inst }),
-			React.createElement(Reviews.Entries, { reviews: reviews, inst: inst, store: store, create: this.state.create })
-		);
-	}
-});
-
-Reviews.Overall = React.createClass({
-	displayName: 'Overall',
-
-	averages: function () {
-		var avgs = [0, 0, 0];
-		var reviews = this.props.reviews;
-		if (reviews.length == 0) {
-			return avgs;
-		}
-		for (i = 0; i < reviews.length; i++) {
-			var r = reviews[i];
-			avgs[0] += parseInt(r.rating_1);
-			avgs[1] += parseInt(r.rating_2);
-			avgs[2] += parseInt(r.rating_3);
-		}
-		avgs[0] = this.truncate(avgs[0] / reviews.length);
-		avgs[1] = this.truncate(avgs[1] / reviews.length);
-		avgs[2] = this.truncate(avgs[2] / reviews.length);
-		return avgs;
-	},
-	truncate: function (i) {
-		return Math.floor(i * 10) / 10;
-	},
-	render: function () {
-		var avgs = this.averages();
-		var overall = (avgs[0] + avgs[1] + avgs[2]) / 3;
-		return React.createElement(
-			'div',
-			{ className: 'reviews-overall' },
-			React.createElement(
-				'div',
-				{ className: 'reviews-overall-header' },
-				React.createElement(
-					'span',
-					{ className: 'reviews-overall-inst' },
-					parse.normalCase(this.props.inst)
-				),
-				React.createElement(
-					'span',
-					{ className: 'reviews-overall-overall' },
-					this.truncate(overall)
-				)
-			),
-			React.createElement(Reviews.Overall.Table, { averages: avgs })
-		);
-	}
-});
-
-Reviews.Overall.Table = React.createClass({
-	displayName: 'Table',
-
-	render: function () {
-		return React.createElement(
-			'table',
-			{ className: 'reviews-overall-table' },
-			React.createElement(
-				'tbody',
-				null,
-				React.createElement(
-					'tr',
-					null,
-					React.createElement(
-						'td',
-						{ className: 'reviews-overall-table-left' },
-						'Difficulty'
-					),
-					React.createElement(
-						'td',
-						{ className: 'reviews-overall-table-right' },
-						this.props.averages[0]
-					)
-				),
-				React.createElement(
-					'tr',
-					null,
-					React.createElement(
-						'td',
-						{ className: 'reviews-overall-table-left' },
-						'Engagement'
-					),
-					React.createElement(
-						'td',
-						{ className: 'reviews-overall-table-right' },
-						this.props.averages[1]
-					)
-				),
-				React.createElement(
-					'tr',
-					null,
-					React.createElement(
-						'td',
-						{ className: 'reviews-overall-table-left' },
-						'Content'
-					),
-					React.createElement(
-						'td',
-						{ className: 'reviews-overall-table-right' },
-						this.props.averages[2]
-					)
-				)
-			)
-		);
-	}
-});
-
-Reviews.Entries = React.createClass({
-	displayName: 'Entries',
-
-	content: function () {
-		if (this.props.create) {
-			return React.createElement(
-				'div',
-				null,
-				React.createElement(Reviews.Back, { store: this.props.store }),
-				React.createElement(ReviewForm, { store: this.props.store, inst: this.props.inst })
-			);
-		} else {
-			return React.createElement(
-				'div',
-				null,
-				React.createElement(Reviews.Create, { store: this.props.store }),
-				React.createElement(
-					'div',
-					{ className: 'reviews-entries-container' },
-					this.entries()
-				)
-			);
-		}
-	},
-	entries: function () {
-		var entries = [];
-		for (i = 0; i < this.props.reviews.length; i++) {
-			r = this.props.reviews[i];
-			if (r.review.length > 0) {
-				entries.push(React.createElement(Reviews.Entry, { key: i, review: r }));
-			}
-		}
-		if (entries.length == 0) {
-			entries = React.createElement(
-				'div',
-				{ className: 'reviews-entries-none' },
-				"None"
-			);
-		}
-		return entries;
-	},
-	componentDidMount: function () {
-		var that = this;
-		var callback = function () {
-			if (that.props.store.selected() == null) {
-				that.setState({
-					create: false
-				});
-			}
-		};
-		this.props.store.addSelectedListener(callback);
-	},
-	render: function () {
-		var header = "Reviews";
-		if (this.props.create) {
-			header = "Write a review";
-		}
-		return React.createElement(
-			'div',
-			{ className: 'reviews-entries' },
-			React.createElement(
-				'div',
-				{ className: 'reviews-entries-header' },
-				header
-			),
-			this.content()
-		);
-	}
-});
-
-Reviews.Create = React.createClass({
-	displayName: 'Create',
-
-	create: function (e) {
-		e.preventDefault();
-		this.props.store.openReviewForm();
-	},
-	render: function () {
-		return React.createElement(
-			'div',
-			{ className: 'reviews-create', onClick: this.create },
-			"+"
-		);
-	}
-});
-
-Reviews.Back = React.createClass({
-	displayName: 'Back',
-
-	back: function (e) {
-		e.preventDefault();
-		this.props.store.closeReviewForm();
-	},
-	render: function () {
-		return React.createElement(
-			'div',
-			{ className: 'reviews-back', onClick: this.back },
-			"Back"
-		);
-	}
-});
-
-Reviews.Entry = React.createClass({
-	displayName: 'Entry',
-
-	render: function () {
-		return React.createElement(
-			'div',
-			{ className: 'reviews-entry' },
-			this.props.review.review
-		);
-	}
-});
-
-module.exports = Reviews;
-
-},{"./review-form.js":172,"./util/ajax.js":176,"./util/parse.js":177,"./util/time.js":178,"react":166,"react-dom":37}],174:[function(require,module,exports){
-/**
- * The Search section of the page. The user inputs search criteria into this
- * section, which sends the query to the backend server.
- */
-
-var React = require('react');
-var ReactDOM = require('react-dom');
-
-var ajax = require('./util/ajax.js');
-var time = require('./util/time.js');
-
-/**
- * Remove all key-value entries in 'dict' where the value is equal to 'val'.
- */
-var clear_dict_key = function (val, dict) {
-	for (var key in dict) {
-		if (dict[key] == val) {
-			delete dict[key];
-		};
-	}
-};
-
-var Search = React.createClass({
-	displayName: 'Search',
-
-	componentDidMount: function () {
-		// Used to ensure 'this' is consistent during asynchronous callbacks
-		var that = this;
-
-		var courseCallback = function () {
-			that.setState({
-				courses: that.props.store.courses()
-			});
-		};
-		this.props.store.addCoursesListener(courseCallback);
-
-		var deptCallback = function (depts) {
-			that.setState({
-				depts: depts
-			});
-		};
-		// Make a GET request for department names; update the Search form state
-		// using the above callback when the HTTP response arrives
-		ajax.getDepartments(deptCallback);
-	},
-	getInitialState: function () {
-		return {
-			depts: [],
-			courses: []
-		};
-	},
-	handleDeptChange: function (e) {
-		var dept = e.target.value;
-		this.props.store.setDepartment(dept);
-	},
-	cancel: function (e) {
-		e.preventDefault();
-		var formDOM = $(ReactDOM.findDOMNode(this));
-		formDOM.find('.search-dept').val('disabled');
-		formDOM.find('.search-course').val('disabled');
-	},
-	submit: function (e) {
-		e.preventDefault();
-		var that = this;
-		var formDOM = $(ReactDOM.findDOMNode(this));
-		var form = {
-			department_name: formDOM.find('.search-dept').val(),
-			name: formDOM.find('.search-course').val()
-		};
-		// Don't allow department name to be null; otherwise the search query will
-		// return the entire table of courses
-		if (form.department_name == null) {
-			return;
-		}
-		if (form.name == 'disabled') {
-			form.name = null;
-		}
-		clear_dict_key(null, form);
-		clear_dict_key('', form);
-		this.props.store.getResults(form);
-
-		// Remove the conflict indicator on the Calendar after moving on to new course
-		this.props.store.conflictOff();
-		// Unselect after a search to display new search results
-		this.props.store.unselect();
-	},
-	render: function () {
-		return React.createElement(
-			'div',
-			{ className: 'search pure-form' },
-			React.createElement(
-				'fieldset',
-				{ className: 'pure-group' },
-				React.createElement(
-					'legend',
-					{ className: 'search-title' },
-					'Search Courses'
-				),
-				React.createElement(Search.Dept, { depts: this.state.depts, onChange: this.handleDeptChange }),
-				React.createElement(Search.Course, { courses: [], courses: this.state.courses }),
-				React.createElement(
-					'a',
-					{ className: 'search-cancel', onClick: this.cancel },
-					'Cancel'
-				),
-				React.createElement(
-					'a',
-					{ className: 'pure-button search-submit', href: 'query.html', onClick: this.submit },
-					'Search'
-				)
-			)
-		);
-	}
-});
-
-/**
- *  "Warning: Use the `defaultValue` or `value` props on <select> instead of setting
- * `selected` on <option>." - console
- */
-Search.Dept = React.createClass({
-	displayName: 'Dept',
-
-	render: function () {
-		var depts = [];
-		this.props.depts.forEach(function (dept) {
-			depts.push(React.createElement(
-				'option',
-				{ value: dept, key: dept },
-				dept
-			));
-		});
-		var change = this.props.onChange;
-		return React.createElement(
-			'select',
-			{ className: 'search-dept', defaultValue: 'disabled', onChange: change },
-			React.createElement(
-				'option',
-				{ className: 'default-option', value: 'disabled', disabled: true },
-				'Department'
-			),
-			depts
-		);
-	}
-});
-
-Search.Course = React.createClass({
-	displayName: 'Course',
-
-	render: function () {
-		var courses = [];
-		this.props.courses.forEach(function (course) {
-			courses.push(React.createElement(
-				'option',
-				{ value: course, key: course },
-				course
-			));
-		});
-		return React.createElement(
-			'select',
-			{ className: 'search-course', defaultValue: 'disabled' },
-			React.createElement(
-				'option',
-				{ className: 'default-option', value: 'disabled' },
-				'Course'
-			),
-			courses
-		);
-	}
-});
-
-Search.Submit = React.createClass({
-	displayName: 'Submit',
-
-	render: function () {
-		return React.createElement('input', { className: 'pure-button search-submit', type: 'submit' });
-	}
-});
-
-module.exports = Search;
-
-},{"./util/ajax.js":176,"./util/time.js":178,"react":166,"react-dom":37}],175:[function(require,module,exports){
-/**
- * The Store class. The Store stores the global front-end state associated with
- * the index.html dashboard page and offers an API for manipulating this state.
- * For example, the Store stores the courses currently displayed in the Calendar
- * (this._schedule). Clicking 'Add' on a new course results in an API call that
- * updates this course state. The Calendar, which will add itself as a listener
- * for schedule updates, reacts to this in a manner specified by calendar.js.
- * This provides a sort of abstraction between the Store and the View.
- *
- * See https://facebook.github.io/flux/docs/todo-list.html for inspiration.
- */
-
-var EventEmitter = require('events');
-
-var ajax = require('./util/ajax.js');
-var time = require('./util/time.js');
-var parse = require('./util/parse.js');
-
-/**
- * Note: course Objects should have the properties 'name', 'room', 'inst',
- * 'time', and 'ccn'.
- */
-
-var Store = function () {
-	// Courses currently displayed on the user's Calendar
-	this._schedule = [];
-	// Department currently selected in the Search form
-	this._department = "";
-	// Courses currently displayed in the Search form for a chosen department
-	this._courses = [];
-	// Results currently displayed in the Results section
-	this._results = [];
-	// Course that is currently selected in the Result section
-	this._selected = null;
-	// Reviews for the course that is currently selected
-	this._reviews = null;
-	// Sections for the course that is currently selected
-	this._sections = null;
-	// True if the user currently has the review form open; false otherwise
-	this._reviewForm = false;
-	// Course currently causing a conflict during addCourse
-	this._conflict = null;
-	// Course that is currently highlighted
-	this._highlight = null;
-};
-
-// Inherit from the EventEmitter class
-Store.prototype = EventEmitter.prototype;
-
-// ------------------------------- Schedule ------------------------------- //
-
-/**
- * Make a GET request for the user's schedule and update the local schedule state
- * if necessary.
- */
-Store.prototype.getSchedule = function () {
-	ajax.getSchedule(this.setSchedule.bind(this));
-};
-
-Store.prototype.setSchedule = function (schedule) {
-	// Split each course, creating a copy of the course for each day of lecture
-	var splits = [];
-	for (i = 0; i < schedule.length; i++) {
-		var c = schedule[i];
-		splits = splits.concat(parse.split(c));
-	}
-	this._schedule = splits;
-	// Emit an event signaling the Calendar state has changed
-	this.emit('schedule');
-};
-
-Store.prototype.addCourse = function (course) {
-	// Turn conflict off in case it was previously on
-	this.conflictOff();
-	// Add one Calendar course for each day of lecture
-	var split = parse.split(course);
-	// Check for any conflicts
-	for (i = 0; i < this._schedule.length; i++) {
-		var c = this._schedule[i];
-		for (j = 0; j < split.length; j++) {
-			if (time.conflict(c, split[j])) {
-				this.conflictOn(c);
-				return;
-			}
-		}
-	}
-	this._schedule = this._schedule.concat(split);
-	// Emit an event signaling the Calendar state has changed
-	this.emit('schedule');
-	ajax.postAddCourse(course);
-};
-
-Store.prototype.removeCourse = function (course) {
-	// Remove all courses with the same ccn (there should only be one)
-	var removed = false;
-	for (i = 0; i < this._schedule.length; i++) {
-		if (this._schedule[i].ccn == course.ccn) {
-			this._schedule.splice(i, 1);
-			i--;
-			removed = true;
-		}
-	}
-	if (removed) {
-		if (this._conflict != null && course.ccn == this._conflict.ccn) {
-			this.conflictOff();
-		}
-		// Emit an event signaling the Calendar state has changed
-		this.emit('schedule');
-		ajax.postRemoveCourse(course);
-	}
-};
-
-Store.prototype.schedule = function () {
-	return this._schedule;
-};
-
-// ------------------------------- Department ------------------------------- //
-
-/**
- * Updates the state containing the currently selected department in the Search
- * form and makes a GET request for the department's courses.
- */
-Store.prototype.setDepartment = function (dept) {
-	if (this._department == dept) {
-		return;
-	}
-	this._department = dept;
-	this.getCourses(dept);
-};
-
-// ------------------------------- Courses ------------------------------- //
-
-/**
- * Make a GET request for the courses listed for the input departmet.
- */
-Store.prototype.getCourses = function (dept) {
-	ajax.getCourses(dept, this.setCourses.bind(this));
-};
-
-Store.prototype.setCourses = function (courses) {
-	this._courses = courses;
-	// Emit an event signaling the Courses state has changed
-	this.emit('courses');
-};
-
-Store.prototype.courses = function () {
-	return this._courses;
-};
-
-// ------------------------------- Results ------------------------------- //
-
-/**
- * Make a GET request for search results based on the input query.
- */
-Store.prototype.getResults = function (form) {
-	ajax.getResults(form, this.setResults.bind(this));
-};
-
-Store.prototype.setResults = function (results) {
-	this._results = results;
-	// Solve the 'MTWTF' problem (two Tuesdays)
-	this.tmp_solution();
-	// Emit an event signaling the Results state has changed
-	this.emit('results');
-};
-
-Store.prototype.results = function () {
-	return this._results;
-};
-
-// If a course is scheduled for all five days, automatically change the second
-// 'T' to an 'R' to distinguish Tues and Thurs. This problem should be resolved
-// lated in the backend.
-Store.prototype.tmp_solution = function () {
-	for (i = 0; i < this._results.length; i++) {
-		var c = this._results[i];
-		var t = time.parse(c.time);
-		if (t.days.length == 5) {
-			this._results[i].time = ["MTWRF", t.start, t.end].join(" ");
-		}
-	}
-};
-
-// ------------------------------- Selected ------------------------------- //
-
-Store.prototype.select = function (course) {
-	this._selected = course;
-	this.emit('selected');
-};
-
-Store.prototype.unselect = function () {
-	this._selected = null;
-	this.emit('selected');
-};
-
-Store.prototype.selected = function () {
-	return this._selected;
-};
-
-// ------------------------------- Reviews ------------------------------- //
-
-/**
- * @param {string} inst The name of the professor
- */
-Store.prototype.getReviews = function (inst) {
-	ajax.getReviews(inst, this.setReviews.bind(this));
-};
-
-Store.prototype.setReviews = function (reviews) {
-	this._reviews = reviews;
-	this.emit('reviews');
-};
-
-Store.prototype.reviews = function () {
-	return this._reviews;
-};
-
-// ------------------------------- ReviewForm ------------------------------- //
-
-Store.prototype.openReviewForm = function () {
-	this._reviewForm = true;
-	this.emit('reviewform');
-};
-
-Store.prototype.closeReviewForm = function () {
-	this._reviewForm = false;
-	this.emit('reviewform');
-};
-
-Store.prototype.postReview = function (review) {
-	var callback = (function (review) {
-		if (this._selected != null && this._selected.inst == review.inst) {
-			this._reviews.unshift(review);
-			this.emit('reviews');
-		}
-	}).bind(this);
-	ajax.postReview(review, callback);
-};
-
-Store.prototype.formOpen = function () {
-	return this._reviewForm;
-};
-
-// ------------------------------- Conflict ------------------------------- //
-
-Store.prototype.conflictOn = function (course) {
-	this._conflict = course;
-	this.emit('conflict');
-};
-
-Store.prototype.conflictOff = function () {
-	this._conflict = null;
-	this.emit('conflict');
-};
-
-Store.prototype.conflict = function () {
-	return this._conflict;
-};
-
-// ------------------------------- Conflict ------------------------------- //
-
-Store.prototype.highlight = function (course) {
-	this._highlight = course;
-	this.emit('highlight');
-};
-
-Store.prototype.unhighlight = function () {
-	this._highlight = null;
-	this.emit('highlight');
-};
-
-Store.prototype.highlighted = function () {
-	return this._highlight;
-};
-
-// ------------------------------- Listeners ------------------------------- //
-
-/**
- * Add a listener for the schedule-change event.
- * @param {function} callback: Whenever the schedule being displayed in the user's
- *   Calendar changes (e.g. a course is added), this callback is called.
- */
-Store.prototype.addScheduleListener = function (callback) {
-	this.on('schedule', callback);
-};
-
-/**
- * Add a listener for the courses-change event.
- * @param {function} callback: Whenever the courses being displayed in the form
- *   change (e.g. a new dept is selected), this callback is called.
- */
-Store.prototype.addCoursesListener = function (callback) {
-	this.on('courses', callback);
-};
-
-/**
- * Add a listener for the results-change event.
- * @param {function} callback: Whenever the results being displayed in the Results
- *   section changes (e.g. a new search occurs), this callback is called.
- */
-Store.prototype.addResultsListener = function (callback) {
-	this.on('results', callback);
-};
-
-/**
- * Add a listener for the selection event. This event is emitted whenever the user
- * selects any clickable part of a result (except for "Add Course"). this._selected
- * is assigned to this result. The event is also emitted when the result loses
- * focus, and this._selected is set back to null.
- * @param (function) callback: Whenever a selection event is emitted, this
- *   callback is called.
- */
-Store.prototype.addSelectedListener = function (callback) {
-	this.on('selected', callback);
-};
-
-/**
- * Add a listener for the reviews-change event. This event is emitted when the
- * user selects the professor's name and when the result becomes unselected.
- */
-Store.prototype.addReviewsListener = function (callback) {
-	this.on('reviews', callback);
-};
-
-/**
- * Add a listener for the review-form-change event. This event is emitted when the
- * ReviewForm is either opened or closed, and when the result becomes unselected.
- */
-Store.prototype.addReviewFormListener = function (callback) {
-	this.on('reviewform', callback);
-};
-
-/**
- * Add a listener for the conflict event. Whenever a conflict occurs, this event
- * will be emitted, and this._conflict will be set to the course in this_schedule
- * that causes the conflict. After the user submits a new search, this._conflict
- * will be reset to an empty object.
- * @param (function) callback: Whenever a conflict event is emitted, this callback
- *   is called. It should check the value of this._conflict to determine whether
- *   or not it should be executed.
- */
-Store.prototype.addConflictListener = function (callback) {
-	this.on('conflict', callback);
-};
-
-/**
- * Add a listener for the highlight event. When a user is hovering over a course,
- * all related lectures (same CCN) should be highlighted.
- */
-Store.prototype.addHighlightListener = function (callback) {
-	this.on('highlight', callback);
-};
-
-module.exports = Store;
-
-},{"./util/ajax.js":176,"./util/parse.js":177,"./util/time.js":178,"events":179}],176:[function(require,module,exports){
-var parse = require('./parse.js');
-var time = require('./time.js');
-
-// var apiUrl = 'https://protected-refuge-7067.herokuapp.com';
-var apiUrl = '';
-
-var queryify = function (query) {
-	query = JSON.stringify(query);
-	return query.replace(/"/g, "").replace(/{/g, '').replace(/}/g, '').replace(/:/g, '=').replace(/,/g, '&').replace(/ /g, '%20');
-};
-
-module.exports = {
-	get: function (url, onSuccess, onFailure) {
-		$.ajax({
-			type: 'GET',
-			url: apiUrl + url,
-			dataType: "json",
-			success: onSuccess,
-			error: onFailure
-		});
-	},
-	post: function (url, data, onSuccess, onFailure) {
-		$.ajax({
-			type: 'POST',
-			url: apiUrl + url,
-			data: JSON.stringify(data),
-			contentType: "application/json",
-			dataType: "json",
-			success: onSuccess,
-			error: onFailure
-		});
-	},
-
-	/**
-  * Make a GET request for the user's schedule.
-  * @param {function} callback: Takes in an array of courses and performs an
-  *   action upon it.
-  */
-	getSchedule: function (callback) {
-		var onSuccess = function (data) {
-			if (data.status == -1) {
-				console.log("Failed to load user's schedule; status = -1");
-				console.log("Errors: " + data.errors);
-				return;
-			}
-			var courses = parse.schedule(data);
-			callback(courses);
-		};
-		var onFailure = function () {
-			console.log("Failed to load user's schedule");
-		};
-		this.get('/api/schedules', onSuccess, onFailure);
-	},
-
-	/**
-  * Make a GET request for all departments.
-  * @param {function} callback: Takes in an array of department names and
-  *   performs an action upon it.
-  */
-	getDepartments: function (callback) {
-		var onSuccess = function (data) {
-			if (data.status == -1) {
-				console.log("Failed to load departments into form; status = -1");
-				console.log("Errors: " + data.errors);
-				return;
-			}
-			var depts = parse.departments(data);
-			callback(depts);
-		};
-		var onFailure = function () {
-			console.log("Failed to load list of departments");
-		};
-		this.get('/api/departments', onSuccess, onFailure);
-	},
-
-	/**
-  * Make a GET request for the courses listed for the given department.
-  * @param {function} callback: Takes in an array of course listings and
-  *   performs an action upon it.
-  */
-	getCourses: function (dept, callback) {
-		var onSuccess = function (data) {
-			if (data.status == -1) {
-				console.log("Failed to load courses into form; status = -1");
-				console.log("Errors: " + data.errors);
-				return;
-			}
-			var courses = parse.courses(data);
-			callback(courses);
-		};
-		var onFailure = function () {
-			console.log("Failed to load courses for " + dept);
-		};
-		var deptQuery = queryify({
-			department_name: dept
-		});
-		this.get('/api/courses?' + deptQuery, onSuccess, onFailure);
-	},
-
-	/**
-  * Make a GET request for search results for the given form info.
-  * @param {function} callback: Takes in an array of results and performs an
-  *   action upon it.
-  */
-	getResults: function (form, callback) {
-		var request = queryify(form);
-		var onSuccess = function (data) {
-			if (data.status == -1) {
-				console.log("Failed to load search results; status = -1");
-				console.log("Errors: " + data.errors);
-				return;
-			}
-			var results = parse.results(data);
-			callback(results);
-		};
-		var onFailure = function () {
-			console.error("Failed to load search results");
-		};
-		this.get('/api/courses?' + request, onSuccess, onFailure);
-	},
-
-	/**
-  * Make a GET request for search results for the given form info.
-  * @param {string}   inst: Name of the professor
-  * @param {function} callback: Takes in an array of results and performs an
-  *   action upon it.
-  */
-	getReviews: function (inst, callback) {
-		var request = queryify(inst);
-		var onSuccess = function (data) {
-			if (data.status == -1) {
-				console.log("Failed to load professor reviews; status = -1");
-				console.log("Errors: " + data.errors);
-				return;
-			}
-			var reviews = data.results;
-			callback(reviews);
-		};
-		var onFailure = function () {
-			console.log("Failed to load professor reviews");
-		};
-		this.get('/api/reviews?professor_name=' + inst, onSuccess, onFailure);
-	},
-
-	/**
-  * Make a POST request to add the course with the given info.
-  */
-	postAddCourse: function (course) {
-		var onSuccess = function () {
-			console.log("Successfully added course to user's schedule in backend");
-		};
-		var onFailure = function () {
-			console.log("Failed to add course to user's schedule in backend");
-		};
-		var data = {
-			name_and_number: course.name,
-			course_time: course.time,
-			section_time: course.time,
-			lab_time: course.time,
-			location: course.room,
-			ccn: course.ccn
-		};
-		this.post('/api/schedules/add', data, onSuccess, onFailure);
-	},
-
-	/**
-  * Make a POST request to remove the course with the given info.
-  */
-	postRemoveCourse: function (course) {
-		var onSuccess = function (data) {
-			if (data == -1) {
-				console.log("Failed to removed course from user's schedule in backend");
-				console.log("Errors: " + data.errors);
-			} else {
-				console.log("Successfully removed course from user's schedule");
-			}
-		};
-		var onFailure = function () {
-			console.log("Failed to removed course from user's schedule in backend");
-		};
-		var data = {
-			name_and_number: course.name
-		};
-		this.post('/api/schedules/remove', data, onSuccess, onFailure);
-	},
-
-	/**
-  * Make a POST request to remove the course with the given info.
-  * @param {Object} review The review ratings and text
-  * @param {string} inst The instructor about which the review was written
-  * @param {function} callback Function that takes in the newly-created
-  *   review and performs some action on it
-  */
-	postReview: function (review, callback) {
-		var onSuccess = function (data) {
-			if (data == -1) {
-				console.log("Failed to record review in backend");
-				console.log("Errors: " + data.errors);
-			} else {
-				console.log("Successfully recorded review");
-			}
-		};
-		var onFailure = function () {
-			console.log("Failed to record review in backend");
-		};
-		var data = {
-			rating_1: review.rating_1,
-			rating_2: review.rating_2,
-			rating_3: review.rating_3,
-			review: review.review,
-			professor_name: review.inst
-		};
-		this.post('/api/reviews/create', data, onSuccess, onFailure);
-
-		callback(review);
-	}
-};
-
-},{"./parse.js":177,"./time.js":178}],177:[function(require,module,exports){
-/**
- * Helper functions for parsing HTTP response data. This was mainly a refactoring
- * effort to keep the code in the core files a bit cleaner.
- */
-
-var time = require('./time.js');
-
-module.exports = {
-	ccn: function (c) {
-		if (c >= 10000) {
-			return "" + c;
-		}
-		if (c >= 1000) {
-			return "0" + c;
-		}
-		if (c >= 100) {
-			return "00" + c;
-		}
-		if (c >= 10) {
-			return "000" + c;
-		}
-		return "0000" + c;
-	},
-	courses: function (data) {
-		var courses = [];
-		for (var i = 0; i < data.results.length; i++) {
-			courses.push(data.results[i].name);
-		}
-		return courses;
-	},
-	departments: function (data) {
-		var depts = [];
-		for (var i = 0; i < data.results.length; i++) {
-			depts.push(data.results[i].department_name);
-		}
-		return depts;
-	},
-	normalCase: function (name) {
-		var tokens = name.split(" ");
-		for (i = 0; i < tokens.length; i++) {
-			var t = tokens[i];
-			if (t.length > 1) {
-				t = t[0].toUpperCase() + t.slice(1).toLowerCase();
-			} else {
-				t = t.toUpperCase() + ".";
-			}
-			tokens[i] = t;
-		}
-		return tokens.join(" ");
-	},
-	results: function (data) {
-		var that = this;
-		var results = [];
-		data.results.forEach(function (lec) {
-			var course = {
-				name: lec.department_name + " " + lec.name,
-				desc: lec.title,
-				inst: lec.professor_name,
-				room: lec.location,
-				time: lec.time,
-				ccn: that.ccn(lec.ccn),
-				units: lec.units,
-				limit: lec.limit,
-				rec: lec.recommendation,
-				info: lec.course_description,
-				enrolled: lec.enrolled,
-				waitlist: lec.waitlist,
-				sections: []
-			};
-			lec.sections.forEach(function (sec) {
-				course.sections.push({
-					time: time.convert(sec.time),
-					ccn: sec.ccn
-				});
-			});
-			results.push(course);
-		});
-		return results;
-	},
-	schedule: function (data) {
-		if (data.status == -1) {
-			console.log("Failed to load user's schedule");
-			console.log("Errors: " + data.errors);
-			return;
-		}
-		var courses = [];
-		data.results.forEach(function (result) {
-			var course = {
-				name: result.name_and_number,
-				time: result.course_time,
-				room: result.location,
-				ccn: result.ccn
-			};
-			if (course.ccn == undefined) {
-				course.ccn = that.ccn(course.name, course.time);
-			}
-			courses.push(course);
-		});
-		return courses;
-	},
-	split: function (course) {
-		var split = [];
-		var t = time.parse(course.time);
-		for (k = 0; k < t.days.length; k++) {
-			var session_time = t.days[k] + " " + t.start + " " + t.end;
-			split.push({
-				ccn: course.ccn,
-				desc: course.desc,
-				info: course.info,
-				limit: course.limit,
-				name: course.name,
-				rec: course.rec,
-				room: course.room,
-				time: session_time,
-				units: course.units,
-				enrolled: course.enrolled,
-				waitlist: course.waitlist,
-				sections: []
-			});
-		}
-		return split;
-	}
-};
-
-},{"./time.js":178}],178:[function(require,module,exports){
-
-module.exports = {
-	/**
-  * Return a dictionary containing parsed time information. An example input
-  * string is "TR 1400 1530".
-  */
-	parse: function (t) {
-		var tokens = t.split(" ");
-		return {
-			days: tokens[0],
-			start: tokens[1],
-			end: tokens[2]
-		};
-	},
-	/**
-  * Return the AM/PM formatted string of a military-time input. For example, if
-  * the input string was "1400", the function would return "2:00 pm"
-  */
-	display: function (t) {
-		var hour = t.substring(0, 2);
-		var min = t.substring(2, 4);
-		var suffix = "am";
-
-		var hour = parseInt(hour);
-
-		if (hour >= 12) {
-			suffix = "pm";
-			hour -= 12;
-		}
-		if (hour == 0) {
-			hour = "12";
-		}
-
-		return hour + ":" + min + suffix;
-	},
-	/**
-  * Return the number of minutes between 'start' and 'end'. Behavior is
-  * undefined if 'start' comes after 'end'.
-  */
-	duration: function (start, end) {
-		var dur = parseInt(end) - parseInt(start);
-		return Math.floor(dur / 100) * 60 + (dur % 100 != 0 ? 30 : 0);
-	},
-	/**
-  * Return true if courses 'a' and 'b' conflict, including when 'a' and 'b' are
-  * the same class (same CCN); return false otherwise.
-  */
-	conflict: function (a, b) {
-		if (a.ccn == b.ccn) {
-			return true;
-		}
-		at = this.parse(a.time);
-		bt = this.parse(b.time);
-		// 'days' should only have length 1 for both 'at' and 'bt'
-		if (at.days != bt.days) {
-			return false;
-		}
-		var aStart = parseInt(at.start);
-		var aEnd = parseInt(at.end);
-		var bStart = parseInt(bt.start);
-		var bEnd = parseInt(bt.end);
-		if (aStart >= bStart && aStart < bEnd) {
-			return true;
-		} else if (bStart >= aStart && bStart < aEnd) {
-			return true;
-		}
-		return false;
-	}
-};
-
-},{}],179:[function(require,module,exports){
-// Copyright Joyent, Inc. and other Node contributors.
-//
-// Permission is hereby granted, free of charge, to any person obtaining a
-// copy of this software and associated documentation files (the
-// "Software"), to deal in the Software without restriction, including
-// without limitation the rights to use, copy, modify, merge, publish,
-// distribute, sublicense, and/or sell copies of the Software, and to permit
-// persons to whom the Software is furnished to do so, subject to the
-// following conditions:
-//
-// The above copyright notice and this permission notice shall be included
-// in all copies or substantial portions of the Software.
-//
-// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
-// OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
-// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN
-// NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
-// DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
-// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
-// USE OR OTHER DEALINGS IN THE SOFTWARE.
-
-function EventEmitter() {
-  this._events = this._events || {};
-  this._maxListeners = this._maxListeners || undefined;
-}
-module.exports = EventEmitter;
-
-// Backwards-compat with node 0.10.x
-EventEmitter.EventEmitter = EventEmitter;
-
-EventEmitter.prototype._events = undefined;
-EventEmitter.prototype._maxListeners = undefined;
-
-// By default EventEmitters will print a warning if more than 10 listeners are
-// added to it. This is a useful default which helps finding memory leaks.
-EventEmitter.defaultMaxListeners = 10;
-
-// Obviously not all Emitters should be limited to 10. This function allows
-// that to be increased. Set to zero for unlimited.
-EventEmitter.prototype.setMaxListeners = function(n) {
-  if (!isNumber(n) || n < 0 || isNaN(n))
-    throw TypeError('n must be a positive number');
-  this._maxListeners = n;
-  return this;
-};
-
-EventEmitter.prototype.emit = function(type) {
-  var er, handler, len, args, i, listeners;
-
-  if (!this._events)
-    this._events = {};
-
-  // If there is no 'error' event listener then throw.
-  if (type === 'error') {
-    if (!this._events.error ||
-        (isObject(this._events.error) && !this._events.error.length)) {
-      er = arguments[1];
-      if (er instanceof Error) {
-        throw er; // Unhandled 'error' event
-      }
-      throw TypeError('Uncaught, unspecified "error" event.');
-    }
-  }
-
-  handler = this._events[type];
-
-  if (isUndefined(handler))
-    return false;
-
-  if (isFunction(handler)) {
-    switch (arguments.length) {
-      // fast cases
-      case 1:
-        handler.call(this);
-        break;
-      case 2:
-        handler.call(this, arguments[1]);
-        break;
-      case 3:
-        handler.call(this, arguments[1], arguments[2]);
-        break;
-      // slower
-      default:
-        args = Array.prototype.slice.call(arguments, 1);
-        handler.apply(this, args);
-    }
-  } else if (isObject(handler)) {
-    args = Array.prototype.slice.call(arguments, 1);
-    listeners = handler.slice();
-    len = listeners.length;
-    for (i = 0; i < len; i++)
-      listeners[i].apply(this, args);
-  }
-
-  return true;
-};
-
-EventEmitter.prototype.addListener = function(type, listener) {
-  var m;
-
-  if (!isFunction(listener))
-    throw TypeError('listener must be a function');
-
-  if (!this._events)
-    this._events = {};
-
-  // To avoid recursion in the case that type === "newListener"! Before
-  // adding it to the listeners, first emit "newListener".
-  if (this._events.newListener)
-    this.emit('newListener', type,
-              isFunction(listener.listener) ?
-              listener.listener : listener);
-
-  if (!this._events[type])
-    // Optimize the case of one listener. Don't need the extra array object.
-    this._events[type] = listener;
-  else if (isObject(this._events[type]))
-    // If we've already got an array, just append.
-    this._events[type].push(listener);
-  else
-    // Adding the second element, need to change to array.
-    this._events[type] = [this._events[type], listener];
-
-  // Check for listener leak
-  if (isObject(this._events[type]) && !this._events[type].warned) {
-    if (!isUndefined(this._maxListeners)) {
-      m = this._maxListeners;
-    } else {
-      m = EventEmitter.defaultMaxListeners;
-    }
-
-    if (m && m > 0 && this._events[type].length > m) {
-      this._events[type].warned = true;
-      console.error('(node) warning: possible EventEmitter memory ' +
-                    'leak detected. %d listeners added. ' +
-                    'Use emitter.setMaxListeners() to increase limit.',
-                    this._events[type].length);
-      if (typeof console.trace === 'function') {
-        // not supported in IE 10
-        console.trace();
-      }
-    }
-  }
-
-  return this;
-};
-
-EventEmitter.prototype.on = EventEmitter.prototype.addListener;
-
-EventEmitter.prototype.once = function(type, listener) {
-  if (!isFunction(listener))
-    throw TypeError('listener must be a function');
-
-  var fired = false;
-
-  function g() {
-    this.removeListener(type, g);
-
-    if (!fired) {
-      fired = true;
-      listener.apply(this, arguments);
-    }
-  }
-
-  g.listener = listener;
-  this.on(type, g);
-
-  return this;
-};
-
-// emits a 'removeListener' event iff the listener was removed
-EventEmitter.prototype.removeListener = function(type, listener) {
-  var list, position, length, i;
-
-  if (!isFunction(listener))
-    throw TypeError('listener must be a function');
-
-  if (!this._events || !this._events[type])
-    return this;
-
-  list = this._events[type];
-  length = list.length;
-  position = -1;
-
-  if (list === listener ||
-      (isFunction(list.listener) && list.listener === listener)) {
-    delete this._events[type];
-    if (this._events.removeListener)
-      this.emit('removeListener', type, listener);
-
-  } else if (isObject(list)) {
-    for (i = length; i-- > 0;) {
-      if (list[i] === listener ||
-          (list[i].listener && list[i].listener === listener)) {
-        position = i;
-        break;
-      }
-    }
-
-    if (position < 0)
-      return this;
-
-    if (list.length === 1) {
-      list.length = 0;
-      delete this._events[type];
-    } else {
-      list.splice(position, 1);
-    }
-
-    if (this._events.removeListener)
-      this.emit('removeListener', type, listener);
-  }
-
-  return this;
-};
-
-EventEmitter.prototype.removeAllListeners = function(type) {
-  var key, listeners;
-
-  if (!this._events)
-    return this;
-
-  // not listening for removeListener, no need to emit
-  if (!this._events.removeListener) {
-    if (arguments.length === 0)
-      this._events = {};
-    else if (this._events[type])
-      delete this._events[type];
-    return this;
-  }
-
-  // emit removeListener for all listeners on all events
-  if (arguments.length === 0) {
-    for (key in this._events) {
-      if (key === 'removeListener') continue;
-      this.removeAllListeners(key);
-    }
-    this.removeAllListeners('removeListener');
-    this._events = {};
-    return this;
-  }
-
-  listeners = this._events[type];
-
-  if (isFunction(listeners)) {
-    this.removeListener(type, listeners);
-  } else if (listeners) {
-    // LIFO order
-    while (listeners.length)
-      this.removeListener(type, listeners[listeners.length - 1]);
-  }
-  delete this._events[type];
-
-  return this;
-};
-
-EventEmitter.prototype.listeners = function(type) {
-  var ret;
-  if (!this._events || !this._events[type])
-    ret = [];
-  else if (isFunction(this._events[type]))
-    ret = [this._events[type]];
-  else
-    ret = this._events[type].slice();
-  return ret;
-};
-
-EventEmitter.prototype.listenerCount = function(type) {
-  if (this._events) {
-    var evlistener = this._events[type];
-
-    if (isFunction(evlistener))
-      return 1;
-    else if (evlistener)
-      return evlistener.length;
-  }
-  return 0;
-};
-
-EventEmitter.listenerCount = function(emitter, type) {
-  return emitter.listenerCount(type);
-};
-
-function isFunction(arg) {
-  return typeof arg === 'function';
-}
-
-function isNumber(arg) {
-  return typeof arg === 'number';
-}
-
-function isObject(arg) {
-  return typeof arg === 'object' && arg !== null;
-}
-
-function isUndefined(arg) {
-  return arg === void 0;
-}
-
-},{}],180:[function(require,module,exports){
+},{"react":157,"react-dom":28}],159:[function(require,module,exports){
 // shim for using process in browser
 
 var process = module.exports = {};
@@ -25174,4 +19094,4 @@ process.chdir = function (dir) {
 };
 process.umask = function() { return 0; };
 
-},{}]},{},[168]);
+},{}]},{},[158]);

@@ -1,0 +1,135 @@
+/* Horizontal menu header */
+
+.pure-menu-horizontal {
+	display: block;
+	position: fixed;
+	z-index: 1;
+	font-family: 'Roboto Slab', serif;
+	background-color: #00b85c;
+	padding-bottom: 4px;
+	border-bottom: 3px solid white;
+}
+
+.pure-menu-link {
+	color: #eeeeee;
+	font-size: 115%;
+	border-radius: 5px;
+	padding-left: 20px;
+	padding-right: 20px;
+	padding-top: 10px;
+	padding-bottom: 10px;
+}
+
+.pure-menu-link:hover {
+	cursor: pointer;
+	background-color: #00a653;
+	color: #eeeeee;
+	text-decoration: none;
+}
+
+.pure-menu-link:focus {
+	background-color: inherit;
+}
+
+.pure-menu-heading {
+	text-transform: none;
+	font-weight: bold;
+	font-size: 145%;
+	margin-left: 1em;
+}
+
+.pure-menu-heading:hover {
+	color: #dddddd;
+}
+
+.pure-menu-heading:hover {
+	background-color: inherit;
+}
+
+.pure-menu-list {
+	float: right;
+	margin-right: 1em;
+	margin-top: 5px;
+}
+
+/* Main page content */
+
+.container {
+	padding-top: 70px;
+	width: 50%;
+	margin-left: auto;
+	margin-right: auto;
+}
+
+.page-header {
+	border: 2px solid #00b85c;
+	color: #00b85c;
+	padding: 6px;
+}
+
+.profile-page-header {
+	font-family: 'Roboto Slab', serif;
+	font-size: 180%;
+	font-weight: bold;
+	vertical-align: middle;
+}
+
+.profile-page-header:hover {
+	text-decoration: underline;
+	cursor: pointer;
+}
+
+.col {
+	width: calc(50% - 15px);
+	display: inline-block;
+	height: 300px;
+	vertical-align: top;
+	margin-left: 5px;
+	margin-right: 5px;
+}
+
+.well {
+	box-shadow: none;
+	width: 100%;
+	height: 100%;
+	padding-top: 0px;
+	padding-left: 10px;
+	padding-right: 10px;
+	word-wrap: break-word;
+	border-radius: 0px;
+	background-color: white;
+	border: none;
+	font-family: 'Roboto', sans-serif;
+}
+
+.user-info {
+	text-align: left;
+}
+
+.well-left {
+	text-align: center;
+}
+
+.well-right {
+	text-align: center;
+}
+
+.fa-google-plus {
+	margin-right: 3px;
+}
+
+h3 {
+	width: 100%;
+	margin-top: 0px;
+	color: #777777;
+	padding: 10px;
+	padding-top: 20px;
+	font-weight: bold;
+	text-align: center;
+	margin-bottom: 20px;
+	border-top: 1px solid #00b85c;
+}
+
+.btn {
+	margin-top: 20px;
+}

@@ -49,7 +49,7 @@ var Courses = sequelize.define('Courses', {
   enrolled: Sequelize.INTEGER,
   waitlist: Sequelize.INTEGER,
   note: Sequelize.STRING,
-    course_description: Sequelize.STRING,
+    course_description: Sequelize.TEXT,
     recommendation: Sequelize.JSON
 });
 
@@ -90,7 +90,7 @@ Sections.sync();
 
 var courseModel = {
     postprocess: function(res, filter) {
-      Courses.findAll({where:filter}).then(
+      Courses.findAll({where:filter,order: [['createdAt', 'ASC']]}).then(
                 function(courses){
                     var results = []
                     for(var i = 0; i < courses.length; i++){
