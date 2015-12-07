@@ -51,6 +51,12 @@ var Search = React.createClass({
 		var dept = e.target.value;
 		this.props.store.setDepartment(dept);
 	},
+	cancel: function(e) {
+		e.preventDefault();
+		var formDOM = $(ReactDOM.findDOMNode(this));
+		formDOM.find('.search-dept').val('disabled');
+		formDOM.find('.search-course').val('disabled');
+	},
 	submit: function(e) {
 		e.preventDefault();
 		var that = this;
@@ -59,6 +65,11 @@ var Search = React.createClass({
 			department_name : formDOM.find('.search-dept').val(),
 			name            : formDOM.find('.search-course').val(),
 		};
+		// Don't allow department name to be null; otherwise the search query will
+		// return the entire table of courses
+		if (form.department_name == null) {
+			return;
+		}
 		if (form.name == 'disabled') {
 			form.name = null;
 		}
@@ -78,6 +89,7 @@ var Search = React.createClass({
 					<legend className='search-title'>Search Courses</legend>
 					<Search.Dept depts={this.state.depts} onChange={this.handleDeptChange} />
 					<Search.Course courses={[]} courses={this.state.courses} />
+					<a className='search-cancel' onClick={this.cancel}>Cancel</a>
 					<a className='pure-button search-submit' href='query.html' onClick={this.submit}>Search</a>
 				</fieldset>
 			</div>

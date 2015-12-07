@@ -12,6 +12,16 @@
 	width: calc(50% - 60px);
 }
 
+/* Menu */
+.menu-slogan {
+    position: absolute;
+    font-family: 'Roboto', sans-serif;
+    color: #eeeeee;
+    top: 19px;
+    left: 160px;
+    font-size: 80%;
+}
+
 /* Calendar */
 
 .calendar {
@@ -145,6 +155,19 @@
 	width: 80px;
 }
 
+.search-cancel {
+	font-family: 'Roboto', sans-serif;
+    font-size: 80%;
+    margin-left: 75px;
+    position: relative;
+    top: 2px;
+}
+
+.search-cancel:hover {
+	text-decoration: underline;
+	cursor: pointer;
+}
+
 .search-submit {
 	float: right;
 	color: #eeeeee;
@@ -165,6 +188,7 @@
 .results {
 	position: relative;
 	left: -10px;
+	overflow-x: hidden;
 	overflow-y: scroll;
 	height: 420px;
 	width: 100%;
@@ -181,11 +205,11 @@
 	border: 1px solid #eeeeee;
 	border-radius: 4px;
 	padding-top: 6px;
-	background-image: linear-gradient(#3399ff 30px, white 30px);
-	background-image: -o-linear-gradient(#3399ff 30px, white 30px);
-	background-image: -moz-linear-gradient(#3399ff 30px, white 30px);
-	background-image: -webkit-linear-gradient(#3399ff 30px, white 30px);
-	background-image: -ms-linear-gradient(#3399ff 30px, white 30px);
+	background-image: linear-gradient(#3399ff 28px, white 28px);
+	background-image: -o-linear-gradient(#3399ff 28px, white 28px);
+	background-image: -moz-linear-gradient(#3399ff 28px, white 28px);
+	background-image: -webkit-linear-gradient(#3399ff 28px, white 28px);
+	background-image: -ms-linear-gradient(#3399ff 28px, white 28px);
 }
 
 .results-course-lecture-back {
@@ -253,14 +277,15 @@
 }
 
 .results-course-title {
-	background-color: #3399ff;
-    color: #eeeeee;
+	border-bottom: 2px solid #3399ff;
+    color: #3399ff;
     padding: 5px;
-    padding-left: 8px;
+    padding-top: 0px;
+    padding-left: 4px;
     border-radius: 2px;
 	margin-bottom: 8px;
 	font-size: 125%;
-	font-family: 'Roboto Slab' serif;
+	font-family: 'Roboto Slab', serif;
 }
 
 .results-course-info {
@@ -271,25 +296,70 @@
 	height: 250px;
 }
 
+.alignment-container {
+	padding-top: 10px;
+	height: 200px;
+}
+
 .results-course-description {
 	width: 100%;
+	height: 100%;
+	font-family: 'Roboto', sans-serif;
+}
+
+.results-course-desc-container {
 	overflow-y: scroll;
 	height: 100%;
-	font-family: 'Roboto' sans-serif;
+	vertical-align: top;
+	width: calc(60% - 15px);
+	display: inline-block;
+	padding-left: 4px;
+	margin-right: 10px;
+}
+
+.desc-table {
+	width: calc(100% - 15px);
+	margin-left: 15px;
+}
+
+.desc-left {
+	color: #3399ff;
+	width: calc(50% - 5px);
+    text-align: right;
+    padding-right: 10px;
+    border-right: 1px solid #3399ff;
+    padding-bottom: 5px;
+}
+
+.desc-right {
+	width: calc(50% - 5px);
+	padding-left: 10px;
+	padding-bottom: 5px;
 }
 
 .data-visualization {
-	float: right;
+	vertical-align: top;
+	width: calc(40% - 5px);
+	display: inline-block;
 	margin-bottom: 10px;
+}
+
+canvas {
+	position: relative;
+    right: 50px;
+}
+
+.long-description {
+	font-style: italic;
+}
+
+.data-vis {
+	text-align: center;
 }
 
 .data-vis-label {
 	text-align: center;
 	margin-bottom: 10px;
-}
-
-.results-course-title {
-	font-family: 'Roboto Slab' serif;
 }
 
 .results-course-lec-course-desc:hover {
@@ -299,7 +369,12 @@
 }
 
 .results-course-lec-desc {
+	margin-top: 15px;
 	margin-bottom: 5px;
+	font-style: italic;
+	font-size: 105%;
+	position: relative:
+	left: -5px;
 }
 
 .results-course-lec-inst:hover {
@@ -362,7 +437,7 @@
 .reviews-overall-header {
 	margin-top: 45px;
 	margin-right: 20px;
-	font-family: 'Roboto Slab' serif;
+	font-family: 'Roboto Slab', serif;
 	text-align: right;
 }
 

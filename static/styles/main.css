@@ -41,6 +41,8 @@ body {
 .pure-menu-link:hover {
 	cursor: pointer;
 	background-color: #00a653;
+	color: #eeeeee;
+	text-decoration: none;
 }
 
 .pure-menu-link:focus {

@@ -7,8 +7,9 @@
 var React    = require('react');
 var ReactDOM = require('react-dom');
 
-var ajax = require('./util/ajax.js');
-var time = require('./util/time.js');
+var ajax  = require('./util/ajax.js');
+var parse = require('./util/parse.js');
+var time  = require('./util/time.js');
 
 var hours = [
 	"0800", "0900", "1000", "1100", "1200", "1300", "1400",
@@ -237,7 +238,7 @@ Calendar.Course = React.createClass({
 			<div className='calendar-course' style={this.style()} onMouseOver={over} onMouseOut={out}>
 				<div className='calendar-course-name'>{this.shorten(c.name)}</div>
 				<div className='calendar-course-type' hidden>{c.type}</div>
-				<div className='calendar-course-room'>{c.room}</div>
+				<div className='calendar-course-room'>{parse.normalCase(c.room)}</div>
 				<div className='calendar-course-remove' onClick={this.remove}>
 					X
 				</div>
