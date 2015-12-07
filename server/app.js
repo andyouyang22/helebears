@@ -30,13 +30,13 @@ var app = express();
 var calendar = google.calendar('v3');
 var CLIENT_ID = '753668621131-guo991t7lr2a7dasfpjjb3p6qvcvea5l.apps.googleusercontent.com';
 var CLIENT_SECRET = 'ND3UzEAAZICIhj7pxI5s-jNS';
-var REDIRECT_URL = 'http://localhost:3000/calendarauth';
+var REDIRECT_URL = 'http://protected-refuge-7067.herokuapp.com/calendarauth';
 
 var oauth2Client = new google.auth.OAuth2(CLIENT_ID, CLIENT_SECRET, REDIRECT_URL);
 var authed = false;
 
 app.get('/addtocalendar',function(req,res) {
-    var unique_id
+    var unique_id;
 
     if(req.query.state) {
         unique_id = req.query.state;
