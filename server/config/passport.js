@@ -2,15 +2,18 @@
  * Created by nirshtern on 10/31/15.
  */
 
-
 // load all the things we need
+var kickbox = require('kickbox').client('604455ed1e1afa7e76631c71e1151f114de11d62f255295543042ff8bf3a3d70').kickbox();
 var LocalStrategy   = require('passport-local').Strategy;
+var GoogleStrategy = require('passport-google-oauth').OAuth2Strategy;
 
 // load up the user model
 var user_model = require('../models/user_model');
 var Users = user_model.Users;
 var UserMethods = user_model.UserMethods;
 
+// loads the auth variables
+var configAuth = require('./auth');
 
 // expose this function to our app using module.exports
 module.exports = function(passport) {
@@ -56,22 +59,68 @@ module.exports = function(passport) {
             // User.findOne wont fire unless data is sent back
             process.nextTick(function() {
 
+                if(password.length < 1){
+                    return done(null, false, req.flash('signupMessage', 'Invalid Password.'));
+                }
+
+                if(email.indexOf("@berkeley.edu") < 0){
+                    return done(null, false, req.flash('signupMessage', 'Must be a @berkeley.edu email account'));
+                }
                 // find a user whose email is the same as the forms email
                 // we are checking to see if the user trying to login already exists
                 Users.findOne({ where:{email :  email }
-                             }).then(function(user) {
+                             }).then(function(localuser) {
 
                     // check to see if theres already a user with that email
-                    if (user) {
+                    if (localuser) {
                         return done(null, false, req.flash('signupMessage', 'That email is already taken.'));
                     } else {
 
-                        // if there is no user with that email
-                        // create the new user and add to the database
 
-                        var newUser = Users.build({email:email,password: UserMethods.generateHash(password)});
-                        newUser.save();
-                        return done(null,newUser);
+                        //  If we're logged in, we're connecting a new local account.
+                        if(req.user) {
+
+                            Users.findOne({ where:{id : req.user.dataValues.id }
+                            }).then(function(user) {
+                                kickbox.verify(email, function (err, response) {
+                                    if (response.body.result === 'deliverable') {
+                                        user.email = response.body.email;
+                                        user.password = UserMethods.generateHash(password);
+                                        user.save().then(function () {
+                                            //if (err)
+                                            //    throw err;
+                                            return done(null, user);
+                                        });
+                                    } else {
+                                        return done(null, false, req.flash('signupMessage', response.body.reason));
+                                    }
+                                });
+                            });
+
+                        } else {
+
+                            // if there is no user with that email
+                            // create the new user and add to the database
+
+                            kickbox.verify(email, function (err, response) {
+                                // Let's see some results
+                                console.log(response.body);
+                                if (response.body.result === 'deliverable') {
+                                    var newUser = Users.build({
+                                        email: response.body.email,
+                                        password: UserMethods.generateHash(password)
+                                    });
+                                    newUser.save();
+                                    return done(null, newUser);
+                                } else {
+                                    return done(null, false, req.flash('signupMessage', response.body.reason));
+                                }
+
+                            });
+
+
+                        }
+
                     }
 
                 });
@@ -115,4 +164,66 @@ module.exports = function(passport) {
 
         }));
 
+    // =========================================================================
+    // GOOGLE ==================================================================
+    // =========================================================================
+    passport.use(new GoogleStrategy({
+
+            clientID        : configAuth.googleAuth.clientID,
+            clientSecret    : configAuth.googleAuth.clientSecret,
+            callbackURL     : configAuth.googleAuth.callbackURL,
+            passReqToCallback : true
+
+        },
+        function(req, token, refreshToken, profile, done) {
+
+            // make the code asynchronous
+            // User.findOne won't fire until we have all our data back from Google
+
+            process.nextTick(function() {
+
+                if(!req.user) {
+
+                    // try to find the user based on their google id
+
+                    Users.findOne({
+                        where: {googleid: profile.id}
+                    }).then(function (user) {
+
+                        // if no user is found, return the message
+                        if (user) {
+                            return done(null, user); // loging user
+                        } else {
+                            var newUser = Users.build({
+                                googleid: profile.id,
+                                googletoken: token,
+                                googlename: profile.displayName,
+                                googleemail: profile.emails[0].value
+                                //email:''
+                            });
+                            newUser.save();
+                            return done(null, newUser);
+                        }
+
+                    });
+
+                } else {
+                    var user = req.user;
+
+                    user.googleid = profile.id;
+                    user.googletoken = token;
+                    user.googlename = profile.displayName;
+                    user.googleemail = profile.emails[0].value;
+
+                    user.save().then(function() {
+                        //if (err)
+                        //    throw err;
+                        return done(null,user);
+                    })
+                }
+
+            });
+
+        }));
 };
+

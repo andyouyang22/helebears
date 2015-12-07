@@ -51,7 +51,7 @@ var Search = React.createClass({
 		var dept = e.target.value;
 		this.props.store.setDepartment(dept);
 	},
-	handleSubmission: function(e) {
+	submit: function(e) {
 		e.preventDefault();
 		var that = this;
 		var formDOM = $(ReactDOM.findDOMNode(this));
@@ -59,12 +59,17 @@ var Search = React.createClass({
 			department_name : formDOM.find('.search-dept').val(),
 			name            : formDOM.find('.search-course').val(),
 		};
+		if (form.name == 'disabled') {
+			form.name = null;
+		}
 		clear_dict_key(null, form);
 		clear_dict_key('', form);
 		this.props.store.getResults(form);
 
 		// Remove the conflict indicator on the Calendar after moving on to new course
 		this.props.store.conflictOff();
+		// Unselect after a search to display new search results
+		this.props.store.unselect();
 	},
 	render: function() {
 		return (
@@ -73,7 +78,7 @@ var Search = React.createClass({
 					<legend className='search-title'>Search Courses</legend>
 					<Search.Dept depts={this.state.depts} onChange={this.handleDeptChange} />
 					<Search.Course courses={[]} courses={this.state.courses} />
-					<a className='pure-button search-submit' href='query.html' onClick={this.handleSubmission}>Search</a>
+					<a className='pure-button search-submit' href='query.html' onClick={this.submit}>Search</a>
 				</fieldset>
 			</div>
 		);
@@ -113,8 +118,8 @@ Search.Course = React.createClass({
 			);
 		});
 		return (
-			<select className='search-course'>
-				<option className='default-option' defaultValue='disabled' disabled>
+			<select className='search-course' defaultValue='disabled'>
+				<option className='default-option' value='disabled'>
 					Course
 				</option>
 				{courses}

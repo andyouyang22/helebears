@@ -17,6 +17,7 @@
     "react-dom": "^0.14.3"
   },
   "devDependencies": {
+    "babel-preset-react": "^6.1.18",
     "babelify": "^7.2.0"
   }
 }

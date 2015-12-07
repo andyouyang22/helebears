@@ -12,8 +12,9 @@
 
 var EventEmitter = require('events');
 
-var ajax = require('./util/ajax.js');
-var time = require('./util/time.js');
+var ajax  = require('./util/ajax.js');
+var time  = require('./util/time.js');
+var parse = require('./util/parse.js');
 
 /**
  * Note: course Objects should have the properties 'name', 'room', 'inst',
@@ -33,8 +34,14 @@ var Store = function() {
 	this._selected = null;
 	// Reviews for the course that is currently selected
 	this._reviews = null;
+	// Sections for the course that is currently selected
+	this._sections = null;
+	// True if the user currently has the review form open; false otherwise
+	this._reviewForm = false;
 	// Course currently causing a conflict during addCourse
 	this._conflict = null;
+	// Course that is currently highlighted
+	this._highlight = null;
 };
 
 // Inherit from the EventEmitter class
@@ -57,16 +64,21 @@ Store.prototype.setSchedule = function(schedule) {
 };
 
 Store.prototype.addCourse = function(course) {
+	// Turn conflict off in case it was previously on
+	this.conflictOff();
+	// Add one Calendar course for each day of lecture
+	var split = parse.split(course);
 	// Check for any conflicts
 	for (i = 0; i < this._schedule.length; i++) {
 		var c = this._schedule[i];
-		if (time.conflict(c, course)) {
-			console.log("These courses conflict " + c + ", " + course);
-			this.conflictOn(c);
-			return;
+		for (j = 0; j < split.length; j++) {
+			if (time.conflict(c, split[j])) {
+				this.conflictOn(c);
+				return;
+			}
 		}
 	}
-	this._schedule.push(course);
+	this._schedule = this._schedule.concat(split);
 	// Emit an event signaling the Calendar state has changed
 	this.emit('schedule');
 	ajax.postAddCourse(course);
@@ -78,10 +90,14 @@ Store.prototype.removeCourse = function(course) {
 	for (i = 0; i < this._schedule.length; i++) {
 		if (this._schedule[i].ccn == course.ccn) {
 			this._schedule.splice(i, 1);
+			i--;
 			removed = true;
 		}
 	}
 	if (removed) {
+		if (this._conflict != null && course.ccn == this._conflict.ccn) {
+			this.conflictOff();
+		}
 		// Emit an event signaling the Calendar state has changed
 		this.emit('schedule');
 		ajax.postRemoveCourse(course);
@@ -136,12 +152,27 @@ Store.prototype.getResults = function(form) {
 
 Store.prototype.setResults = function(results) {
 	this._results = results;
+	// Solve the 'MTWTF' problem (two Tuesdays)
+	this.tmp_solution();
 	// Emit an event signaling the Results state has changed
 	this.emit('results');
 };
 
 Store.prototype.results = function() {
 	return this._results;
+};
+
+// If a course is scheduled for all five days, automatically change the second
+// 'T' to an 'R' to distinguish Tues and Thurs. This problem should be resolved
+// lated in the backend.
+Store.prototype.tmp_solution = function() {
+	for (i = 0; i < this._results.length; i++) {
+		var c = this._results[i];
+		var t = time.parse(c.time);
+		if (t.days.length == 5) {
+			this._results[i].time = ["MTWRF", t.start, t.end].join(" ");
+		}
+	}
 };
 
 // ------------------------------- Selected ------------------------------- //
@@ -178,6 +209,32 @@ Store.prototype.reviews = function() {
 	return this._reviews;
 };
 
+// ------------------------------- ReviewForm ------------------------------- //
+
+Store.prototype.openReviewForm = function() {
+	this._reviewForm = true;
+	this.emit('reviewform');
+};
+
+Store.prototype.closeReviewForm = function() {
+	this._reviewForm = false;
+	this.emit('reviewform');
+};
+
+Store.prototype.postReview = function(review) {
+	var callback = function(review) {
+		if (this._selected != null && this._selected.inst == review.inst) {
+			this._reviews.unshift(review);
+			this.emit('reviews');
+		}
+	}.bind(this);
+	ajax.postReview(review, callback);
+};
+
+Store.prototype.formOpen = function() {
+	return this._reviewForm;
+};
+
 // ------------------------------- Conflict ------------------------------- //
 
 Store.prototype.conflictOn = function(course) {
@@ -192,6 +249,22 @@ Store.prototype.conflictOff = function() {
 
 Store.prototype.conflict = function() {
 	return this._conflict;
+};
+
+// ------------------------------- Conflict ------------------------------- //
+
+Store.prototype.highlight = function(course) {
+	this._highlight = course;
+	this.emit('highlight');
+};
+
+Store.prototype.unhighlight = function() {
+	this._highlight = null;
+	this.emit('highlight');
+};
+
+Store.prototype.highlighted = function() {
+	return this._highlight;
 };
 
 // ------------------------------- Listeners ------------------------------- //
@@ -244,6 +317,14 @@ Store.prototype.addReviewsListener = function(callback) {
 };
 
 /**
+ * Add a listener for the review-form-change event. This event is emitted when the
+ * ReviewForm is either opened or closed, and when the result becomes unselected.
+ */
+Store.prototype.addReviewFormListener = function(callback) {
+	this.on('reviewform', callback);
+};
+
+/**
  * Add a listener for the conflict event. Whenever a conflict occurs, this event
  * will be emitted, and this._conflict will be set to the course in this_schedule
  * that causes the conflict. After the user submits a new search, this._conflict
@@ -254,6 +335,14 @@ Store.prototype.addReviewsListener = function(callback) {
  */
 Store.prototype.addConflictListener = function(callback) {
 	this.on('conflict', callback);
+};
+
+/**
+ * Add a listener for the highlight event. When a user is hovering over a course,
+ * all related lectures (same CCN) should be highlighted.
+ */
+Store.prototype.addHighlightListener = function(callback) {
+	this.on('highlight', callback);
 };
 
 module.exports = Store;

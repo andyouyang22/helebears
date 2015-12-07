@@ -29,7 +29,7 @@ describe('============== Users ==============', function() {
         })
     });
     it('Attempt to create a course with an invalid key', function (done) {
-        Users.create({useron: "PleaseError"}).then(function (result) {
+        Users.create({id: "PleaseError"}).then(function (result) {
             throw "Users did not properly error out"
             done()
         }).error(function (err) {
@@ -83,16 +83,6 @@ describe('Asynchronous Users Testing', function() {
         });
     });
 
-    describe('Add Two Users with same email', function() {
-        it('Should not allow to add existing email', function(done) {
-            Users.create({ username: 'TestUser', email: 'test2@email.com', password: 'password' })
-                .then(function(user){
-                done(err,'Allowed storing two user with same primary key email.')
-            }).catch(function(error) {
-               done();
-            })
-        });
-    });
 
     describe('UserMethods validPassword works ', function() {
         it('It should reflect equlity', function(done) {

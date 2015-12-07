@@ -7,10 +7,11 @@ var React    = require('react');
 var ReactDOM = require('react-dom');
 var PieChart = require("react-chartjs").Pie;
 
-var Reviews = require('./reviews.js');
+var Reviews  = require('./reviews.js');
 
-var ajax = require('./util/ajax.js');
-var time = require('./util/time.js');
+var ajax  = require('./util/ajax.js');
+var parse = require('./util/parse.js');
+var time  = require('./util/time.js');
 
 var Results = React.createClass({
 	componentDidMount: function() {
@@ -54,7 +55,7 @@ var Results = React.createClass({
 		if (this.state.selected != null) {
 			var s = this.state.selected;
 			results.push(
-				<Results.Course store={that.props.store} key={s.ccn} course={s} selected />
+				<Results.Course store={that.props.store} key={s.ccn} course={s} selected={this.state.selected} />
 			);
 		}
 		// Otherwise, generate all Results immediately after a search
@@ -75,37 +76,40 @@ var Results = React.createClass({
 
 Results.Course = React.createClass({
 	componentDidMount: function() {
-		var that = this;
-		var reviewsCallback = function() {
-			var inst = that.props.course.inst;
-			var reviews = that.props.store.reviews();
-			that.setState({
-				infoContent : [<Reviews key="420" inst={inst} reviews={reviews} />],
-			});
-		}
-		this.props.store.addReviewsListener(reviewsCallback);
+		this.props.store.addReviewsListener(this.showReviews);
 	},
 	getInitialState: function() {
 		return {
 			infoContent : [],
 		};
 	},
-	showReview: function(name, ratings) {
-		var review = {
-			name    : name,
-			ratings : ratings,
-		}
+	showDescription: function() {
+		var store = this.props.store;
+		var course = this.props.course;
+		store.select(course);
 		this.setState({
-			review : review,
+			infoContent : <Results.Course.Description course={course} />
 		});
-		var container = $(ReactDOM.findDOMNode(this)).find('.review-container');
-		container.slideDown();
 	},
-	toggleSections: function() {
-		$(ReactDOM.findDOMNode(this)).find('.results-course-sections').slideToggle();
+	showReviews: function() {
+		var store = this.props.store;
+		var course = this.props.course;
+		if (store.selected().ccn == course.ccn) {
+			var inst = course.inst;
+			var ccn = course.ccn;
+			var reviews = store.reviews();
+			this.setState({
+				infoContent : <Reviews store={store} inst={inst} reviews={reviews} />,
+			});
+		}
 	},
-	toggleDescription: function () {
-		$(ReactDOM.findDOMNode(this)).find('.results-course-description').slideToggle();
+	showSections: function() {
+		var store = this.props.store;
+		var course = this.props.course;
+		store.select(course);
+		this.setState({
+			infoContent : <Results.Course.Sections sections={course.sections} />
+		});
 	},
 	toggleVisual: function () {
 		$(ReactDOM.findDOMNode(this)).find('.data-visualization').slideToggle();
@@ -121,7 +125,7 @@ Results.Course = React.createClass({
 		}
 		return (
 			<div className='results-course'>
-				<Results.Course.Lecture store={this.props.store} course={this.props.course} selected={this.props.selected} toggleDescription={this.toggleDescription} toggleVisual={this.toggleVisual} toggleSections={this.toggleSections} />
+				<Results.Course.Lecture store={this.props.store} course={this.props.course} selected={this.props.selected} sections={this.showSections} desc={this.showDescription} toggleVisual={this.toggleVisual} />
 				{info}
 			</div>
 		);
@@ -152,28 +156,38 @@ Results.Course.Lecture = React.createClass({
 	back: function() {
 		this.props.store.unselect();
 	},
+	description: function() {
+		this.select();
+		this.props.desc()
+	},
 	sections: function() {
+		this.select();
+		this.props.sections();
 		var course = this.props.course;
-		this.props.store.select(course);
 	},
 	reviews: function() {
+		this.select();
 		var inst = this.props.course.inst;
 		this.props.store.getReviews(inst);
-		this.select();
 	},
 	select: function() {
 		var course = this.props.course;
 		this.props.store.select(course);
-	},
-	unselect: function() {
-		return
 	},
 	render: function() {
 		var back = [];
 		if (this.props.selected) {
 			back.push(
 				<div className='results-course-lecture-back' key="420" onClick={this.back}>
-					Return to results
+					{"Return to results"}
+				</div>
+			);
+		}
+		var showSections = [];
+		if (!this.props.selected) {
+			showSections = (
+				<div className='results-course-show-sections' onClick={this.sections}>
+					{"Show sections"}
 				</div>
 			);
 		}
@@ -183,29 +197,13 @@ Results.Course.Lecture = React.createClass({
 		return (
 			<div className='results-course-lecture'>
 				{back}
-				<div className='results-course-lec-name' onClick={this.sections}>{c.name}</div>
-				<div className='results-course-data-visualization' onClick={this.props.toggleVisual}>Recommended With</div>
-				<div className='results-course-lec-course-desc' onClick={this.props.toggleDescription}>Course Info</div>
+				<div className='results-course-lec-name' onClick={this.description}>{c.name}</div>
+				{showSections}
 				<div className='results-course-lec-desc'>{c.desc}</div>
-				<div className='results-course-lec-inst' onClick={this.reviews}>{c.inst}</div>
+				<div className='results-course-lec-inst' onClick={this.reviews}>{parse.normalCase(c.inst)}</div>
 				<div className='results-course-lec-time'>{t}</div>
-				<div className='results-course-description' style={{display: 'none'}}>
-					<div className='results-course-lecture-add' id='close-button' onClick={this.props.toggleDescription}>Close</div>
-					<div className='results-course-title ci-metadata'>{c.name}</div>
-					<div className='results-course-time ci-metadata'>{t}</div>
-					<div className='results-course-professor ci-metadata'>{c.inst}</div>
-					<div className='results-course-enrolled ci-metadata'>Enrolled: {c.enrolled}</div>
-					<div className='results-course-limit ci-metadata'>Limit: {c.limit}</div>
-					<div className='results-course-waitlist ci-metadata'>Waitlist: {c.limit}</div>
-					<div className='results-course-ccn ci-metadata'>CCN: {c.ccn}</div>
-					<div className='ci-metadata' id='locationid'> Location: {c.room}</div>
-					<p className='long-description ci-metadata'>{c.info}</p>
-				</div>
 				<div className='results-course-lecture-add' onClick={this.add}>
-					Add Course
-				</div>
-				<div className='data-visualization'>
-					<Results.Course.Lecture.RecommendationChart recommendation={this.props.recommendation}/>
+					{"Add Course"}
 				</div>
 			</div>
 		);
@@ -214,30 +212,35 @@ Results.Course.Lecture = React.createClass({
 
 Results.Course.Lecture.RecommendationChart = React.createClass({
 	render: function() {
-		var temp = this.props.recommendation;
-		if (temp != null) {
-			var recc_courses = Object.keys(temp);
-			var chartData = [];
-			for (var i = 0; i < recc_courses.length; i++) {
-				tempDict = {};
-				tempDict['label'] = recc_courses[i];
-				tempDict['value'] = temp[recc_courses[i]];
-				var letters = '0123456789ABCDEF'.split('');
-	    		var color = '#';
-				for (var j = 0; j < 6; j++ ) {
-	        		color += letters[Math.floor(Math.random() * 16)];
-				}
-				tempDict['color'] = color;
-				chartData.push(tempDict);
-			}
+		var rec = this.props.recommendation;
+		if (rec == null) {
 			return (
-				<PieChart data={chartData} />
-			);
-		} else {
-			return (
-				<div>Be the first to take this course!</div>
+				<div></div>
 			);
 		}
+
+		var recc_courses = Object.keys(rec);
+		var chartData = [];
+		for (var i = 0; i < recc_courses.length; i++) {
+			tempDict = {};
+			tempDict['label'] = recc_courses[i];
+			tempDict['value'] = rec[recc_courses[i]];
+			var letters = '0123456789ABCDEF'.split('');
+    		var color = '#';
+			for (var j = 0; j < 6; j++ ) {
+        		color += letters[Math.floor(Math.random() * 16)];
+			}
+			tempDict['color'] = color;
+			chartData.push(tempDict);
+		}
+		return (
+			<div className='data-vis'>
+				<div className='data-vis-label'>
+					{"Other people took..."}
+				</div>
+				<PieChart data={chartData} />
+			</div>
+		);
 	}
 });
 
@@ -266,8 +269,17 @@ Results.Course.Sections = React.createClass({
 					sections.fri.push(<Results.Course.Sections.Section key={sec.ccn} time={sec.time}/>); break;
 			}
 		}
+		for (d in sections) {
+			if (sections[d].length == 0) {
+				sections[d] = (
+					<div className='results-course-sections-none'>
+						{"None"}
+					</div>
+				);
+			}
+		}
 		return (
-			<div className='results-course-sections' style={{display: 'none'}}>
+			<div className='results-course-sections'>
 				<div className='results-course-sections-col'>
 					<div className='results-course-sections-col-header'>Mon</div>
 					{sections.mon}
@@ -303,6 +315,32 @@ Results.Course.Sections.Section = React.createClass({
 			</div>
 		);
 	}
+});
+
+Results.Course.Description = React.createClass({
+	render: function() {
+		var c = this.props.course;
+		var t = time.parse(c.time);
+		t = t.days + " " + time.display(t.start) + " - " + time.display(t.end);
+		return (
+			<div className='results-course-description'>
+				<div className='results-course-title ci-metadata'>
+					{"Course Description"}
+				</div>
+				<div className='data-visualization'>
+					<Results.Course.Lecture.RecommendationChart recommendation={c.rec}/>
+				</div>
+				<div className='results-course-time ci-metadata'>{t}</div>
+				<div className='results-course-professor ci-metadata'>{c.inst}</div>
+				<div className='results-course-enrolled ci-metadata'>Enrolled: {c.enrolled}</div>
+				<div className='results-course-limit ci-metadata'>Limit: {c.limit}</div>
+				<div className='results-course-waitlist ci-metadata'>Waitlist: {c.limit}</div>
+				<div className='results-course-ccn ci-metadata'>CCN: {c.ccn}</div>
+				<div className='ci-metadata' id='locationid'> Location: {c.room}</div>
+				<p className='long-description ci-metadata'>{c.info}</p>
+			</div>
+		);
+	},
 });
 
 module.exports = Results

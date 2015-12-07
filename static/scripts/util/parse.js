@@ -5,15 +5,64 @@
 
 var time = require('./time.js');
 
-var generateCCN = function(ccn) {
-	ccn = ccn + ""
-	for (var i = ccn.length; i < 5; i++) {
-		ccn = "0" + ccn;
-	}
-	return ccn;
-};
-
 module.exports = {
+	courses: function(data) {
+		var courses = [];
+		for (var i = 0; i < data.results.length; i++) {
+			courses.push(data.results[i].name);
+		}
+		return courses;
+	},
+	departments: function(data) {
+		var depts = [];
+		for (var i = 0; i < data.results.length; i++) {
+			depts.push(data.results[i].department_name);
+		}
+		return depts;
+	},
+	normalCase: function(name) {
+		var tokens = name.split(" ");
+		for (i = 0; i < tokens.length; i++) {
+			var t = tokens[i];
+			if (t.length > 1) {
+				t = t[0].toUpperCase() + t.slice(1).toLowerCase();
+			}
+			else {
+				t = t.toUpperCase() + "."
+			}
+			tokens[i] = t;
+		}
+		return tokens.join(" ");
+	},
+	results: function(data) {
+		var that = this;
+		var results = [];
+		data.results.forEach(function(lec) {
+			var course = {
+				name  : lec.department_name + " " + lec.name,
+				desc  : lec.title,
+				inst  : lec.professor_name,
+				room  : lec.location,
+				time  : lec.time,
+				ccn   : lec.ccn,
+				units : lec.units,
+				limit : lec.limit,
+				rec   : lec.recommendation,
+				info  : lec.course_description,
+				enrolled : lec.enrolled,
+				waitlist : lec.waitlist,
+				sections : [],
+			};
+			lec.sections.forEach(function(sec) {
+				course.sections.push({
+					time : time.convert(sec.time),
+					ccn  : sec.ccn,
+				});
+			});
+			results.push(course);
+		});
+		return results;
+	},
 	schedule: function(data) {
 		if (data.status == -1) {
 			console.log("Failed to load user's schedule");
@@ -35,46 +84,26 @@ module.exports = {
 		});
 		return courses;
 	},
-	departments: function(data) {
-		var depts = [];
-		for (var i = 0; i < data.results.length; i++) {
-			depts.push(data.results[i].department_name);
-		}
-		return depts;
-	},
-	courses: function(data) {
-		var courses = [];
-		for (var i = 0; i < data.results.length; i++) {
-			courses.push(data.results[i].name);
-		}
-		return courses;
-	},
-	results: function(data) {
-		var results = [];
-		data.results.forEach(function(lec) {
-			var course = {
-				name  : lec.department_name + " " + lec.name,
-				desc  : lec.title,
-				inst  : lec.professor_name,
-				room  : lec.location,
-				time  : time.convert(lec.time),
-				ccn   : generateCCN(lec.ccn),
-				units : lec.units,
-				limit : lec.limit,
-				rec   : lec.recommendation,
-				info  : lec.course_description,
-				enrolled : lec.enrolled,
-				waitlist : lec.waitlist,
+	split: function(course) {
+		var split = [];
+		var t = time.parse(course.time);
+		for (i = 0; i < t.days.length; i++) {
+			var session_time = t.days[i] + " " + t.start + " " + t.end;
+			split.push({
+				ccn   : course.ccn,
+				desc  : course.desc,
+				info  : course.info,
+				limit : course.limit,
+				name  : course.name,
+				rec   : course.rec,
+				room  : course.room,
+				time  : session_time,
+				units : course.units,
+				enrolled : course.enrolled,
+				waitlist : course.waitlist,
 				sections : [],
-			};
-			lec.sections.forEach(function(sec) {
-				course.sections.push({
-					time : time.convert(sec.time),
-					ccn  : generateCCN(sec.ccn),
-				});
 			});
-			results.push(course);
-		});
-		return results;
-	},
+		}
+		return split;
+	}
 };

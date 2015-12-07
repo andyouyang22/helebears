@@ -1,8 +1,9 @@
 var parse = require('./parse.js');
 var time  = require('./time.js');
 
-//var apiUrl = 'https://protected-refuge-7067.herokuapp.com';
+// var apiUrl = 'https://protected-refuge-7067.herokuapp.com';
 var apiUrl = '';
+
 var queryify = function(query) {
 	query = JSON.stringify(query);
 	return query
@@ -110,7 +111,6 @@ module.exports = {
 	getResults: function(form, callback) {
 		var request = queryify(form);
 		var onSuccess = function(data) {
-			//console.log(JSON.stringify(data));
 			if (data.status == -1) {
 				console.log("Failed to load search results; status = -1");
 				console.log("Errors: " + data.errors);
@@ -123,6 +123,29 @@ module.exports = {
 			console.error("Failed to load search results");
 		};
 		this.get('/api/courses?' + request, onSuccess, onFailure);
+	},
+
+	/**
+	 * Make a GET request for search results for the given form info.
+	 * @param {string}   inst: Name of the professor
+	 * @param {function} callback: Takes in an array of results and performs an
+	 *   action upon it.
+	 */
+	getReviews: function(inst, callback) {
+		var request = queryify(inst);
+		var onSuccess = function(data) {
+			if (data.status == -1) {
+				console.log("Failed to load professor reviews; status = -1");
+				console.log("Errors: " + data.errors);
+				return;
+			}
+			var reviews = data.results;
+			callback(reviews);
+		};
+		var onFailure = function() {
+			console.log("Failed to load professor reviews");
+		};
+		this.get('/api/reviews?professor_name=' + inst, onSuccess, onFailure);
 	},
 
 	/**
@@ -140,6 +163,7 @@ module.exports = {
 			course_time     : course.time,
 			section_time    : course.time,
 			lab_time        : course.time,
+			location        : course.room,
 			ccn             : course.ccn
 		};
 		this.post('/api/schedules/add', data, onSuccess, onFailure);
@@ -164,5 +188,36 @@ module.exports = {
 			name_and_number : course.name,
 		};
 		this.post('/api/schedules/remove', data, onSuccess, onFailure);
+	},
+
+	/**
+	 * Make a POST request to remove the course with the given info.
+	 * @param {Object} review The review ratings and text
+	 * @param {string} inst The instructor about which the review was written
+	 * @param {function} callback Function that takes in the newly-created
+	 *   review and performs some action on it
+	 */
+	postReview: function(review, callback) {
+		var onSuccess = function(data) {
+			if (data == -1) {
+				console.log("Failed to record review in backend");
+				console.log("Errors: " + data.errors);
+			} else {
+				console.log("Successfully recorded review");
+			}
+		};
+		var onFailure = function() {
+			console.log("Failed to record review in backend");
+		};
+		var data = {
+			rating_1 : review.rating_1,
+			rating_2 : review.rating_2,
+			rating_3 : review.rating_3,
+			review   : review.review,
+			professor_name : review.inst,
+		};
+		this.post('/api/reviews/create', data, onSuccess, onFailure);
+
+		callback(review);
 	},
 };

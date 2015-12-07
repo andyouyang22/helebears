@@ -125,30 +125,32 @@ var courseModel = {
 
     aggregateRecommendations: function(courseToAdd,res) {
         Schedules.create(courseToAdd).then(function() {
-            res.json({status:1, "results": 'good'})
+            res.json({status:1, "results": 'success'})
 
     }).catch(function(err) {
             res.json({status:-1, errors:["Unable to correctly retrieve all departments",err]})
         });
 
         sequence
-            .then(function (next) {
+            .then(function(next) {
                 next(null, courseToAdd)
             })
             .then(function (next, err, courseToAdd) {
-                //console.log("two");
                 Schedules.findAll({where: {"unique_id": courseToAdd.unique_id}}).then(
                     function (results) {
-                        stripped_results = []
+                        coursesCCNs = [];
+                        coursesName = [];
+
+                        coursesCCNs.push(courseToAdd.ccn);
                         for (i = 0; i < results.length; i++) {
-                            stripped_results.push(results[i].dataValues.ccn)
+                            coursesCCNs.push(results[i].dataValues.ccn);
+                            coursesName.push(results[i].dataValues.name_and_number);
                         }
-                        next(null, stripped_results, courseToAdd.name_and_number);
+                        next(null, coursesCCNs,coursesName, courseToAdd);
                     })
 
             })
-            .then(function (next, err, courseCCNsToUpdate, courseToIncrement) {
-                //console.log("three");
+            .then(function (next, err, courseCCNsToUpdate, coursesName, courseToAdd) {
                 Courses.findAll({
                     where: {
                         ccn: {
@@ -156,32 +158,58 @@ var courseModel = {
                         }
                     }
                 }).then(function (courses) {
-                    next(null, courses, courseToIncrement);
+                    next(null, courses, courseToAdd, coursesName);
                 });
 
             })
-            .then(function (next, err, courses, courseToIncrement) {
-                //console.log("four");
-
+            .then(function (next, err, courses, courseToAdd, coursesName) {
+                var courseToIncrement = courseToAdd.name_and_number;
+                var newAddedCourse = [];
                 for (var i = 0; i < courses.length; i++) {
                     var course = courses[i];
-                    if (course.recommendation === null || course.recommendation === undefined) {
-                        course.recommendation = {};
-                    }
+                    if(course.ccn !== courseToAdd.ccn) {
+                        if (course.recommendation === null || course.recommendation === undefined) {
+                            course.recommendation = {};
+                        }
 
-                    var rec = course.recommendation;
+                        var rec = course.recommendation;
 
-                    if (rec.hasOwnProperty(courseToIncrement)) {
-                        rec[courseToIncrement] += 1;
+                        if (rec.hasOwnProperty(courseToIncrement)) {
+                            rec[courseToIncrement] += 1;
+                        } else {
+                            rec[courseToIncrement] = 1;
+                        }
+                        course.update({
+                            recommendation: rec
+                        })
                     } else {
-                        rec[courseToIncrement] = 1;
+                        newAddedCourse.push(course);
                     }
-                    course.update({
+                }
+                next(null,coursesName,newAddedCourse);
+            }).then(function(next,err,coursesName,newAddedCourseArray) {
+                var newAddedCourse = newAddedCourseArray[0];
+                for(var i=0; i<coursesName.length;i++){
+                    var courseName = coursesName[i];
+                    if (newAddedCourse.recommendation === null || newAddedCourse.recommendation === undefined) {
+                        newAddedCourse.recommendation = {};
+                    }
+
+                    var rec = newAddedCourse.recommendation;
+
+                    if (rec.hasOwnProperty(courseName)) {
+                        rec[courseName] += 1;
+                    } else {
+                        rec[courseName] = 1;
+                    }
+                    newAddedCourse.update({
                         recommendation: rec
                     })
+
                 }
+
                 next();
-            })
+        })
     }
 
 };

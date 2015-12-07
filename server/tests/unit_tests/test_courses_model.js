@@ -1,8 +1,14 @@
 var assert = require('assert');
 var course_model = require("../../models/course_models")
+var departments_model = require("../../models/departments_model");
+var professors_model = require("../../models/professors_model");
+var schedule_model = require("../../models/schedule_model");
+var courseModel = course_model.courseModel;
+var Courses = course_model.Courses;
+var Departments = departments_model.Departments;
+var Professors = professors_model.Professors;
+var Schedules = schedule_model.Schedules;
 
-var courseModel = course_model.courseModel
-var Courses = course_model.Courses
 
 
 
@@ -51,4 +57,6 @@ describe('============== Courses ==============', function() {
   		courseModel.controller(res, {})
   		done()
   	})
-})
+});
+
+
