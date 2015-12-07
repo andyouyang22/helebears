@@ -24594,6 +24594,21 @@ module.exports = {
 var time = require('./time.js');
 
 module.exports = {
+	ccn: function (c) {
+		if (c >= 10000) {
+			return "" + c;
+		}
+		if (c >= 1000) {
+			return "0" + c;
+		}
+		if (c >= 100) {
+			return "00" + c;
+		}
+		if (c >= 10) {
+			return "000" + c;
+		}
+		return "0000" + c;
+	},
 	courses: function (data) {
 		var courses = [];
 		for (var i = 0; i < data.results.length; i++) {
@@ -24631,7 +24646,7 @@ module.exports = {
 				inst: lec.professor_name,
 				room: lec.location,
 				time: lec.time,
-				ccn: lec.ccn,
+				ccn: that.ccn(lec.ccn),
 				units: lec.units,
 				limit: lec.limit,
 				rec: lec.recommendation,
