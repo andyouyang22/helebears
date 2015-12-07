@@ -146,7 +146,7 @@ app.get('/addtocalendar',function(req,res) {
                 next(null);
             }
         }).then(function(next,err) {
-            res.redirect('/');
+            res.redirect('/homepage');
             //sleep(2);
             open('https://calendar.google.com/calendar');
             next();
