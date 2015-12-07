@@ -2,7 +2,7 @@ var express = require('express');
 var router = express.Router();
 
 var schedules_model = require("../models/schedule_model")
-var scheduleModel = schedules_model.scheduleModel
+var scheduleModel = schedules_model.scheduleModel;
 var course_models = require("../models/course_models")
 var courseModel = course_models.courseModel;
 
