@@ -12,6 +12,16 @@
 	width: calc(50% - 60px);
 }
 
+/* Menu */
+.menu-slogan {
+    position: absolute;
+    font-family: 'Roboto', sans-serif;
+    color: #eeeeee;
+    top: 19px;
+    left: 160px;
+    font-size: 80%;
+}
+
 /* Calendar */
 
 .calendar {

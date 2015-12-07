@@ -22864,11 +22864,16 @@ var ajax = require('./util/ajax.js');
 var Menu = React.createClass({
 	displayName: 'Menu',
 
+	slogan: function () {
+		menuDOM = $(ReactDOM.findDOMNode(this));
+		menuDOM.find('.menu-slogan').animate({ width: 'toggle' }, "100%");
+	},
 	render: function () {
 		return React.createElement(
 			'header',
 			null,
-			React.createElement(Menu.Logo, null),
+			React.createElement(Menu.Logo, { slogan: this.slogan }),
+			React.createElement(Menu.Slogan, null),
 			React.createElement(Menu.Buttons, null)
 		);
 	}
@@ -22880,8 +22885,20 @@ Menu.Logo = React.createClass({
 	render: function () {
 		return React.createElement(
 			'a',
-			{ className: 'pure-menu-heading pure-menu-link' },
+			{ className: 'pure-menu-heading pure-menu-link', onClick: this.props.slogan },
 			'HeleBears'
+		);
+	}
+});
+
+Menu.Slogan = React.createClass({
+	displayName: 'Slogan',
+
+	render: function () {
+		return React.createElement(
+			'div',
+			{ className: 'menu-slogan', style: { display: 'none' } },
+			'Tell your friends'
 		);
 	}
 });

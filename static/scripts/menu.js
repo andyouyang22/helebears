@@ -8,10 +8,15 @@ var ReactDOM = require('react-dom');
 var ajax = require('./util/ajax.js');
 
 var Menu = React.createClass({
+	slogan: function() {
+		menuDOM = $(ReactDOM.findDOMNode(this));
+		menuDOM.find('.menu-slogan').animate({width:'toggle'}, "100%");
+	},
 	render: function() {
 		return (
 			<header>
-				<Menu.Logo />
+				<Menu.Logo slogan={this.slogan} />
+				<Menu.Slogan />
 				<Menu.Buttons />
 			</header>
 		);
@@ -21,9 +26,17 @@ var Menu = React.createClass({
 Menu.Logo = React.createClass({
 	render: function() {
 		return (
-			<a className='pure-menu-heading pure-menu-link'>HeleBears</a>
+			<a className='pure-menu-heading pure-menu-link' onClick={this.props.slogan}>HeleBears</a>
 		);
 	}
+});
+
+Menu.Slogan = React.createClass({
+	render: function() {
+		return (
+			<div className='menu-slogan' style={{display:'none'}}>Tell your friends</div>
+		);
+	},
 });
 
 Menu.Buttons = React.createClass({
