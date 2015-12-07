@@ -39,7 +39,12 @@
 <tr>
 	<td>select</td>
 	<td>css=select.search-dept</td>
-	<td>label=Celtic Studies</td>
+	<td>label=Bioengineering</td>
+</tr>
+<tr>
+	<td>select</td>
+	<td>css=select.search-dept</td>
+	<td>label=Architecture</td>
 </tr>
 <tr>
 	<td>click</td>
@@ -53,17 +58,27 @@
 </tr>
 <tr>
 	<td>click</td>
-	<td>//div[@id='container-right']/div/div[2]/div[2]/div/div[6]</td>
-	<td></td>
-</tr>
-<tr>
-	<td>click</td>
 	<td>//div[@id='container-right']/div/div[2]/div[3]/div/div[6]</td>
 	<td></td>
 </tr>
 <tr>
 	<td>click</td>
 	<td>//div[@id='container-right']/div/div[2]/div[4]/div/div[6]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>select</td>
+	<td>css=select.search-dept</td>
+	<td>label=Buddhist Studies</td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>link=Search</td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>//div[@id='container-right']/div/div[2]/div[3]/div/div[6]</td>
 	<td></td>
 </tr>
 <tr>
@@ -94,7 +109,7 @@
 <tr>
 	<td>select</td>
 	<td>css=select.search-dept</td>
-	<td>label=Celtic Studies</td>
+	<td>label=Buddhist Studies</td>
 </tr>
 <tr>
 	<td>click</td>
@@ -103,17 +118,12 @@
 </tr>
 <tr>
 	<td>click</td>
-	<td>//div[@id='container-right']/div/div[2]/div[4]/div/div[6]</td>
+	<td>//div[@id='container-right']/div/div[2]/div[3]/div/div[6]</td>
 	<td></td>
 </tr>
 <tr>
 	<td>click</td>
-	<td>//div[@id='container-left']/div/div[3]/div[2]/div[2]/div/div[4]</td>
-	<td></td>
-</tr>
-<tr>
-	<td>click</td>
-	<td>//div[@id='container-left']/div/div[3]/div/div[2]/div[3]/div[4]</td>
+	<td>//div[@id='container-right']/div/div[2]/div[2]/div/div[6]</td>
 	<td></td>
 </tr>
 <tr>
@@ -123,7 +133,17 @@
 </tr>
 <tr>
 	<td>click</td>
-	<td>//div[@id='container-left']/div/div[3]/div[3]/div[2]/div[2]/div[4]</td>
+	<td>//div[@id='container-left']/div/div[3]/div[4]/div[2]/div[2]/div[4]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>//div[@id='container-left']/div/div[3]/div[4]/div[2]/div/div[4]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>//div[@id='container-left']/div/div[3]/div[3]/div[2]/div/div[4]</td>
 	<td></td>
 </tr>
 <tr>
@@ -131,7 +151,6 @@
 	<td>link=Log Out</td>
 	<td></td>
 </tr>
-
 </tbody></table>
 </body>
 </html>
