@@ -59,6 +59,11 @@ var Search = React.createClass({
 			department_name : formDOM.find('.search-dept').val(),
 			name            : formDOM.find('.search-course').val(),
 		};
+		// Don't allow department name to be null; otherwise the search query will
+		// return the entire table of courses
+		if (form.department_name == null) {
+			return;
+		}
 		if (form.name == 'disabled') {
 			form.name = null;
 		}
