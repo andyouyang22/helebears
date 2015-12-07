@@ -22559,6 +22559,7 @@ var React = require('react');
 var ReactDOM = require('react-dom');
 
 var ajax = require('./util/ajax.js');
+var parse = require('./util/parse.js');
 var time = require('./util/time.js');
 
 var hours = ["0800", "0900", "1000", "1100", "1200", "1300", "1400", "1500", "1600", "1700", "1800", "1900", "2000", "2100"];
@@ -22809,7 +22810,7 @@ Calendar.Course = React.createClass({
 			React.createElement(
 				'div',
 				{ className: 'calendar-course-room' },
-				c.room
+				parse.normalCase(c.room)
 			),
 			React.createElement(
 				'div',
@@ -22822,7 +22823,7 @@ Calendar.Course = React.createClass({
 
 module.exports = Calendar;
 
-},{"./util/ajax.js":176,"./util/time.js":178,"react":166,"react-dom":37}],168:[function(require,module,exports){
+},{"./util/ajax.js":176,"./util/parse.js":177,"./util/time.js":178,"react":166,"react-dom":37}],168:[function(require,module,exports){
 
 /**
  * The central script that renders the React components of index.html and stores
@@ -23388,7 +23389,7 @@ Results.Course.Description = React.createClass({
 								React.createElement(
 									'td',
 									{ className: 'desc-right' },
-									c.room
+									parse.normalCase(c.room)
 								)
 							),
 							React.createElement(

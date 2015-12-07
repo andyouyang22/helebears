@@ -341,7 +341,7 @@ Results.Course.Description = React.createClass({
 							</tr>
 							<tr>
 								<td className='desc-left'>Location</td>
-								<td className='desc-right'>{c.room}</td>
+								<td className='desc-right'>{parse.normalCase(c.room)}</td>
 							</tr>
 							<tr>
 								<td className='desc-left'>Enrolled</td>
