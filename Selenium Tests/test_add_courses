@@ -4,12 +4,12 @@
 <head profile="http://selenium-ide.openqa.org/profiles/test-case">
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 <link rel="selenium.base" href="http://protected-refuge-7067.herokuapp.com/" />
-<title>query_all_courses</title>
+<title>test_add_courses</title>
 </head>
 <body>
 <table cellpadding="1" cellspacing="1" border="1">
 <thead>
-<tr><td rowspan="1" colspan="3">query_all_courses</td></tr>
+<tr><td rowspan="1" colspan="3">test_add_courses</td></tr>
 </thead><tbody>
 <tr>
 	<td>open</td>
@@ -18,13 +18,13 @@
 </tr>
 <tr>
 	<td>clickAndWait</td>
-	<td>link=Login</td>
+	<td>link=Sign in</td>
 	<td></td>
 </tr>
 <tr>
 	<td>type</td>
 	<td>name=email</td>
-	<td>test1@berkeley.edu</td>
+	<td>ryankashi@berkeley.edu</td>
 </tr>
 <tr>
 	<td>type</td>
@@ -37,15 +37,36 @@
 	<td></td>
 </tr>
 <tr>
+	<td>select</td>
+	<td>css=select.search-dept</td>
+	<td>label=Aerospace Studies</td>
+</tr>
+<tr>
 	<td>click</td>
 	<td>link=Search</td>
 	<td></td>
 </tr>
 <tr>
-	<td>clickAndWait</td>
-	<td>link=Log Out</td>
+	<td>click</td>
+	<td>css=div.results-course-lecture-add</td>
 	<td></td>
 </tr>
+<tr>
+	<td>click</td>
+	<td>//div[@id='container-right']/div/div[2]/div[2]/div/div[6]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>//div[@id='container-left']/div/div[3]/div[3]/div[2]/div[2]/div[4]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>css=div.calendar-course-remove</td>
+	<td></td>
+</tr>
+
 </tbody></table>
 </body>
 </html>
