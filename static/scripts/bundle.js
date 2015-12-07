@@ -24038,7 +24038,13 @@ Store.prototype.getSchedule = function () {
 };
 
 Store.prototype.setSchedule = function (schedule) {
-	this._schedule = schedule;
+	// Split each course, creating a copy of the course for each day of lecture
+	var splits = [];
+	for (i = 0; i < schedule.length; i++) {
+		var c = schedule[i];
+		splits = splits.concat(parse.split(c));
+	}
+	this._schedule = splits;
 	// Emit an event signaling the Calendar state has changed
 	this.emit('schedule');
 };
@@ -24635,8 +24641,8 @@ module.exports = {
 	split: function (course) {
 		var split = [];
 		var t = time.parse(course.time);
-		for (i = 0; i < t.days.length; i++) {
-			var session_time = t.days[i] + " " + t.start + " " + t.end;
+		for (k = 0; k < t.days.length; k++) {
+			var session_time = t.days[k] + " " + t.start + " " + t.end;
 			split.push({
 				ccn: course.ccn,
 				desc: course.desc,

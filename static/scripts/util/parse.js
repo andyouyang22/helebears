@@ -87,8 +87,8 @@ module.exports = {
 	split: function(course) {
 		var split = [];
 		var t = time.parse(course.time);
-		for (i = 0; i < t.days.length; i++) {
-			var session_time = t.days[i] + " " + t.start + " " + t.end;
+		for (k = 0; k < t.days.length; k++) {
+			var session_time = t.days[k] + " " + t.start + " " + t.end;
 			split.push({
 				ccn   : course.ccn,
 				desc  : course.desc,
