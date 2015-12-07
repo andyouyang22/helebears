@@ -23885,6 +23885,12 @@ var Search = React.createClass({
 		var dept = e.target.value;
 		this.props.store.setDepartment(dept);
 	},
+	cancel: function (e) {
+		e.preventDefault();
+		var formDOM = $(ReactDOM.findDOMNode(this));
+		formDOM.find('.search-dept').val('disabled');
+		formDOM.find('.search-course').val('disabled');
+	},
 	submit: function (e) {
 		e.preventDefault();
 		var that = this;
@@ -23924,6 +23930,11 @@ var Search = React.createClass({
 				),
 				React.createElement(Search.Dept, { depts: this.state.depts, onChange: this.handleDeptChange }),
 				React.createElement(Search.Course, { courses: [], courses: this.state.courses }),
+				React.createElement(
+					'a',
+					{ className: 'search-cancel', onClick: this.cancel },
+					'Cancel'
+				),
 				React.createElement(
 					'a',
 					{ className: 'pure-button search-submit', href: 'query.html', onClick: this.submit },
