@@ -29,8 +29,14 @@
     "passport-local": "^1.0.0",
     "pg": "^4.4.3",
     "pg-hstore": "^2.3.2",
+    "react": "^0.14.3",
+    "react-dom": "^0.14.3",
     "sequelize": "^3.12.2",
     "sequence": "^3.0.0",
     "serve-favicon": "~2.3.0"
+  },
+  "devDependencies": {
+    "babel-preset-react": "^6.3.13",
+    "babelify": "^7.2.0"
   }
 }
