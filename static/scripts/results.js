@@ -327,17 +327,42 @@ Results.Course.Description = React.createClass({
 				<div className='results-course-title ci-metadata'>
 					{"Course Description"}
 				</div>
-				<div className='data-visualization'>
-					<Results.Course.Lecture.RecommendationChart recommendation={c.rec}/>
+				<div className='alignment-container'>
+					<div className='results-course-desc-container'>
+						<table className='desc-table'>
+						<tbody>
+							<tr>
+								<td className='desc-left'>Professor</td>
+								<td className='desc-right'>{parse.normalCase(c.inst)}</td>
+							</tr>
+							<tr>
+								<td className='desc-left'>Time</td>
+								<td className='desc-right'>{t}</td>
+							</tr>
+							<tr>
+								<td className='desc-left'>Location</td>
+								<td className='desc-right'>{c.room}</td>
+							</tr>
+							<tr>
+								<td className='desc-left'>Enrolled</td>
+								<td className='desc-right'>{c.enrolled + " / " + c.limit}</td>
+							</tr>
+							<tr>
+								<td className='desc-left'>Waitlist</td>
+								<td className='desc-right'>{c.waitlist}</td>
+							</tr>
+							<tr>
+								<td className='desc-left'>CCN</td>
+								<td className='desc-right'>{c.ccn}</td>
+							</tr>
+						</tbody>
+						</table>
+						<p className='long-description ci-metadata'>{c.info}</p>
+					</div>
+					<div className='data-visualization'>
+						<Results.Course.Lecture.RecommendationChart recommendation={c.rec}/>
+					</div>
 				</div>
-				<div className='results-course-time ci-metadata'>{t}</div>
-				<div className='results-course-professor ci-metadata'>{c.inst}</div>
-				<div className='results-course-enrolled ci-metadata'>Enrolled: {c.enrolled}</div>
-				<div className='results-course-limit ci-metadata'>Limit: {c.limit}</div>
-				<div className='results-course-waitlist ci-metadata'>Waitlist: {c.limit}</div>
-				<div className='results-course-ccn ci-metadata'>CCN: {c.ccn}</div>
-				<div className='ci-metadata' id='locationid'> Location: {c.room}</div>
-				<p className='long-description ci-metadata'>{c.info}</p>
 			</div>
 		);
 	},
