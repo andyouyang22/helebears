@@ -77,7 +77,7 @@ var Search = React.createClass({
 		clear_dict_key('', form);
 		this.props.store.getResults(form);
 
-		// Remove the conflict indicator on the Calendar after moving on to new course
+		// Remove the conflict indicator on the Calendar after moving to new course
 		this.props.store.conflictOff();
 		// Unselect after a search to display new search results
 		this.props.store.unselect();

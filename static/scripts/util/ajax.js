@@ -220,4 +220,14 @@ module.exports = {
 
 		callback(review);
 	},
+
+	getGoogleCalendar: function() {
+		var onSuccess = function() {
+			console.log("Successfully recorded schedule to Google Calendar");
+		}
+		var onFailure = function() {
+			console.log("Failed to record schedule to Google Calendar");
+		}
+		this.get('/addtocalendar', onSuccess, onFailure);
+	}
 };

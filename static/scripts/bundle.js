@@ -22599,7 +22599,23 @@ var Calendar = React.createClass({
 				this.conflictString()
 			),
 			React.createElement(Calendar.Axis, null),
-			React.createElement(Calendar.Grid, { store: this.props.store })
+			React.createElement(Calendar.Grid, { store: this.props.store }),
+			React.createElement(Calendar.AddGoogle, null)
+		);
+	}
+});
+
+Calendar.AddGoogle = React.createClass({
+	displayName: 'AddGoogle',
+
+	add: function () {
+		ajax.getGoogleCalendar();
+	},
+	render: function () {
+		return React.createElement(
+			'div',
+			{ className: 'calendar-google-add', onClick: this.add },
+			'Update Google Calendar'
 		);
 	}
 });
@@ -23911,7 +23927,7 @@ var Search = React.createClass({
 		clear_dict_key('', form);
 		this.props.store.getResults(form);
 
-		// Remove the conflict indicator on the Calendar after moving on to new course
+		// Remove the conflict indicator on the Calendar after moving to new course
 		this.props.store.conflictOff();
 		// Unselect after a search to display new search results
 		this.props.store.unselect();
@@ -24582,6 +24598,16 @@ module.exports = {
 		this.post('/api/reviews/create', data, onSuccess, onFailure);
 
 		callback(review);
+	},
+
+	getGoogleCalendar: function () {
+		var onSuccess = function () {
+			console.log("Successfully recorded schedule to Google Calendar");
+		};
+		var onFailure = function () {
+			console.log("Failed to record schedule to Google Calendar");
+		};
+		this.get('/addtocalendar', onSuccess, onFailure);
 	}
 };
 

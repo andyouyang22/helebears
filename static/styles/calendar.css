@@ -131,6 +131,10 @@
 	text-align: center;
 }
 
+.calendar-google-add:hover {
+	cursor: pointer;
+}
+
 /* Search */
 
 .search {

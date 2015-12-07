@@ -47,6 +47,20 @@ var Calendar = React.createClass({
 				</div>
 				<Calendar.Axis />
 				<Calendar.Grid store={this.props.store} />
+				<Calendar.AddGoogle />
+			</div>
+		);
+	},
+});
+
+Calendar.AddGoogle = React.createClass({
+	add: function() {
+		ajax.getGoogleCalendar();
+	},
+	render: function() {
+		return (
+			<div className='calendar-google-add' onClick={this.add}>
+				Update Google Calendar
 			</div>
 		);
 	},
