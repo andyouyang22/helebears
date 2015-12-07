@@ -8,7 +8,19 @@
 <body>
 <table id="suiteTable" cellpadding="1" cellspacing="1" border="1" class="selenium"><tbody>
 <tr><td><b>Test Suite</b></td></tr>
-<tr><td><a href="test_log_in">test_log_in</a></td></tr>
+<tr><td><a href="test_successful_log_in">test_successful_log_in</a></td></tr>
+<tr><td><a href="test_wrong_username_log_in">test_wrong_username_log_in</a></td></tr>
+<tr><td><a href="test_wrong_password_log_in">test_wrong_password_log_in</a></td></tr>
+<tr><td><a href="test_google_log_in">test_google_log_in</a></td></tr>
+<tr><td><a href="test_department_search">test_department_search</a></td></tr>
+<tr><td><a href="test_add_courses">test_add_courses</a></td></tr>
+<tr><td><a href="test_remove_courses">test_remove_courses</a></td></tr>
+<tr><td><a href="test_log_out">test_log_out</a></td></tr>
+<tr><td><a href="test_all_combinatins_of_buttons_for_a_single_class">test_all_combinatins_of_buttons_for_a_single_class</a></td></tr>
+<tr><td><a href="write_review_for_course">write_review_for_course</a></td></tr>
+<tr><td><a href="add_courses_log_out_log_back_in_remove_courses_and_repeat">add_courses_log_out_log_back_in_remove_courses_and_repeat</a></td></tr>
+<tr><td><a href="test_opening_button_then_making_query_and_post_empty_review">test_opening_button_then_making_query_and_post_empty_review</a></td></tr>
+<tr><td><a href="test_add_conflicting_courses_log_out_then_log_in_and_retry">test_add_conflicting_courses_log_out_then_log_in_and_retry</a></td></tr>
 </tbody></table>
 </body>
 </html>
