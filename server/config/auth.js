@@ -5,8 +5,8 @@
 module.exports = {
 
     'googleAuth' : {
-        'clientID'      : '753668621131-36g6ge4gcnlaldr3easvgu83nsb6n88r.apps.googleusercontent.com',
-        'clientSecret'  : '8fsUiVGAyHua6nmDtd9O21sj',
+        'clientID'      : '753668621131-bafakrufkqs51ti7047o90mosm6p3juf.apps.googleusercontent.com',
+        'clientSecret'  : 'zGmIwT2kajW3wVTRh4XMIM1w',
         'callbackURL'   : 'http://protected-refuge-7067.herokuapp.com/auth/google/callback'
     }
 };
