@@ -80,14 +80,13 @@ app.get('/addtocalendar',function(req,res) {
                             'timeZone': 'America/Los_Angeles',
                         },
                         'recurrence': [
-                            'RRULE:FREQ=WEEKLY;BYDAY=' + ''+';UNTIL=20151205T063000Z'
+                            'RRULE:FREQ=WEEKLY;BYDAY=' + 'TU,TH'+';UNTIL=20151205T063000Z'
                         ]
                     }
                     events.push(event);
                 }
-                //if(i === results.length) {
                     next(null, events);
-                //}
+
             });
         }).then(function(next, err,events){
             for(var i=0;i<events.length;i++) {
