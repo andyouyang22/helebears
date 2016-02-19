@@ -1,6 +1,6 @@
 # HeleBears
 
-This is the main repository for the HeleBears project of Computer Science 169, Fall 2015.
+This is the main repository for the HeleBears.
 
 Try out our app at http://protected-refuge-7067.herokuapp.com/
 
